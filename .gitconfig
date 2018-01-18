@@ -1,0 +1,48 @@
+[color]
+        branch          = auto
+        diff            = auto
+        status          = auto
+        interactive     = auto
+        status          = auto
+[alias]
+        st              = status
+        ci              = commit
+        co              = checkout
+        br              = branch
+        logg            = log --decorate --graph
+        lg              = log --graph --pretty=tformat:'%Cred%h%Creset -%C(yellow)%d%Creset%s %Cgreen(%an %cr)%Creset' --abbrev-commit --date=relative
+        lga             = "!sh -c 'git log --author=\"$1\" -p $2' -"
+        lol             = log --graph --decorate --pretty=oneline --abbrev-commit
+        lola            = log --graph --decorate --pretty=oneline --abbrev-commit --all
+        tree            = log --graph --decorate --pretty=oneline --abbrev-commit --all
+        lint            = "!sh -c 'git status | awk \"/modified/ {print \\$3}\" | xargs -L 1 php -l'"
+        logfull         = log --pretty=fuller --graph --stat -p
+        cat             = cat-file -p
+        unstage         = reset HEAD
+        uncommit        = update-ref HEAD HEAD^
+        uncommithard    = reset --hard HEAD^
+        undomerge       = reset --hard ORIG_HEAD
+        oups            = commit -a --amend -C HEAD
+        d               = difftool
+[branch "master"]
+        remote = origin
+        merge  = refs/heads/master
+        rebase = true
+[core]
+        autocrlf        = input
+        excludesfile    = ~/.gitignore
+        eol             = lf
+[mergetool]
+        keepBackup = true
+[http]
+[user]
+	name  = Chloé Dequeker
+	email = chloe@dequeker.me
+[filter "media"]
+	clean    = git media clean %f
+	smudge   = git media smudge %f
+	required = true
+[diff]
+    tool   = vimdiff
+[difftool]
+    prompt = false

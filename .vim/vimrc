@@ -1,0 +1,309 @@
+set nocompatible               " Be iMproved
+filetype off                  " required
+
+" Required:
+" set rtp+=$HOME/.vim/bundle/Vundle.vim
+
+" Required:
+call plug#begin('~/.vim/plugged')
+
+" Required:
+
+    Plug 'Shougo/vimproc.vim', {'build': 'make'}
+    Plug '/usr/local/opt/fzf'
+    Plug 'junegunn/fzf.vim'
+    Plug 'mileszs/ack.vim'                     " Fuzzy search
+    Plug 'roxma/nvim-completion-manager'       " auto completion
+    Plug 'roxma/clang_complete'                " auto completion
+    Plug 'davidhalter/jedi-vim'                " auto completion
+    Plug 'lervag/vimtex'
+
+    Plug 'w0rp/ale' " lint checker
+    Plug 'ludovicchabant/vim-gutentags'
+
+    Plug 'flazz/vim-colorschemes'
+    Plug 'vim-airline/vim-airline'               " line with useful infos
+    Plug 'vim-airline/vim-airline-themes'
+    Plug 'airblade/vim-gitgutter'                " git info on the left
+    Plug 'ap/vim-css-color'                      " Color highlighter
+    Plug 'altercation/vim-colors-solarized'      " Colour scheme
+    Plug 'joshdick/onedark.vim'                  " Colour scheme
+    " Plugin 'Yggdroot/indentLine'                   " Display indentation
+
+    Plug 'Raimondi/delimitMate'                  " For parenthesis
+
+    " NERDtree loaded on toggle
+    Plug 'scrooloose/nerdtree'
+    Plug 'Xuyuanp/nerdtree-git-plugin'
+
+    Plug 'tmhedberg/SimpylFold'
+    Plug 'godlygeek/tabular'                        " Tabuliarise and align based on pattern
+
+    Plug 'sheerun/vim-polyglot'
+    Plug 'vim-python/python-syntax'
+
+    Plug 'tpope/vim-commentary'                  " comments based on the file type
+    Plug 'tpope/vim-surround'
+    Plug 'tpope/vim-sensible'
+    Plug 'tpope/vim-fugitive'
+    Plug 'tpope/vim-repeat'
+
+    Plug 'def-lkb/vimbufsync'
+    Plug 'terryma/vim-expand-region'
+    Plug 'xolox/vim-misc'
+    Plug 'terryma/vim-multiple-cursors'
+    Plug 'marcweber/vim-addon-mw-utils'
+    Plug 'tomtom/tlib_vim'
+    Plug 'majutsushi/tagbar'
+
+    Plug 'SirVer/ultisnips'
+    Plug 'honza/vim-snippets'
+    Plug 'ymatz/vim-latex-completion'
+    " Plug 'gerw/vim-latex-suite'
+
+call plug#end()
+
+" ------ Basic VIM modifications ------ "
+
+set guioptions=M
+
+set hidden " Allow background buffers without saving
+set splitright
+
+" set t_Co=256
+set number              " line numbers
+hi CursorLineNr guifg=#dddddd
+set encoding=utf-8
+
+set autoindent
+set autoread            " reload automatically a file if not changed
+
+" Text wrapping
+" set nowrap
+" set textwidth=79
+" set colorcolumn=80
+
+set runtimepath+=~/.vim/my-snippets/
+
+" Search
+set incsearch           " search as characters are entered
+set hlsearch            " highlight matches
+set magic               " For regex
+set ignorecase
+
+" vim tmp files
+set directory=$HOME/.vim/swap,/tmp
+set backupdir=$HOME/.vim/backup,/tmp
+set undodir=$HOME/.vim/undo,/tmp
+
+
+" mapping the 'super' button on space
+let mapleader = "\<Space>"
+
+" Tab spec
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set backspace=indent,eol,start
+
+""" NetRW - VIM file explorer
+let g:netrw_liststyle = 1 " Detail View
+let g:netrw_sizestyle = 'H' " Human-readable file sizes
+" let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+' " hide dotfiles
+" let g:netrw_hide = 1 " hide dotfiles by default
+let g:netrw_banner = 0 " Turn off banner
+
+""" Explore in vertical split
+nnoremap <Leader>e :Explore! <enter>
+
+syntax on
+filetype plugin indent on
+
+" Some remaps
+" noremap m l
+" noremap l k
+" noremap k j
+" noremap j h
+noremap gV `[V`]
+noremap ; :
+
+" Switching panes using the ctrl key
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+" Navigate display lines
+noremap <silent> j gj
+noremap <silent> k gk
+noremap H 5h
+noremap J 5j
+noremap K 5k
+noremap L 5l
+
+" Saving
+nnoremap <Leader>w :w<CR>
+
+" Save the copy buffer
+noremap <Leader>x "+
+
+" Stupid window...
+map q: :q
+
+" Align blocks of texte and keep them selected
+vmap < <gv
+vmap > >gv
+
+" Used for latex editing
+autocmd FileType tex set spell
+autocmd FileType tex set iskeyword+=:,-
+let g:tex_flavor='latex'
+
+" ------ Buffer ------ "
+nnoremap <Leader>l :bn<CR><return>
+nnoremap <Leader>h :bp<CR>
+nnoremap gl :ls<CR>
+nnoremap gb :ls<CR>:b
+
+nnoremap <Leader>c ggVG:!column -t<CR>
+
+" Close the current buffer and move to the previous one
+" This replicates the idea of closing a tab
+nmap <Leader>q :bp <BAR> bd #<CR>
+
+" Visual mode enhancements
+nmap <Leader><Leader> V
+
+" Turn off highlight after search
+nnoremap <Leader>a :noh<return><CR>
+
+" Color scheme
+set background=dark
+colorscheme onedark
+
+if (has('nvim'))
+    set termguicolors
+endif
+
+"""""""""""""""""""""""""""
+"        PLUGINS          "
+"""""""""""""""""""""""""""
+
+" ------ Clang-complete ------ "
+let g:clang_library_path='/usr/lib64/libclang.so'
+
+" ------ ALE ------ "
+" Prevents from continuously checking for errors
+" and eating up battery
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_sign_column_always = 1
+let g:ale_linters = {'python': ['flake8']}
+let g:ale_fixers = {'python': ['remove_trailing_lines', 'trim_whitespace', 'yapf']}
+
+" ------ NERDtree ------"
+map <Leader>n :NERDTreeToggle<return><CR>
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
+
+" ------ jedi-python ------"
+let g:jedi#popup_on_dot = 0
+let g:jedi#usages_command = ""
+let g:jedi#documentation_command = "D"
+map <Leader>b Oimport pdb; pdb.set_trace() # BREAKPOINT<C-c>
+
+" ------ Airline Plugin ------ "
+let g:airline_theme = 'bubblegum'
+let g:airline#extensions#tabline#enabled = 1
+set laststatus=2
+
+" ------ VimTex ------ "
+let g:vimtex_compiler_method = 'latexmk'
+autocmd FileType tex nmap <Leader>c :VimtexTocToggle<CR>
+autocmd FileType tex nmap <F5> :VimtexCompile<CR>
+
+
+" ------ fzf plugin ------ "
+autocmd CompleteDone * pclose
+let g:fzf_history_dir = '~/.local/share/fzf-history'
+" [Buffers] Jump to the existing window if possible
+let g:fzf_buffers_jump = 1
+" [Tags] Command to generate tags file
+let g:fzf_tags_command = 'ctags -R'
+
+nmap , :Buffers<CR>
+nnoremap <Leader>o :FZF<CR>
+
+" ------ Tagbar ------ "
+nmap <F8> :TagbarToggle<CR>
+
+" ------ Expand regions  ------ "
+vmap v <Plug>(expand_region_expand)
+vmap <C-v> <Plug>(expand_region_shrink)
+
+
+" ------ Python folding  ------ "
+" Be able to read doc
+let g:SimpylFold_docstring_preview = 1
+
+" ------ Git plugin ------ "
+set diffopt+=vertical
+
+" ------ Tabular ------ "
+nmap <Leader>a= :Tabularize /=<CR>
+vmap <Leader>a= :Tabularize /=<CR>
+
+" ------ Neo complete ------ "
+set completeopt+=longest,menuone,noinsert,noselect
+set shortmess+=c " Turn off completion messages
+
+" For it to be working with vimtex
+augroup my_cm_setup
+  autocmd!
+  autocmd User CmSetup call cm#register_source({
+        \ 'name' : 'vimtex',
+        \ 'priority': 8,
+        \ 'scoping': 1,
+        \ 'scopes': ['tex'],
+        \ 'abbreviation': 'tex',
+        \ 'cm_refresh_patterns': g:vimtex#re#ncm,
+        \ 'cm_refresh': {'omnifunc': 'vimtex#complete#omnifunc'},
+        \ })
+augroup END
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" ------ Ultisnips ------ "
+let g:UltiSnipsExpandTrigger="<c-c>"
+let g:UltiSnipsJumpForwardTrigger="<c-n>"
+let g:UltiSnipsJumpBackwardTrigger="<c-b>"
+
+" ------ VIM polyglot ------ "
+let g:polyglot_disabled = ['python']
+let g:polyglot_disabled = ['latex']
+
+" ------ python-syntax ------ "
+let g:python_highlight_all = 1
+
+" ------ Useful function ------ "
+
+" pasting doesn't replace paste buffer
+function! RestoreRegister()
+    let @" = s:restore_reg"
+    return ''
+endfunction
+function! s:Repl()
+    let s:restore_reg = @"
+    return "p@=RestoreRegister()\<cr>"
+endfunction
+vmap <silent> <expr> p <sid>Repl()
+
+" Keep undo history across sessions by storing it in a file
+if has('persistent_undo')
+    let undo_dir = expand('$HOME/.vim/undo_dir')
+    if !isdirectory(undo_dir)
+        call mkdir(undo_dir, "", 0700)
+    endif
+    set undodir=$HOME/.vim/undo_dir
+    set undofile
+endif
+

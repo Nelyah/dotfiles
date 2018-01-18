@@ -1,0 +1,10 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_1='/home/chloe/mapping/scripts/lib'
+let g:netrw_dirhist_2='/home/chloe/mapping/scripts'
+let g:netrw_dirhist_3='/home/chloe/mapping'
+let g:netrw_dirhist_4='/home/chloe'
+let g:netrw_dirhist_5='/home/chloe/routines/weekly'
+let g:netrw_dirhist_6='/home/chloe/routines'
+let g:netrw_dirhist_7='/home/chloe'
+let g:netrw_dirhist_8='/home/chloe/bin'

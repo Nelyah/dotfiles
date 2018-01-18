@@ -1,0 +1,28 @@
+# Pacman
+nvim
+fzf
+git
+htop
+ncdu
+zip
+ctags
+clang
+yaourt
+calibre
+dnsutils
+base-deval
+dig
+gufw
+autossh
+python-pylint
+flake8
+ctags
+ack
+yapf
+stow
+
+# AUR
+mons
+spotify
+signal-desktop-bin
+mypy

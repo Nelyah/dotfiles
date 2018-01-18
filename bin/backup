@@ -1,0 +1,96 @@
+#!/bin/bash
+
+function print_usage() {
+    echo "Usage:"
+    echo "backup [-f|--backup-file FILE] [-e|--exclude] [-h|--help] USER REMOTE"
+    echo "-f, --backup-file     Specify a file to be read for backup names."
+    echo "                      Each line should correspond to a file/directory."
+    echo "-u, --user            User to backup, default is current user."
+    echo "-h, --help            print this message."
+}
+
+if [[ $# == 0 ]]; then
+    echo "No argument given"
+    print_usage
+    exit 0
+fi
+
+args=$(getopt -l "user:backup-file:help" -o "u:f:h" -- "$@")
+eval set -- "$args"
+
+BACKUP_FILE=
+EXCLUDE_FILE=
+USER_BAK=$USER
+while [ $# -ge 1 ]; do
+    case "$1" in
+        --)
+            # No more options left.
+            shift
+            break
+           ;;
+        -f|--backup-file)
+            BACKUP_FILE=$2
+            shift
+        ;;
+        -u|--user)
+            USER_BAK=$2
+            shift
+        ;;
+        -h|--help)
+            print_usage
+            exit 0
+        ;;
+    esac
+    shift
+done
+
+# home of user to backup
+BACKUP_HOME=$(eval echo ~$USER_BAK)
+
+# List of files/directory to backup
+LIST_BACK=()
+if [[ -n $BACKUP_FILE ]]; then
+    for el in $(cat $BACKUP); do
+        LIST_BACK+=($el)
+    done
+else
+    # Default backup list
+    LIST_BACK=($BACKUP_HOME/Documents $BACKUP_HOME/Music $BACKUP_HOME/Pictures)
+fi
+
+# Setting the USER and REMOTE values
+# BACKUP_DIR is the backup prefix
+USER=$1
+REMOTE=$2
+BACKUP_DIR=backup
+PREV_BACKUP=
+
+# Get the name of available remote backups
+AVAIL_BACKUP=$(ssh $USER@$REMOTE "stat -c "%n" $BACKUP_DIR/*" 2> /dev/null)
+
+# Check if there is at least one previous backup
+if [[ -n $AVAIL_BACKUP ]]; then
+
+    # Get last backup date
+    for NB_DAYS in {1..180}; do
+        PREV_DATE=$(date -d  "$NB_DAYS day ago" "+%d-%m-%Y")
+        PREV_BACKUP=$BACKUP_DIR/backup_${PREV_DATE}
+
+        # If PREV_BACKUP exists in AVAIL_BACKUP
+        if [[ -n $(grep $PREV_BACKUP <<< $AVAIL_BACKUP) ]]; then
+            break
+        fi
+    done
+fi
+
+# Proceed to actual backup
+if [[ -n $PREV_BACKUP ]]; then
+    BASE_PREVBACKUP=$(basename $PREV_BACKUP)
+    DATE=$(date "+%d-%m-%Y")
+    BACKUP_NAME=$BACKUP_DIR/backup_${DATE}
+    rsync -avz \
+        --delete \
+        --link-dest=../${BASE_PREVBACKUP} \
+        ${LIST_BACK[@]} \
+        $USER@$REMOTE:$BACKUP_NAME
+fi
