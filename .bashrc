@@ -45,7 +45,7 @@ IN="\[\033[0m\]"
 
 # Those are the PC names and user names I use 
 # most of the time
-LIST_PC=(lcqb0001 chloe-pc laptop-chloe chloe-desktop_lcqb)
+LIST_PC=(lcqb0001 chloe-pc chloe-laptop chloe-desktop_lcqb)
 LIST_USER=(chloe Chloe dequeker Dequeker nelyah Nelyah)
 
 # Testing if this user is a common one
