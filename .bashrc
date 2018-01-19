@@ -1,4 +1,5 @@
 # Environnement variable
+source ~/.profile
 
 if [[ -z $OLDPATH ]];
 then
@@ -16,7 +17,6 @@ export HEX_ROOT=/home/chloe/lib/hex
 export HEX_VERSION=8.0.0
 export HEX_CACHE=$HOME/lib/hex_cache
 export PATH="$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$HEX_ROOT/bin:$PATH"
-
 
 export EDITOR=nvim
 export SOFT_MANAGER=trizen
@@ -69,7 +69,7 @@ do
     [[ $e == $(hostname --short) ]] && KNOWN_HOST=0 && break
 done
 
-if [[ $KNOWN_HOST == 0 ]]
+if [[ $KNOWN_HOST == 0 ]] && [[ $SESSION_TYPE != remote ]]
 then
     PS1_HOST=""
 else
