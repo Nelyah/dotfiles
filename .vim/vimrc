@@ -2,15 +2,11 @@ set nocompatible               " Be iMproved
 filetype off                  " required
 
 " Required:
-" set rtp+=$HOME/.vim/bundle/Vundle.vim
-
-" Required:
 call plug#begin('~/.vim/plugged')
-
-" Required:
 
     Plug 'Shougo/vimproc.vim', {'build': 'make'}
     Plug '/usr/local/opt/fzf'
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
     Plug 'mileszs/ack.vim'                     " Fuzzy search
     Plug 'roxma/nvim-completion-manager'       " auto completion
@@ -59,7 +55,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'SirVer/ultisnips'
     Plug 'honza/vim-snippets'
     Plug 'ymatz/vim-latex-completion'
-    " Plug 'gerw/vim-latex-suite'
 
 call plug#end()
 
@@ -83,6 +78,7 @@ set autoread            " reload automatically a file if not changed
 " set textwidth=79
 " set colorcolumn=80
 
+" Adding my own snippets
 set runtimepath+=~/.vim/my-snippets/
 
 " Search
@@ -219,7 +215,6 @@ set laststatus=2
 let g:vimtex_compiler_method = 'latexmk'
 autocmd FileType tex nmap <Leader>c :VimtexTocToggle<CR>
 autocmd FileType tex nmap <F5> :VimtexCompile<CR>
-
 
 " ------ fzf plugin ------ "
 autocmd CompleteDone * pclose
