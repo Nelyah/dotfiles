@@ -279,6 +279,11 @@ let g:polyglot_disabled = ['latex']
 " ------ python-syntax ------ "
 let g:python_highlight_all = 1
 
+" ------ git-gutter ------ "
+nmap <Leader>gp <Plug>GitGutterPreviewHunk
+nmap <Leader>gs <Plug>GitGutterStageHunk
+nmap <Leader>gu <Plug>GitGutterUndoHunk
+
 " ------ Useful function ------ "
 
 " pasting doesn't replace paste buffer
