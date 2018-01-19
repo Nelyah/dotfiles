@@ -5,14 +5,15 @@ filetype off                  " required
 call plug#begin('~/.vim/plugged')
 
     Plug 'Shougo/vimproc.vim', {'build': 'make'}
-    Plug '/usr/local/opt/fzf'
-    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    Plug 'christoomey/vim-tmux-navigator'
     Plug 'junegunn/fzf.vim'
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'mileszs/ack.vim'                     " Fuzzy search
     Plug 'roxma/nvim-completion-manager'       " auto completion
     Plug 'roxma/clang_complete'                " auto completion
     Plug 'davidhalter/jedi-vim'                " auto completion
     Plug 'lervag/vimtex'
+    Plug 'easymotion/vim-easymotion'
 
     Plug 'w0rp/ale' " lint checker
     Plug 'ludovicchabant/vim-gutentags'
@@ -124,10 +125,10 @@ noremap gV `[V`]
 noremap ; :
 
 " Switching panes using the ctrl key
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
+nnoremap <M-h> <C-w>h
+nnoremap <M-j> <C-w>j
+nnoremap <M-k> <C-w>k
+nnoremap <M-l> <C-w>l
 " Navigate display lines
 noremap <silent> j gj
 noremap <silent> k gk
@@ -179,6 +180,13 @@ colorscheme onedark
 if (has('nvim'))
     set termguicolors
 endif
+
+nmap <silent> <c-up> <c-w>3+
+nmap <silent> <c-down> <c-w>3-
+nmap <silent> <c-left> <c-w>3<
+nmap <silent> <c-right> <c-w>3>
+
+
 
 """""""""""""""""""""""""""
 "        PLUGINS          "
@@ -283,6 +291,22 @@ let g:python_highlight_all = 1
 nmap <Leader>gp <Plug>GitGutterPreviewHunk
 nmap <Leader>gs <Plug>GitGutterStageHunk
 nmap <Leader>gu <Plug>GitGutterUndoHunk
+
+" ------ easymotion ------ "
+map  <Leader>s <Plug>(easymotion-bd-w)
+nmap <Leader>s <Plug>(easymotion-overwin-w)
+" Gif config
+map  / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
+
+" ------ vim-tmux-navigator ------ "
+let g:tmux_navigator_no_mappings = 1
+
+nnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <m-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <m-\> :TmuxNavigatePrevious<cr>
 
 " ------ Useful function ------ "
 
