@@ -1,0 +1,21 @@
+#!/bin/bash
+
+function pac(){
+    case $1 in
+        update|up )
+            shift
+            $SOFT_MANAGER -Syu $@
+        ;;
+        install|ins ) 
+            shift
+            $SOFT_MANAGER -S $@
+        ;;
+        remove|rm )
+            shift
+            $SOFT_MANAGER -Rs $@
+        ;;
+        *)
+            $SOFT_MANAGER $@
+        ;;
+    esac
+}

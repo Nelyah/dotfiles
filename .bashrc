@@ -100,24 +100,4 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-# Useful function
-function pac(){
-    case $1 in
-        update|up )
-            trizen -Syu $@
-        ;;
-        install|ins ) 
-            shift
-            trizen -S $@
-        ;;
-        remove|rm )
-            shift
-            trizen -Rs $@
-        ;;
-        *)
-            trizen $@
-        ;;
-    esac
-}
-
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
