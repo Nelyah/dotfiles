@@ -24,3 +24,5 @@ function pac(){
         ;;
     esac
 }
+
+pac $*
