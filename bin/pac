@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function pac(){
+    SOFT_MANAGER=trizen
     case $1 in
         update|up )
             shift
