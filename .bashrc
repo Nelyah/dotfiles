@@ -45,8 +45,15 @@ IN="\[\033[0m\]"
 
 # Those are the PC names and user names I use 
 # most of the time
-LIST_PC=(lcqb0001 chloe-pc chloe-laptop chloe-desktop_lcqb)
+LIST_PC=(lcqb0001 chloe-pc chloe-laptop desktop_lcqb)
 LIST_USER=(chloe Chloe dequeker Dequeker nelyah Nelyah)
+
+
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    export SESSION_TYPE=remote 
+else
+    export SESSION_TYPE=
+fi
 
 # Testing if this user is a common one
 KNOWN_USER=1 
@@ -101,4 +108,16 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-eval "$(fasd --init auto)"
+
+if type fasd > /dev/null 2>&1; then
+    eval "$(fasd --init auto)"
+
+    alias a='fasd -a'        # any
+    alias s='fasd -si'       # show / search / select
+    alias d='fasd -d'        # directory
+    alias f='fasd -f'        # file
+    alias sd='fasd -sid'     # interactive directory selection
+    alias sf='fasd -sif'     # interactive file selection
+    alias z='fasd_cd -d'     # cd, same functionality as j in autojump
+    alias zz='fasd_cd -d -i' # cd with interactive selection
+fi

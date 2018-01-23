@@ -20,6 +20,7 @@ ctags
 ack
 yapf
 stow
+fasd
 
 # AUR
 mons

@@ -7,7 +7,3 @@
 export EDITOR=vim
 
 [[ -f ~/.extend.profile ]] && . ~/.extend.profile
-
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-    export SESSION_TYPE=remote 
-fi

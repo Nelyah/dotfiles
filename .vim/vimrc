@@ -62,6 +62,7 @@ call plug#end()
 " ------ Basic VIM modifications ------ "
 
 set guioptions=M
+set mouse=a " Use the mouse to slide panes size or scrolling, and copying
 
 set hidden " Allow background buffers without saving
 set splitright
@@ -231,6 +232,19 @@ let g:fzf_history_dir = '~/.local/share/fzf-history'
 let g:fzf_buffers_jump = 1
 " [Tags] Command to generate tags file
 let g:fzf_tags_command = 'ctags -R'
+
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+nmap <Leader>i :Ag 
 
 nmap , :Buffers<CR>
 nnoremap <Leader>o :FZF<CR>
