@@ -172,7 +172,7 @@ nmap <Leader>q :bp <BAR> bd #<CR>
 nmap <Leader><Leader> V
 
 " Turn off highlight after search
-nnoremap <Leader>a :noh<return><CR>
+nnoremap <Leader>a :noh<CR>
 
 " Color scheme
 set background=dark
@@ -316,13 +316,15 @@ omap / <Plug>(easymotion-tn)
 " ------ vim-tmux-navigator ------ "
 let g:tmux_navigator_no_mappings = 1
 
-nnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
-nnoremap <silent> <m-j> :TmuxNavigateDown<cr>
-nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
-nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
-nnoremap <silent> <m-\> :TmuxNavigatePrevious<cr>
+map <silent> <m-h> :TmuxNavigateLeft<cr>
+map <silent> <m-j> :TmuxNavigateDown<cr>
+map <silent> <m-k> :TmuxNavigateUp<cr>
+map <silent> <m-l> :TmuxNavigateRight<cr>
+map <silent> <m-\> :TmuxNavigatePrevious<cr>
 
 " ------ Useful function ------ "
+
+command -nargs=1 Ssh :r scp://<args>/
 
 " pasting doesn't replace paste buffer
 function! RestoreRegister()
