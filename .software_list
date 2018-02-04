@@ -19,8 +19,8 @@ flake8
 ctags
 ack
 yapf
-stow
 fasd
+fd-rs
 
 # AUR
 mons
