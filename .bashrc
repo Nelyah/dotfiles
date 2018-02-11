@@ -8,27 +8,29 @@ else
     export PATH=$OLDPATH
 fi
 
-export JET2_HOME=$HOME/JET2/
 export ATTRACTDIR=$HOME/lib/attract/bin/ 
 export ATTRACTTOOLS=$ATTRACTDIR/../tools
-export PYTHONPATH=$PYTHONPATH:/usr/share/pdb2pqr:$HOME/mapping/scripts/lib
+export PYTHONPATH=$PYTHONPATH:$HOME/mapping/scripts/lib
 export PYMOLPATH=$PYMOLPATH:$HOME/mapping/scripts/lib
-export HEX_ROOT=/home/chloe/lib/hex
+export HEX_ROOT=$HOME/lib/hex
 export HEX_VERSION=8.0.0
 export HEX_CACHE=$HOME/lib/hex_cache
 export PATH="$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$HEX_ROOT/bin:$PATH"
 
-export EDITOR=nvim
-export SOFT_MANAGER=trizen
-
-
-if [[ -f /usr/share/fzf/key-bindings.bash ]]; then
-    source /usr/share/fzf/key-bindings.bash
-    source /usr/share/fzf/completion.bash
+if type nvim &> /dev/null; then
+    export EDITOR=nvim
+    alias vim='nvim'
 fi
 
-/usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh > /dev/null
-export GNOME_KEYRING_CONTROL GNOME_KEYRING_PID GPG_AGENT_INFO SSH_AUTH_SOCK
+if type trizen &> /dev/null; then
+    export SOFT_MANAGER=trizen
+fi
+
+
+if [ -f /usr/bin/gnome-keyring-daemon ]; then 
+    /usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh > /dev/null
+    export GNOME_KEYRING_CONTROL GNOME_KEYRING_PID GPG_AGENT_INFO SSH_AUTH_SOCK
+fi
 
 if [ "$TERM" != "dumb" ]; then
     export LS_OPTIONS='--color=auto'
@@ -100,7 +102,6 @@ alias rm='rm -i'
 alias rebash='source ~/.bashrc'
 alias irssi@freenode="irssi -c chat.freenode.net -p 6667 -n Nelyah"
 alias irc='weechat-curses'
-alias vim='nvim'
 
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -120,4 +121,14 @@ if type fasd > /dev/null 2>&1; then
     alias sf='fasd -sif'     # interactive file selection
     alias z='fasd_cd -d'     # cd, same functionality as j in autojump
     alias zz='fasd_cd -d -i' # cd with interactive selection
+fi
+
+
+if [ -f ~/.pm/pm.bash ]; then
+    # PM functions
+    source ~/.pm/pm.bash
+    alias pma="pm add"
+    alias pmg="pm go"
+    alias pmrm="pm remove"
+    alias pml="pm list"
 fi

@@ -5,7 +5,6 @@ git
 htop
 ncdu
 zip
-ctags
 clang
 yaourt
 calibre
@@ -21,6 +20,7 @@ ack
 yapf
 fasd
 fd-rs
+ag
 
 # AUR
 mons
