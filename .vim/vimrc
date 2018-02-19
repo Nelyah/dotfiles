@@ -1,6 +1,12 @@
 set nocompatible               " Be iMproved
 filetype off                  " required
 
+""""""""""""""
+"  Vim-wiki  "
+""""""""""""""
+let g:vimwiki_map_prefix = '<Leader>e'
+let g:vimwiki_list = [{'path': '~/.vim/vimwiki/'}]
+
 " Required:
 call plug#begin('~/.vim/plugged')
 
@@ -25,6 +31,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'ap/vim-css-color'                      " Color highlighter
     Plug 'altercation/vim-colors-solarized'      " Colour scheme
     Plug 'joshdick/onedark.vim'                  " Colour scheme
+    Plug 'vimwiki/vimwiki'
     " Plugin 'Yggdroot/indentLine'                   " Display indentation
 
     Plug 'Raimondi/delimitMate'                  " For parenthesis
@@ -35,6 +42,7 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'tmhedberg/SimpylFold'
     Plug 'godlygeek/tabular'                        " Tabuliarise and align based on pattern
+    Plug 'plasticboy/vim-markdown'
 
     Plug 'sheerun/vim-polyglot'
     Plug 'vim-python/python-syntax'
@@ -139,7 +147,7 @@ noremap K 5k
 noremap L 5l
 
 " Saving
-nnoremap <Leader>w :w<CR>
+nnoremap <Leader>w :w<CR><return>
 
 " Save the copy buffer
 noremap <Leader>x "+
@@ -321,6 +329,8 @@ map <silent> <m-j> :TmuxNavigateDown<cr>
 map <silent> <m-k> :TmuxNavigateUp<cr>
 map <silent> <m-l> :TmuxNavigateRight<cr>
 map <silent> <m-\> :TmuxNavigatePrevious<cr>
+
+
 
 " ------ Useful function ------ "
 
