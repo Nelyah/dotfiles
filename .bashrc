@@ -26,15 +26,9 @@ if type trizen &> /dev/null; then
     export SOFT_MANAGER=trizen
 fi
 
-
 if [ -f /usr/bin/gnome-keyring-daemon ]; then 
     /usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh > /dev/null
     export GNOME_KEYRING_CONTROL GNOME_KEYRING_PID GPG_AGENT_INFO SSH_AUTH_SOCK
-fi
-
-if [ "$TERM" != "dumb" ]; then
-    export LS_OPTIONS='--color=auto'
-    eval `dircolors ~/.dircolors`
 fi
 
 # Couleurs du préfix du terminal
@@ -50,7 +44,7 @@ IN="\[\033[0m\]"
 LIST_PC=(lcqb0001 chloe-pc chloe-laptop desktop_lcqb)
 LIST_USER=(chloe Chloe dequeker Dequeker nelyah Nelyah)
 
-
+# Check if the current session is a SSH session or not
 if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
     export SESSION_TYPE=remote 
 else
@@ -92,16 +86,47 @@ alias ls="ls --color=always"
 alias grep="grep --color=always"
 alias egrep="egrep --color=always"
 
+if [ "$TERM" != "dumb" ]; then
+    export LS_OPTIONS='--color=auto --time-style=long-iso --group-directories-first -G'
+    eval `dircolors ~/.dircolors`
+fi
 
 # Aliases
-alias ll='ls -lh'
-alias lla='ls -lha'
-alias llth='ls -lht|head'
-alias llt='ls -lht'
+
+function llth (){
+    if [[ -f $1 ]] || [[ -d $1 ]]; then
+        ls -lht $LS_OPTIONS $1 | head $2
+    else
+        ls -lht $LS_OPTIONS | head $1
+    fi
+}
+
+export LESS_TERMCAP_md="${yellow}";
+
+alias ll='ls -lh $LS_OPTIONS'
+alias lla='ls -lha $LS_OPTIONS'
+alias llt='ls -lht $LS_OPTIONS'
+alias lld='ls -lhd $LS_OPTIONS'
+alias llad='ls -lhad $LS_OPTIONS'
+alias llda='ls -lhad $LS_OPTIONS'
+
 alias rm='rm -i'
 alias rebash='source ~/.bashrc'
-alias irssi@freenode="irssi -c chat.freenode.net -p 6667 -n Nelyah"
+alias irssi@freenode='irssi -c chat.freenode.net -p 6667 -n Nelyah'
 alias irc='weechat-curses'
+alias bc='bc -l'
+
+alias speedtest='wget -O /dev/null http://speed.transip.nl/100mb.bin'
+alias tree='tree -A'
+alias treed='tree -d'
+alias tree1='tree -d -L 1'
+alias tree2='tree -d -L 2'
+
+alias cpwd="pwd|tr -d '\n'|xclip" # copy pwd in clipboard
+
+alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
+regexip='inet ([0-9]{,3}\.[0-9]{,3}\.[0-9]{,3}\.[0-9]{,3})\/.* ([^ ]+)'
+alias ipl='ip addr | \grep -E "$regexip"| \grep -v 127.0.0.1|sed -r "s/$regexip/\2 \1/"|column -t'
 
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -123,7 +148,6 @@ if type fasd > /dev/null 2>&1; then
     alias zz='fasd_cd -d -i' # cd with interactive selection
 fi
 
-
 if [ -f ~/.pm/pm.bash ]; then
     # PM functions
     source ~/.pm/pm.bash
@@ -132,3 +156,17 @@ if [ -f ~/.pm/pm.bash ]; then
     alias pmrm="pm remove"
     alias pml="pm list"
 fi
+
+calc() {
+  echo "$*" | bc -l;
+}
+
+meteo() {
+	local LOCALE=`echo ${LANG:-en} | cut -c1-2`
+	if [ $# -eq 0 ]; then
+		local LOCATION=`curl -s ipinfo.io/loc`
+	else
+		local LOCATION=$1
+	fi
+	curl -s "$LOCALE.wttr.in/$LOCATION"
+}

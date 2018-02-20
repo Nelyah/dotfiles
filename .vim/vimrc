@@ -147,7 +147,7 @@ noremap K 5k
 noremap L 5l
 
 " Saving
-nnoremap <Leader>w :w<CR><return>
+nnoremap <Leader>w :w<CR>
 
 " Save the copy buffer
 noremap <Leader>x "+
