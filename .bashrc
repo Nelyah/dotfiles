@@ -86,8 +86,9 @@ alias ls="ls --color=always"
 alias grep="grep --color=always"
 alias egrep="egrep --color=always"
 
+LS_GROUPDIR='--group-directories-first'
 if [ "$TERM" != "dumb" ]; then
-    export LS_OPTIONS='--color=auto --time-style=long-iso --group-directories-first -G'
+    export LS_OPTIONS='--color=always --time-style=long-iso -G'
     eval `dircolors ~/.dircolors`
 fi
 
@@ -103,8 +104,8 @@ function llth (){
 
 export LESS_TERMCAP_md="${yellow}";
 
-alias ll='ls -lh $LS_OPTIONS'
-alias lla='ls -lha $LS_OPTIONS'
+alias ll='ls -lh $LS_OPTIONS $LS_GROUPDIR'
+alias lla='ls -lha $LS_OPTIONS $LS_GROUPDIR'
 alias llt='ls -lht $LS_OPTIONS'
 alias lld='ls -lhd $LS_OPTIONS'
 alias llad='ls -lhad $LS_OPTIONS'
