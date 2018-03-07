@@ -15,7 +15,7 @@ export PYMOLPATH=$PYMOLPATH:$HOME/mapping/scripts/lib
 export HEX_ROOT=$HOME/lib/hex
 export HEX_VERSION=8.0.0
 export HEX_CACHE=$HOME/lib/hex_cache
-export PATH="$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$HEX_ROOT/bin:$PATH"
+export PATH="$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$HEX_ROOT/bin:$HOME/.local/bin:$PATH"
 
 if type nvim &> /dev/null; then
     export EDITOR=nvim
@@ -86,9 +86,9 @@ alias ls="ls --color=always"
 alias grep="grep --color=always"
 alias egrep="egrep --color=always"
 
-LS_GROUPDIR='--group-directories-first'
 if [ "$TERM" != "dumb" ]; then
     export LS_OPTIONS='--color=always --time-style=long-iso -G'
+    export LS_DIRFIRST='--group-directories-first'
     eval `dircolors ~/.dircolors`
 fi
 
@@ -103,9 +103,8 @@ function llth (){
 }
 
 export LESS_TERMCAP_md="${yellow}";
-
-alias ll='ls -lh $LS_OPTIONS $LS_GROUPDIR'
-alias lla='ls -lha $LS_OPTIONS $LS_GROUPDIR'
+alias ll='ls -lh $LS_OPTIONS $LS_DIRFIRST'
+alias lla='ls -lha $LS_OPTIONS $LS_DIRFIRST'
 alias llt='ls -lht $LS_OPTIONS'
 alias lld='ls -lhd $LS_OPTIONS'
 alias llad='ls -lhad $LS_OPTIONS'

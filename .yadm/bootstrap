@@ -8,11 +8,14 @@ then
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     if command -v vim &> /dev/null; then
-      echo "Bootstraping Vim"
-      vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
+        echo "Bootstraping Vim"
+        ln -s ~/.vim/vimrc ~/.vimrc
+        vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
     fi
 
-    ln -s ~/.vim/vimrc ~/.vimrc
 fi
+
+curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
+ln -s ~/.local/venvs/pipsi/bin/virtualenv ~/.local/bin/virtualenv
 
 yadm decrypt
