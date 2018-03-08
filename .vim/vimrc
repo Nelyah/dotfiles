@@ -32,7 +32,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'altercation/vim-colors-solarized'      " Colour scheme
     Plug 'joshdick/onedark.vim'                  " Colour scheme
     Plug 'vimwiki/vimwiki'
-    " Plugin 'Yggdroot/indentLine'                   " Display indentation
+"     Plugin 'Yggdroot/indentLine'                   " Display indentation
+    Plug 'thaerkh/vim-indentguides'
 
     Plug 'Raimondi/delimitMate'                  " For parenthesis
 
@@ -187,14 +188,16 @@ set background=dark
 colorscheme onedark
 
 if (has('nvim'))
+    colorscheme onedark
     set termguicolors
+else
+    colorscheme ir_black
 endif
 
 nmap <silent> <c-up> <c-w>3+
 nmap <silent> <c-down> <c-w>3-
 nmap <silent> <c-left> <c-w>3<
 nmap <silent> <c-right> <c-w>3>
-
 
 
 """""""""""""""""""""""""""
@@ -256,6 +259,12 @@ nmap <Leader>i :Ag
 
 nmap , :Buffers<CR>
 nnoremap <Leader>o :FZF<CR>
+nnoremap <Leader>t :Tags<CR>
+nnoremap <Leader>T :BTags<CR>
+autocmd! FileType fzf
+autocmd  FileType fzf set laststatus=0 noshowmode noruler
+  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+
 
 " ------ Tagbar ------ "
 nmap <F8> :TagbarToggle<CR>
@@ -330,11 +339,12 @@ map <silent> <m-k> :TmuxNavigateUp<cr>
 map <silent> <m-l> :TmuxNavigateRight<cr>
 map <silent> <m-\> :TmuxNavigatePrevious<cr>
 
+" ------ Gutentags ------ "
+let g:gutentags_cache_dir = '~/.vim/gutentags'
 
 
 " ------ Useful function ------ "
-
-command -nargs=1 Ssh :r scp://<args>/
+command! -nargs=1 Ssh :r scp://<args>/
 
 " pasting doesn't replace paste buffer
 function! RestoreRegister()

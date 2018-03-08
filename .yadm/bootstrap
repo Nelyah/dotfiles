@@ -15,7 +15,14 @@ then
 
 fi
 
+# installing python packages through pipsi (with each its own virtualenv)
 curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
 ln -s ~/.local/venvs/pipsi/bin/virtualenv ~/.local/bin/virtualenv
+
+# Clearing the caps lock key
+if uname -o|grep Linux &> /dev/null; then
+    xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+fi
+
 
 yadm decrypt

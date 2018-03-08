@@ -12,6 +12,7 @@ export ATTRACTDIR=$HOME/lib/attract/bin/
 export ATTRACTTOOLS=$ATTRACTDIR/../tools
 export PYTHONPATH=$PYTHONPATH:$HOME/mapping/scripts/lib
 export PYMOLPATH=$PYMOLPATH:$HOME/mapping/scripts/lib
+export HCMD2PATH=$HOME/mapping/HCMD2
 export HEX_ROOT=$HOME/lib/hex
 export HEX_VERSION=8.0.0
 export HEX_CACHE=$HOME/lib/hex_cache
