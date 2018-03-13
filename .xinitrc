@@ -41,7 +41,7 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
     done
     unset f
 fi
-killall xautolock; xautolock -detectsleep -time 15 -locker "/home/chloe/bi/lock"
+# killall xautolock; xautolock -detectsleep -time 15 -locker "/home/chloe/bi/lock"
 
 get_session(){
 	local dbus_args=(--sh-syntax --exit-with-session)
@@ -67,6 +67,9 @@ get_session(){
 
 	echo "dbus-launch ${dbus_args[*]}"
 }
+
+# pixel perfect scrolling in Firefox
+export MOZ_USE_XINPUT2=1
 
 exec $(get_session)
 
