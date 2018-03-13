@@ -4,12 +4,11 @@
 #
 # Executed by startx (run your window manager from here)
 
-if [[ -f ~/.extend.xinitrc ]];then
-	. ~/.extend.xinitrc
-else
-	DEFAULT_SESSION=xfce4-session
-fi
+DEFAULT_SESSION=budgie-desktop
+# pixel perfect scrolling in Firefox
+export MOZ_USE_XINPUT2=1
 
+GTK2_RC_FILES="$HOME/.gtkrc-2.0"
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
 sysresources=/etc/X11/xinit/.Xresources
@@ -68,8 +67,6 @@ get_session(){
 	echo "dbus-launch ${dbus_args[*]}"
 }
 
-# pixel perfect scrolling in Firefox
-export MOZ_USE_XINPUT2=1
 
 exec $(get_session)
 

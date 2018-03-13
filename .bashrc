@@ -134,7 +134,8 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+[ -f ~/.config/fzf/key-bindings.bash ] && source ~/.config/fzf/key-bindings.bash
+[ -f ~/.config/fzf/completion.bash ] && source ~/.config/fzf/completion.bash
 
 if type fasd > /dev/null 2>&1; then
     eval "$(fasd --init auto)"

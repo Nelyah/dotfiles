@@ -1,28 +1,66 @@
 #!/bin/bash
 
-read -p "Setup vim? [yN] " -n 1 -r
+[ $1 = -yy ] && ALL_YES=1 || ALL_YES=
+
+#########
+#  VIM  #
+#########
+
+[[ -n $ALL_YES ]] || read -p "Setup vim? [yN] " -n 1 -r
 echo ""
-if [[ $REPLY =~ ^[Yy]$ ]]
+if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
 then
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     if command -v vim &> /dev/null; then
         echo "Bootstraping Vim"
-        ln -s ~/.vim/vimrc ~/.vimrc
+        ln -sf ~/.vim/vimrc ~/.vimrc
         vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
     fi
 
 fi
 
-# installing python packages through pipsi (with each its own virtualenv)
-curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
-ln -s ~/.local/venvs/pipsi/bin/virtualenv ~/.local/bin/virtualenv
+
+###########
+#  Pipsi  #
+###########
+
+[[ -n $ALL_YES ]] || read -p "Setup pipsi? [yN] " -n 1 -r
+echo ""
+if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
+then
+    # installing python packages through pipsi (with each its own virtualenv)
+    curl \
+        https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python 
+    ln -sf ~/.local/venvs/pipsi/bin/virtualenv ~/.local/bin/virtualenv
+fi
+
+
+#############
+#  XModmap  #
+#############
 
 # Clearing the caps lock key
 if uname -o|grep Linux &> /dev/null; then
     xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
 fi
 
+#########
+#  FZF  #
+#########
 
-yadm decrypt
+[[ -n $ALL_YES ]] || read -p "Setup fzf? [yN] " -n 1 -r
+echo ""
+if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
+then
+    if type fzf &> /dev/null; then
+        mkdir -p $HOME/.config/fzf
+        for shell in bash zsh; do
+            ln -sf /usr/share/fzf/key-bindings.${shell} $HOME/.config/fzf/
+            ln -sf /usr/share/fzf/completion.${shell} $HOME/.config/fzf/
+        done
+    else
+        echo "fzf is not installed."
+    fi
+fi
