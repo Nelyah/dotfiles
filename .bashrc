@@ -10,7 +10,7 @@ fi
 
 export ATTRACTDIR=$HOME/lib/attract/bin/ 
 export ATTRACTTOOLS=$ATTRACTDIR/../tools
-export PYTHONPATH=$PYTHONPATH:$HOME/mapping/scripts/lib
+export PYTHONPATH=$PYTHONPATH:$HOME/mapping/scripts/lib:~/.local/venvs
 export PYMOLPATH=$PYMOLPATH:$HOME/mapping/scripts/lib
 export HCMD2PATH=$HOME/mapping/HCMD2
 export HEX_ROOT=$HOME/lib/hex
