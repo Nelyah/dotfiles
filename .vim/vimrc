@@ -18,22 +18,19 @@ call plug#begin('~/.vim/plugged')
     Plug 'roxma/nvim-completion-manager'       " auto completion
     Plug 'roxma/clang_complete'                " auto completion
     Plug 'davidhalter/jedi-vim'                " auto completion
-    Plug 'lervag/vimtex'
     Plug 'easymotion/vim-easymotion'
 
     Plug 'w0rp/ale' " lint checker
     Plug 'ludovicchabant/vim-gutentags'
 
-    Plug 'flazz/vim-colorschemes'
     Plug 'vim-airline/vim-airline'               " line with useful infos
     Plug 'vim-airline/vim-airline-themes'
     Plug 'airblade/vim-gitgutter'                " git info on the left
     Plug 'ap/vim-css-color'                      " Color highlighter
-    Plug 'altercation/vim-colors-solarized'      " Colour scheme
     Plug 'joshdick/onedark.vim'                  " Colour scheme
     Plug 'vimwiki/vimwiki'
 "     Plugin 'Yggdroot/indentLine'                   " Display indentation
-    Plug 'thaerkh/vim-indentguides'
+    " Plug 'thaerkh/vim-indentguides'
 
     Plug 'Raimondi/delimitMate'                  " For parenthesis
 
@@ -64,6 +61,7 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'SirVer/ultisnips'
     Plug 'honza/vim-snippets'
+    Plug 'lervag/vimtex'
     Plug 'ymatz/vim-latex-completion'
 
 call plug#end()
@@ -290,6 +288,7 @@ set completeopt+=longest,menuone,noinsert,noselect
 set shortmess+=c " Turn off completion messages
 
 " For it to be working with vimtex
+let g:vimtex_compiler_progname = 'nvr'
 augroup my_cm_setup
   autocmd!
   autocmd User CmSetup call cm#register_source({

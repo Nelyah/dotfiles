@@ -57,7 +57,7 @@ TERM gnome-256color
 
 NORMAL  00          # global default, although everything should be something.
 FILE    38;5;37     # normal file
-DIR     38;5;241    # directory
+DIR     38;5;245    # directory
 LINK    01;37       # symbolic link.  (If you set this to 'target' instead of a
                     # numerical value, the color is as for the file pointed to.)
 FIFO    01;33       # pipe

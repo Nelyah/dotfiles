@@ -172,3 +172,5 @@ meteo() {
 	fi
 	curl -s "$LOCALE.wttr.in/$LOCATION"
 }
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
