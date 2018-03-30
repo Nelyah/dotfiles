@@ -64,3 +64,14 @@ then
         echo "fzf is not installed."
     fi
 fi
+
+#########################
+#  Tmux plugin manager  #
+#########################
+
+[[ -n $ALL_YES ]] || read -p "Setup Tmux plugin manager? [yN] " -n 1 -r
+echo ""
+if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
+then
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
