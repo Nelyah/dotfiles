@@ -23,8 +23,8 @@ if type nvim &> /dev/null; then
     alias vim='nvim'
 fi
 
-if type trizen &> /dev/null; then
-    export SOFT_MANAGER=trizen
+if type yay &> /dev/null; then
+    export SOFT_MANAGER=yay
 fi
 
 if [ -f /usr/bin/gnome-keyring-daemon ]; then 
@@ -104,35 +104,35 @@ function llth (){
 }
 
 export LESS_TERMCAP_md="${yellow}";
-alias ll='ls -lh $LS_OPTIONS $LS_DIRFIRST'
-alias lla='ls -lha $LS_OPTIONS $LS_DIRFIRST'
-alias llt='ls -lht $LS_OPTIONS'
-alias lld='ls -lhd $LS_OPTIONS'
-alias llad='ls -lhad $LS_OPTIONS'
-alias llda='ls -lhad $LS_OPTIONS'
+alias ll="ls -lh $LS_OPTIONS $LS_DIRFIRST"
+alias lla="ls -lha $LS_OPTIONS $LS_DIRFIRST"
+alias llt="ls -lht $LS_OPTIONS"
+alias lld="ls -lhd $LS_OPTIONS"
+alias llad="ls -lhad $LS_OPTIONS"
+alias llda="ls -lhad $LS_OPTIONS"
 
-alias rm='rm -i'
-alias rebash='source ~/.bashrc'
-alias irssi@freenode='irssi -c chat.freenode.net -p 6667 -n Nelyah'
-alias irc='weechat-curses'
-alias bc='bc -l'
+alias rm="rm -i"
+alias rebash="source ~/.bashrc"
+alias irssi@freenode="irssi -c chat.freenode.net -p 6667 -n Nelyah"
+alias irc="weechat-curses"
+alias bc="bc -l"
 
-alias speedtest='wget -O /dev/null http://speed.transip.nl/100mb.bin'
-alias tree='tree -A'
-alias treed='tree -d'
-alias tree1='tree -d -L 1'
-alias tree2='tree -d -L 2'
+alias speedtest="wget -O /dev/null http://speed.transip.nl/100mb.bin"
+alias tree="tree -A"
+alias treed="tree -d"
+alias tree1="tree -d -L 1"
+alias tree2="tree -d -L 2"
 
-alias cpwd="pwd|tr -d '\n'|xclip" # copy pwd in clipboard
+alias cpwd="pwd|tr -d "\n"|xclip" # copy pwd in clipboard
 
-alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
-regexip='inet ([0-9]{,3}\.[0-9]{,3}\.[0-9]{,3}\.[0-9]{,3})\/.* ([^ ]+)'
-alias ipl='ip addr | \grep -E "$regexip"| \grep -v 127.0.0.1|sed -r "s/$regexip/\2 \1/"|column -t'
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+regexip="inet ([0-9]{,3}\.[0-9]{,3}\.[0-9]{,3}\.[0-9]{,3})\/.* ([^ ]+)"
+alias ipl="ip addr | \grep -E "$regexip"| \grep -v 127.0.0.1|sed -r "s/$regexip/\2 \1/"|column -t"
 
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
 
 [ -f ~/.config/fzf/key-bindings.bash ] && source ~/.config/fzf/key-bindings.bash
 [ -f ~/.config/fzf/completion.bash ] && source ~/.config/fzf/completion.bash
@@ -140,12 +140,12 @@ alias .....='cd ../../../..'
 if type fasd > /dev/null 2>&1; then
     eval "$(fasd --init auto)"
 
-    alias a='fasd -a'        # any
-    alias s='fasd -si'       # show / search / select
-    alias d='fasd_cd -d'     # directory
-    alias f='fasd -f'        # file
-    alias sd='fasd -sid'     # interactive directory selection
-    alias sf='fasd -sif'     # interactive file selection
+    alias a="fasd -a"        # any
+    alias s="fasd -si"       # show / search / select
+    alias d="fasd_cd -d"     # directory
+    alias f="fasd -f"        # file
+    alias sd="fasd -sid"     # interactive directory selection
+    alias sf="fasd -sif"     # interactive file selection
 fi
 
 e() {
