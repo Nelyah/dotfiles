@@ -6,9 +6,10 @@
 #  VIM  #
 #########
 
-[[ -n $ALL_YES ]] || read -p "Setup vim? [yN] " -n 1 -r
+REPLY=0
+[[ -n $ALL_YES ]] || read -p "Setup vim? [0] Full vim install -- (1) minimal vim install" -n 1 -r
 echo ""
-if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
+if [[ -n $ALL_YES ]] || [[ $REPLY == 0 ]]
 then
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -18,7 +19,9 @@ then
         ln -sf ~/.vim/vimrc ~/.vimrc
         vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
     fi
-
+else
+    echo "setting up minimal vim"
+    ln -sf ~/.vim/vimrc-mini ~/.vimrc
 fi
 
 
