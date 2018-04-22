@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ $1 = -yy ] && ALL_YES=1 || ALL_YES=
+[[ $1 == -yy ]] && ALL_YES=1 || ALL_YES=
 
 #########
 #  VIM  #
