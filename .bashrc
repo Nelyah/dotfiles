@@ -125,17 +125,28 @@ alias tree2="tree -d -L 2"
 
 alias cpwd="pwd|tr -d "\n"|xclip" # copy pwd in clipboard
 
-alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
-regexip="inet ([0-9]{,3}\.[0-9]{,3}\.[0-9]{,3}\.[0-9]{,3})\/.* ([^ ]+)"
-alias ipl="ip addr | \grep -E "$regexip"| \grep -v 127.0.0.1|sed -r "s/$regexip/\2 \1/"|column -t"
+alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-[ -f ~/.config/fzf/key-bindings.bash ] && source ~/.config/fzf/key-bindings.bash
-[ -f ~/.config/fzf/completion.bash ] && source ~/.config/fzf/completion.bash
+if type fzf 2> /dev/null; then
+    [ -f ~/.config/fzf/key-bindings.bash ] && source ~/.config/fzf/key-bindings.bash
+    [ -f ~/.config/fzf/completion.bash ] && source ~/.config/fzf/completion.bash
+
+    [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+    e() {
+        local dir
+        dir=$(fasd -Rdl |\
+            sed "s:$HOME:~:" |\
+            fzf --no-sort +m -q "$*" |\
+            sed "s:~:$HOME:")\
+        && pushd "$dir"
+    }
+fi
 
 if type fasd > /dev/null 2>&1; then
     eval "$(fasd --init auto)"
@@ -147,15 +158,6 @@ if type fasd > /dev/null 2>&1; then
     alias sd="fasd -sid"     # interactive directory selection
     alias sf="fasd -sif"     # interactive file selection
 fi
-
-e() {
-    local dir
-    dir=$(fasd -Rdl |\
-        sed "s:$HOME:~:" |\
-        fzf --no-sort +m -q "$*" |\
-        sed "s:~:$HOME:")\
-    && pushd "$dir"
-}
 
 if [ -f ~/.pm/pm.bash ]; then
     # PM functions
@@ -180,4 +182,3 @@ meteo() {
 	curl -s "$LOCALE.wttr.in/$LOCATION"
 }
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
