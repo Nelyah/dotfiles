@@ -1,0 +1,151 @@
+set nocompatible               " Be iMproved
+filetype off                  " required
+
+" ------ Basic VIM modifications ------ "
+
+set guioptions=M
+set mouse=a " Use the mouse to slide panes size or scrolling, and copying
+
+set hidden " Allow background buffers without saving
+set splitright
+
+" set t_Co=256
+set number              " line numbers
+hi CursorLineNr guifg=#dddddd
+set encoding=utf-8
+
+set autoindent
+set autoread            " reload automatically a file if not changed
+
+" Text wrapping
+" set nowrap
+" set textwidth=79
+" set colorcolumn=80
+
+" Search
+set incsearch           " search as characters are entered
+set hlsearch            " highlight matches
+set magic               " For regex
+set ignorecase
+
+" vim tmp files
+set directory=$HOME/.vim/swap,/tmp
+set backupdir=$HOME/.vim/backup,/tmp
+set undodir=$HOME/.vim/undo,/tmp
+
+
+" mapping the 'super' button on space
+let mapleader = "\<Space>"
+
+" Tab spec
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set backspace=indent,eol,start
+
+""" NetRW - VIM file explorer
+let g:netrw_liststyle = 1 " Detail View
+let g:netrw_sizestyle = 'H' " Human-readable file sizes
+" let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+' " hide dotfiles
+" let g:netrw_hide = 1 " hide dotfiles by default
+let g:netrw_banner = 0 " Turn off banner
+
+""" Explore in vertical split
+nnoremap <Leader>e :Explore! <enter>
+
+syntax on
+filetype plugin indent on
+
+" Some remaps
+" noremap m l
+" noremap l k
+" noremap k j
+" noremap j h
+noremap gV `[V`]
+noremap ; :
+
+" Switching panes using the meta key
+nnoremap <M-h> <C-w>h
+nnoremap <M-j> <C-w>j
+nnoremap <M-k> <C-w>k
+nnoremap <M-l> <C-w>l
+
+" Navigate display lines
+noremap <silent> j gj
+noremap <silent> k gk
+noremap H 5h
+noremap J 5j
+noremap K 5k
+noremap L 5l
+
+" Saving
+nnoremap <Leader>w :w<CR>
+
+" Save the copy buffer
+noremap <Leader>x "+
+
+" Stupid window...
+map q: :q
+
+" Align blocks of texte and keep them selected
+vmap < <gv
+vmap > >gv
+
+" ------ Buffer ------ "
+nnoremap <Leader>l :bn<CR><return>
+nnoremap <Leader>h :bp<CR>
+nnoremap gl :ls<CR>
+nnoremap gb :ls<CR>:b
+
+nnoremap <Leader>c ggVG:!column -t<CR>
+
+" Close the current buffer and move to the previous one
+" This replicates the idea of closing a tab
+nmap <Leader>q :bp <BAR> bd #<CR>
+
+" Visual mode enhancements
+nmap <Leader><Leader> V
+
+" Turn off highlight after search
+nnoremap <Leader>a :noh<CR>
+
+" Color scheme
+set background=dark
+
+if (has('nvim'))
+    set termguicolors
+    colorscheme ir_black
+else
+    colorscheme ir_black
+endif
+
+nmap <silent> <c-up> <c-w>3+
+nmap <silent> <c-down> <c-w>3-
+nmap <silent> <c-left> <c-w>3<
+nmap <silent> <c-right> <c-w>3>
+
+
+" ------ Useful function ------ "
+command! -nargs=1 Ssh :r scp://<args>/
+
+" pasting doesn't replace paste buffer
+function! RestoreRegister()
+    let @" = s:restore_reg"
+    return ''
+endfunction
+function! s:Repl()
+    let s:restore_reg = @"
+    return "p@=RestoreRegister()\<cr>"
+endfunction
+vmap <silent> <expr> p <sid>Repl()
+
+" Keep undo history across sessions by storing it in a file
+if has('persistent_undo')
+    let undo_dir = expand('$HOME/.vim/undo_dir')
+    if !isdirectory(undo_dir)
+        call mkdir(undo_dir, "", 0700)
+    endif
+    set undodir=$HOME/.vim/undo_dir
+    set undofile
+endif
+
