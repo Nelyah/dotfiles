@@ -15,7 +15,16 @@ call plug#begin('~/.vim/plugged')
     Plug 'junegunn/fzf.vim'
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'mileszs/ack.vim'                     " Fuzzy search
-    Plug 'roxma/nvim-completion-manager'       " auto completion
+
+    Plug 'wellle/tmux-complete.vim'
+    if has('nvim')
+      Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    else
+      Plug 'Shougo/deoplete.nvim'
+      Plug 'roxma/nvim-yarp'
+      Plug 'roxma/vim-hug-neovim-rpc'
+    endif
+    Plug 'zchee/deoplete-jedi'
     Plug 'roxma/clang_complete'                " auto completion
     Plug 'davidhalter/jedi-vim'                " auto completion
     Plug 'easymotion/vim-easymotion'
@@ -219,7 +228,7 @@ let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
 " ------ jedi-python ------"
-let g:jedi#popup_on_dot = 0
+let g:jedi#popup_on_dot = 1
 let g:jedi#usages_command = ""
 let g:jedi#documentation_command = "D"
 map <Leader>b Oimport pdb; pdb.set_trace() # BREAKPOINT<C-c>
@@ -340,6 +349,12 @@ map <silent> <m-\> :TmuxNavigatePrevious<cr>
 
 " ------ Gutentags ------ "
 let g:gutentags_cache_dir = '~/.vim/gutentags'
+
+" ------ Deoplete ------ "
+let g:deoplete#enable_at_startup = 1
+
+" ------ Tmux-Complete ------ "
+let g:tmuxcomplete#trigger = ''
 
 
 " ------ Useful function ------ "
