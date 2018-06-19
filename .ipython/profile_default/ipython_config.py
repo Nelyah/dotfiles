@@ -5,11 +5,8 @@ c.InteractiveShellApp.log_level = 50
 c.InteractiveShellApp.extensions = ['autoreload']
 c.InteractiveShellApp.exec_lines = [
     'import numpy as np',
-    'import matplotlib',
-    'import seaborn as sns',
     'import protein as pr',
     '%autoreload 2',
-    '%matplotlib qt5'
 ]
 c.InteractiveShell.autoindent = True
 # c.InteractiveShell.colors = 'LightBG'
