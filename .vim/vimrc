@@ -134,6 +134,9 @@ nnoremap <Leader>e :Explore! <enter>
 syntax on
 filetype plugin indent on
 
+" Copy to clipboard
+vnoremap  <leader>y  "+y
+
 " Some remaps
 " noremap m l
 " noremap l k
