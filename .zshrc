@@ -7,7 +7,7 @@ export ZSH=$HOME/.oh-my-zsh
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-# ZSH_THEME="random"
+# ZSH_THEME="refined"
 ZSH_THEME="steeef"
 
 # Set list of themes to load
@@ -28,7 +28,7 @@ ZSH_THEME="steeef"
 # DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+export UPDATE_ZSH_DAYS=1
 
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
@@ -137,6 +137,7 @@ fi
 pink="%F{212}" 
 yellow="%F{214}" 
 orange="%F{202}" 
+t="%F{0}" 
 
 # Those are the PC names and user names I use 
 # most of the time
@@ -178,16 +179,19 @@ else
     PS1_HOST="@${orange}$(hostname --short)${pink}"
 fi
 
-get_PS1() {
-    PS1="$yellow%~ ${pink}${PS1_USER}${PS1_HOST} $ %{${reset_color}%}"
-}
 
 setopt prompt_subst
 # export PS1="$yellow%~ ${pink}${PS1_USER}${PS1_HOST} $ %{${orange}%}"
 autoload -U add-zsh-hook
 autoload -Uz vcs_info
+autoload -U colors && colors
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+get_PS1() {
+    PS1="$yellow%~ ${pink}${PS1_USER}${PS1_HOST} $ %{${t}%}"
+}
+PROMPT="$yellow%~ ${pink}${PS1_USER}${PS1_HOST} $ %{$reset_color%}%"
 
 function virtualenv_info {
     [ $VIRTUAL_ENV ] && echo '('%F{blue}`basename $VIRTUAL_ENV`%f') '
@@ -208,17 +212,17 @@ zstyle ':vcs_info:*:prompt:*' formats       "${FMT_BRANCH}"
 zstyle ':vcs_info:*:prompt:*' nvcsformats   ""
 
 
-function steeef_preexec {
-    case "$(history $HISTCMD)" in
-        *git*)
-            PR_GIT_UPDATE=1
-            ;;
-        *svn*)
-            PR_GIT_UPDATE=1
-            ;;
-    esac
-}
-add-zsh-hook preexec steeef_preexec
+# function steeef_preexec {
+#     case "$(history $HISTCMD)" in
+#         *git*)
+#             PR_GIT_UPDATE=1
+#             ;;
+#         *svn*)
+#             PR_GIT_UPDATE=1
+#             ;;
+#     esac
+# }
+# add-zsh-hook preexec steeef_preexec
 
 function steeef_chpwd {
     PR_GIT_UPDATE=1
@@ -242,12 +246,6 @@ function steeef_precmd {
 }
 add-zsh-hook precmd steeef_precmd
 
-PROMPT='$yellow%~ ${pink}${PS1_USER}${PS1_HOST} %{${reset_color}%}$vcs_info_msg_0_$(virtualenv_info)${pink}$ %{${reset_color}%}'
-
-setopt prompt_subst
-
-autoload -U add-zsh-hook
-autoload -Uz vcs_info
 
 # ls with color
 alias grep="grep --color=always"

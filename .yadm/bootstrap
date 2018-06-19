@@ -78,3 +78,6 @@ if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
 then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
+
+wget https://github.com/sindresorhus/pure/blob/master/pure.zsh
+wget https://github.com/sindresorhus/pure/blob/master/async.zsh

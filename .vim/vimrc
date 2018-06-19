@@ -316,7 +316,7 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " ------ Ultisnips ------ "
 let g:UltiSnipsExpandTrigger="<c-c>"
-let g:UltiSnipsJumpForwardTrigger="<c-n>"
+let g:UltiSnipsJumpForwardTrigger="<c-c>"
 let g:UltiSnipsJumpBackwardTrigger="<c-b>"
 
 " ------ VIM polyglot ------ "

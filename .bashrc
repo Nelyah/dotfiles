@@ -132,7 +132,7 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-if type fzf 2> /dev/null; then
+if type fzf &> /dev/null; then
     [ -f ~/.config/fzf/key-bindings.bash ] && source ~/.config/fzf/key-bindings.bash
     [ -f ~/.config/fzf/completion.bash ] && source ~/.config/fzf/completion.bash
 
