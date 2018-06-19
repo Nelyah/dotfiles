@@ -16,15 +16,15 @@ export HCMD2PATH=$HOME/mapping/HCMD2
 export HEX_ROOT=$HOME/lib/hex
 export HEX_VERSION=8.0.0
 export HEX_CACHE=$HOME/lib/hex_cache
-export PATH="$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$HEX_ROOT/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$HEX_ROOT/bin:$HOME/.local/bin:$HOME/.miniconda3/bin:$PATH"
 
 if type nvim &> /dev/null; then
     export EDITOR=nvim
     alias vim='nvim'
 fi
 
-if type yay &> /dev/null; then
-    export SOFT_MANAGER=yay
+if type trizen &> /dev/null; then
+    export SOFT_MANAGER=trizen
 fi
 
 if [ -f /usr/bin/gnome-keyring-daemon ]; then 
@@ -151,13 +151,22 @@ fi
 if type fasd > /dev/null 2>&1; then
     eval "$(fasd --init auto)"
 
-    alias a="fasd -a"        # any
-    alias s="fasd -si"       # show / search / select
-    alias d="fasd_cd -d"     # directory
-    alias f="fasd -f"        # file
-    alias sd="fasd -sid"     # interactive directory selection
-    alias sf="fasd -sif"     # interactive file selection
+    alias a='fasd -a'        # any
+    alias s='fasd -si'       # show / search / select
+    alias d='fasd_cd -d'     # directory
+    alias f='fasd -f'        # file
+    alias sd='fasd -sid'     # interactive directory selection
+    alias sf='fasd -sif'     # interactive file selection
 fi
+
+e() {
+    local dir
+    dir=$(fasd -Rdl |\
+        sed "s:$HOME:~:" |\
+        fzf --no-sort +m -q "$*" |\
+        sed "s:~:$HOME:")\
+    && pushd "$dir"
+}
 
 if [ -f ~/.pm/pm.bash ]; then
     # PM functions
@@ -182,3 +191,5 @@ meteo() {
 	curl -s "$LOCALE.wttr.in/$LOCATION"
 }
 
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+. /home/chloe/.miniconda3/etc/profile.d/conda.sh

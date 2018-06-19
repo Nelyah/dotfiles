@@ -25,6 +25,7 @@ call plug#begin('~/.vim/plugged')
       Plug 'roxma/vim-hug-neovim-rpc'
     endif
     Plug 'zchee/deoplete-jedi'
+    Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
     Plug 'roxma/clang_complete'                " auto completion
     Plug 'davidhalter/jedi-vim'                " auto completion
     Plug 'easymotion/vim-easymotion'
@@ -220,7 +221,7 @@ let g:clang_library_path='/usr/lib64/libclang.so'
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_sign_column_always = 1
 let g:ale_linters = {'python': ['flake8']}
-let g:ale_fixers = {'python': ['remove_trailing_lines', 'trim_whitespace', 'yapf']}
+let g:ale_fixers = {'python': ['remove_trailing_lines', 'trim_whitespace', 'yapf'], 'javascript': ['eslint']}
 
 " ------ NERDtree ------"
 map <Leader>n :NERDTreeToggle<return><CR>
@@ -262,7 +263,7 @@ let g:fzf_colors =
   \ 'pointer': ['fg', 'Exception'],
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
-nmap <Leader>i :Ag 
+nmap <Leader>i :Ag<CR>
 
 nmap , :Buffers<CR>
 nnoremap <Leader>o :FZF<CR>
@@ -352,6 +353,53 @@ let g:gutentags_cache_dir = '~/.vim/gutentags'
 
 " ------ Deoplete ------ "
 let g:deoplete#enable_at_startup = 1
+
+" Whether to include the types of the completions in the result data. Default: 0
+let g:deoplete#sources#ternjs#types = 1
+
+" Whether to include the distance (in scopes for variables, in prototypes for 
+" properties) between the completions and the origin position in the result 
+" data. Default: 0
+let g:deoplete#sources#ternjs#depths = 1
+
+" Whether to include documentation strings (if found) in the result data.
+" Default: 0
+let g:deoplete#sources#ternjs#docs = 1
+
+" When on, only completions that match the current word at the given point will
+" be returned. Turn this off to get all results, so that you can filter on the 
+" client side. Default: 1
+let g:deoplete#sources#ternjs#filter = 0
+
+" Whether to use a case-insensitive compare between the current word and 
+" potential completions. Default 0
+let g:deoplete#sources#ternjs#case_insensitive = 1
+
+" When completing a property and no completions are found, Tern will use some 
+" heuristics to try and return some properties anyway. Set this to 0 to 
+" turn that off. Default: 1
+let g:deoplete#sources#ternjs#guess = 0
+
+" Determines whether the result set will be sorted. Default: 1
+let g:deoplete#sources#ternjs#sort = 0
+
+" When disabled, only the text before the given position is considered part of 
+" the word. When enabled (the default), the whole variable name that the cursor
+" is on will be included. Default: 1
+let g:deoplete#sources#ternjs#expand_word_forward = 0
+
+" Whether to ignore the properties of Object.prototype unless they have been 
+" spelled out by at least two characters. Default: 1
+let g:deoplete#sources#ternjs#omit_object_prototype = 0
+
+" Whether to include JavaScript keywords when completing something that is not 
+" a property. Default: 0
+let g:deoplete#sources#ternjs#include_keywords = 1
+
+" If completions should be returned when inside a literal. Default: 1
+let g:deoplete#sources#ternjs#in_literal = 0
+
+
 
 " ------ Tmux-Complete ------ "
 let g:tmuxcomplete#trigger = ''
