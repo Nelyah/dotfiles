@@ -296,10 +296,6 @@ set diffopt+=vertical
 nmap <Leader>a= :Tabularize /=<CR>
 vmap <Leader>a= :Tabularize /=<CR>
 
-" ------ Neo complete ------ "
-set completeopt+=longest,menuone,noinsert,noselect
-set shortmess+=c " Turn off completion messages
-
 " For it to be working with vimtex
 let g:vimtex_compiler_progname = 'nvr'
 augroup my_cm_setup
@@ -401,6 +397,11 @@ let g:deoplete#sources#ternjs#include_keywords = 1
 
 " If completions should be returned when inside a literal. Default: 1
 let g:deoplete#sources#ternjs#in_literal = 0
+
+call deoplete#custom#var('omni', 'input_patterns', {
+      \ 'tex' : g:vimtex#re#deoplete,
+\})
+
 
 
 
