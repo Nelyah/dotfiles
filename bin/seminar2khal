@@ -1,0 +1,19 @@
+#!/bin/bash
+
+blank=0
+while read line; do
+    if [[ $line == '' ]]; then
+        blank=$((blank+1))
+    elif [[ $blank == 1 ]]; then
+        # Date
+        date_value=$(sed -r 's/^[^,]*, ([^\ ]+) ([0-9]+), ([0-9]+) - (.*)/\1 \2 \3 \4/' <<< $line)
+        date_value=$(date -d"$date_value")
+    elif [[ $blank == 2 ]]; then
+        title=${line%%,*}
+        description=${description}'\n'$line
+    elif [[ $blank > 2 ]]; then
+        description=${description}'\n'$line
+    fi
+done
+khal new -a work "$date_value" "$title" :: "$description"
+

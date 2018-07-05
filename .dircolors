@@ -19,6 +19,7 @@ TERM con80x60
 TERM xterm
 TERM xterm-color
 TERM xterm-256color
+TERM xterm-kitty
 TERM xterm-debian     
 TERM gnome-color
 TERM gnome-256color
