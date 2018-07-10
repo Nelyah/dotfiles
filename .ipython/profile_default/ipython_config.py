@@ -1,11 +1,12 @@
+from IPython.terminal.prompts import Prompts, Token
+import os
+
 c = get_config()
 
 c.TerminalIPythonApp.display_banner = True
 c.InteractiveShellApp.log_level = 50
 c.InteractiveShellApp.extensions = ['autoreload']
 c.InteractiveShellApp.exec_lines = [
-    'import numpy as np',
-    'import protein as pr',
     '%autoreload 2',
 ]
 c.InteractiveShell.autoindent = True
@@ -15,8 +16,6 @@ c.InteractiveShell.confirm_exit = True
 c.InteractiveShell.editor = 'nvim'
 c.InteractiveShell.xmode = 'Context'
 
-from IPython.terminal.prompts import Prompts, Token
-import os
 
 class MyPrompt(Prompts):
     def in_prompt_tokens(self, cli=None):
