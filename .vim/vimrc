@@ -53,6 +53,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'godlygeek/tabular'                        " Tabuliarise and align based on pattern
     Plug 'plasticboy/vim-markdown'
 
+    Plug 'junegunn/goyo.vim'
+
     Plug 'sheerun/vim-polyglot'
     Plug 'vim-python/python-syntax'
 
@@ -137,6 +139,7 @@ nnoremap <Leader>e :Explore! <enter>
 syntax on
 filetype plugin indent on
 
+
 " Copy to clipboard
 vnoremap  <leader>y  "+y
 
@@ -174,10 +177,11 @@ map q: :q
 vmap < <gv
 vmap > >gv
 
-" Used for latex editing
-autocmd FileType tex set spell
-autocmd FileType tex set spelllang=en_gb,fr
+" Used for filetype specific editing
+autocmd FileType tex,mail set spell
+autocmd FileType tex,mail set spelllang=en_gb,fr
 autocmd FileType tex set iskeyword+=:,-
+
 let g:tex_flavor='latex'
 
 " ------ Buffer ------ "
@@ -356,6 +360,29 @@ nmap <Leader>s <Plug>(easymotion-overwin-w)
 " Gif config
 map  / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-tn)
+
+
+" ------ Goyo ------ "
+function! s:goyo_enter()
+  let b:quitting = 0
+  let b:quitting_bang = 0
+  autocmd QuitPre <buffer> let b:quitting = 1
+  cabbrev <buffer> q! let b:quitting_bang = 1 <bar> q!
+endfunction
+
+function! s:goyo_leave()
+  " Quit Vim if this is the only remaining buffer
+  if b:quitting && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
+    if b:quitting_bang
+      qa!
+    else
+      qa
+    endif
+  endif
+endfunction
+
+autocmd! User GoyoEnter call <SID>goyo_enter()
+autocmd! User GoyoLeave call <SID>goyo_leave()
 
 " ------ vim-tmux-navigator ------ "
 let g:tmux_navigator_no_mappings = 1
