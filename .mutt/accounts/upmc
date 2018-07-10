@@ -1,0 +1,40 @@
+# vim: filetype=muttrc
+
+set realname   = "Chloé Dequeker"
+set from       = "chloe.dequeker@upmc.fr"
+
+set ssl_starttls=yes
+set ssl_force_tls=yes
+
+set realname = 'Chloé Dequeker'
+set use_from = yes
+set sendmail  = "msmtp -a upmc"
+
+set mbox_type = Maildir
+set folder = ~/.mail
+set spoolfile = +upmc/Inbox
+mailboxes =UPMC \
+=upmc/Inbox \
+=upmc/Sent \
+=upmc/Drafts \
+=upmc/Archive \
+=upmc/Junk \
+=upmc/Trash \
+=upmc/'Mailing list' \
+=upmc/'Mailing list/ibps' \
+=upmc/Teaching \
+=upmc/Teaching/[1I002] \
+=upmc/Teaching/[2I012] 
+
+unset record
+set record = '+upmc/Sent'
+
+macro index E "<change-folder>+upmc/Archive<enter><limit>~B " "search everything"
+macro index,pager a "<save-message>+upmc/Archive<enter>" "move message to the archive"
+macro index D "<save-message>+upmc/Trash<enter>" "move message to the trash"
+macro index S "<save-message>+upmc/Junk<enter>" "mark message as spam"
+
+macro index,pager gi "<change-folder>+upmc/Inbox<enter>" "search everything"
+macro index,pager ga "<change-folder>+upmc/Archive<enter>" 
+macro index,pager gs "<change-folder>+upmc/Sent<enter>" 
+macro index,pager gu "<change-folder>+upmc/Update<enter>" 

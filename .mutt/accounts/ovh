@@ -1,0 +1,41 @@
+# vim: filetype=muttrc
+set realname   = "Chloé Dequeker"
+set from       = "chloe@dequeker.me"
+
+set ssl_starttls=yes
+set ssl_force_tls=yes
+
+set realname = 'Chloé Dequeker'
+set imap_user = `bw --session "QJxWZcCK74DqQ2/5Eutu8hkFTohTqIkVsA5dfb1lb90ESqI3kBRyCUFc48+hXh/Y4zZ1zp3FBUBy6JBxzAUWBg==" get username "OVH"`
+set imap_pass = `bw --session "QJxWZcCK74DqQ2/5Eutu8hkFTohTqIkVsA5dfb1lb90ESqI3kBRyCUFc48+hXh/Y4zZ1zp3FBUBy6JBxzAUWBg==" get password "OVH"`
+set use_from = yes
+
+set mbox_type = Maildir
+set folder = ~/.mail
+set spoolfile = +perso/Inbox
+mailboxes =PERSO \
+=perso/Inbox \
+=perso/Sent \
+=perso/Drafts \
+=perso/Archive \
+=perso/Update \
+=perso/'Mailing lists' \
+=perso/'Mailing lists.SFBI' \
+=perso/Junk \
+=perso/Trash
+
+
+set sendmail  = "msmtp -a ovh"
+
+unset record
+set record = '+perso/Sent'
+
+macro index E "<change-folder>+perso/Archive<enter><limit>~B " "search everything"
+macro index,pager a "<save-message>+perso/Archive<enter>" "move message to the archive"
+macro index D "<save-message>+perso/Trash<enter>" "move message to the trash"
+macro index S "<save-message>+perso/Junk<enter>" "mark message as spam"
+
+macro index,pager gi "<change-folder>+perso/Inbox<enter>" 
+macro index,pager ga "<change-folder>+perso/Archive<enter>" 
+macro index,pager gs "<change-folder>+perso/Sent<enter>" 
+macro index,pager gu "<change-folder>+perso/Update<enter>" 

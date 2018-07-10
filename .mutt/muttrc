@@ -1,0 +1,13 @@
+# vim: filetype=muttrc
+
+source ~/.mutt/settings
+source ~/.mutt/colours
+source ~/.mutt/sidebar
+source ~/.mutt/notmuch
+
+source ~/.mutt/accounts/upmc
+source ~/.mutt/accounts/ovh
+# # Folder hooks
+# folder-hook 'upmc' 'source ~/.mutt/accounts/upmc'
+# folder-hook 'ovh' 'source ~/.mutt/accounts/ovh'
+

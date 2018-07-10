@@ -1,0 +1,8 @@
+
+set folder      = "imaps://imap.gmail.com:993"
+set imap_user = ch.dequeker@gmail.com
+set imap_pass = `gpg -dq ~/.logins.gpg |grep --color=never @GOOGLE_PWD_MUTT@|sed -r 's/^.*---\ (.*)$/\1/'`
+set spoolfile   = +INBOX
+mailboxes       = +INBOX
+
+set postponed = +[Gmail]/Drafts

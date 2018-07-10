@@ -1,0 +1,182 @@
+# vim: filetype=muttrc
+
+set editor=$EDITOR
+set my_name = "Chloé Dequeker"
+set imap_check_subscribed
+
+# main options
+set envelope_from
+
+# Paths ----------------------------------------------
+set folder           = ~/.mail               # mailbox location
+set alias_file       = ~/.mutt/alias         # where to store aliases
+set header_cache     = ~/.mutt/cache/headers # where to store headers
+set message_cachedir = ~/.mutt/cache/bodies  # where to store bodies
+set certificate_file = ~/.mutt/certificates  # where to store certs
+set mailcap_path     = ~/.mutt/mailcap       # entries for filetypes
+set tmpdir           = ~/.mutt/temp          # where to keep temp files
+set signature        = ~/.mutt/sig           # my signature file
+
+# Basic Options --------------------------------------
+set wait_key = no        # shut up, mutt
+set mbox_type = Maildir  # mailbox type
+set timeout = 3          # idle time before scanning
+set mail_check = 0       # minimum time between scans
+set mail_check_stats
+unset move               # gmail does that
+set delete               # don't ask, just do
+unset confirmappend      # don't ask, just do!
+set quit                 # don't ask, just do!!
+unset mark_old           # read/new is good enough for me
+set beep_new             # bell on new mails
+set pipe_decode          # strip headers and eval mimes when piping
+set thorough_search      # strip headers and eval mimes before searching
+
+# sort/threading
+set sort     = threads
+set sort_aux = reverse-last-date-received
+set sort_re
+
+# look and feel
+set pager_index_lines = 8
+set pager_context     = 5
+set pager_stop
+set menu_scroll
+set smart_wrap
+set tilde
+unset markers
+
+# composing 
+set fcc_attach
+unset mime_forward
+set forward_format = "Fwd: %s"
+set include
+set forward_quote
+
+
+# Headers infos
+ignore *                               # first, ignore all headers
+unignore from: to: cc: date: subject:  # then, show only these
+hdr_order from: to: cc: date: subject: # and in this order<Paste>
+
+# Store message headers locally to speed things up.
+# If hcache is a folder, Mutt will create sub cache folders for each account which may speeds things up even more.
+#
+set header_cache = ~/.cache/mutt
+
+# Navigation
+bind attach,index,pager \CD next-page
+bind attach,index,pager \CB previous-page
+bind index,pager,attach g noop
+bind index,pager,attach \CR group-reply
+bind pager gg top
+bind pager G bottom
+bind attach,index G last-entry
+bind attach,index gg first-entry
+bind attach,pager j next-line
+bind attach,pager k previous-line
+bind attach,pager J next-entry
+bind attach,pager K previous-entry
+bind editor <Tab> complete-query
+set query_command= "khard email --parsable --search-in-source-files '%s'"
+bind editor ^T    complete
+set edit_headers = yes
+set editor = 'nvim +/^$ +nohlsearch +Goyo' # Move past headers.
+set sleep_time = 0
+
+# Allow Mutt to open a new IMAP connection automatically.
+unset imap_passive
+
+# Keep the IMAP connection alive by polling intermittently (time in seconds).
+set imap_keepalive = 300
+
+auto_view text/html text/calendar application/ics # view html automatically
+
+alternative_order text/plain text/enriched text/html text/*
+
+macro attach \CE "<pipe-message>khal import<enter>"
+
+
+# Macros for switching accounts
+macro index <f2> '<sync-mailbox><enter-command>source ~/.mutt/accounts/upmc<enter><change-folder>!<enter>'
+macro index <f3> '<sync-mailbox><enter-command>source ~/.mutt/accounts/ovh<enter><change-folder>!<enter>'
+
+# use tab to switch between accounts, inspired by
+#  http://msmtp.sourceforge.net/doc/msmtp.html#Using-msmtp-with-Mutt
+macro generic \Cx| "<enter-command>source"
+macro generic \Cx& "<enter-command>macro index \\t \"\\Cx"
+macro index <tab> "\Cx0"    # default change to account 1, this will be redefined once pressed
+macro generic \Cx0 "\Cx| ~/.mutt/accounts/upmc\"\n\Cx&1\"<enter><change-folder>!<enter>"
+macro generic \Cx1 "\Cx| ~/.mutt/accounts/ovh\"\n\Cx&0\"<enter><change-folder>!<enter>"
+
+
+# ------------------------------------------------
+# --- index / forward / message / pager format ---
+# ------------------------------------------------
+# %a address of the author
+# %A reply-to address (if present; otherwise: address of author)
+# %b filename of the original message folder (think mailBox)
+# %B the list to which the letter was sent, or else the folder name
+#    (%b).
+# %c number of characters (bytes) in the message
+# %C current message number
+# %d date and time of the message in the format specified by
+#    ``date_format'' converted to sender's time zone
+# %D date and time of the message in the format specified by
+#    ``date_format'' converted to the local time zone
+# %e current message number in thread
+# %E number of messages in current thread
+# %f entire From: line (address + real name)
+# %F author name, or recipient name if the message is from you
+# %H spam attribute(s) of this message
+# %i message-id of the current message
+# %l number of lines in the message (does not work with maildir, mh,
+#    and possibly IMAP folders)
+# %L If an address in the To or CC header field matches an address
+#    defined by the users ``subscribe'' command, this displays "To
+#    <list-name>", otherwise the same as %F.
+# %m total number of message in the mailbox
+# %M number of hidden messages if the thread is collapsed.
+# %N message score
+# %n author's real name (or address if missing)
+# %O (_O_riginal save folder) Where mutt would formerly have stashed
+#    the message: list name or recipient name if no list
+# %s subject of the message
+# %S status of the message (N/D/d/!/r/*)
+# %t `to:' field (recipients)
+# %T the appropriate character from the $to_chars string
+# %u user (login) name of the author
+# %v first name of the author, or the recipient if the message is
+#    from you
+# %X number of attachments (please see the ``attachments'' section
+#    for possible speed effects)
+# %y `x-label:' field, if present
+# %Y `x-label' field, if present, and (1) not at part of a thread
+#    tree, (2) at the top of a thread, or (3) `x-label' is different
+#    from preceding message's `x-label'.
+# %Z message status flags
+# %{fmt} the date and time of the message is converted to sender's time
+#        zone, and ``fmt'' is expanded by the library function
+#        ``strftime''; a leading bang disables locales
+# %[fmt] the date and time of the message is converted to the local time
+#        zone, and ``fmt'' is expanded by the library function
+#        ``strftime''; a leading bang disables locales
+# %(fmt) the local date and time when the message was received. ``fmt''
+#        is expanded by the library function ``strftime''; a leading
+#        bang disables locales
+# %<fmt> the current local time. ``fmt'' is expanded by the library
+#        function ``strftime''; a leading bang disables locales.
+# %>X right justify the rest of the string and pad with character "X"
+# %|X pad to the end of the line with character "X"
+
+#set index_format="%Z %3C %{%b %d} %-19.19L (%5c) %s"
+#set index_format="%4C %Z %{%b %d} %-15.15n (%4l) %s"
+#set index_format="%Z %3C %{%b %d} %-17.17n (%4l) %s"
+#set index_format="%Z %3C %{%b %d} %-17.17n (%5c) %s"
+#set index_format="%Z %3C %{%b %d} %-17.17n - %s"
+#set index_format="%3C %Z %[!%m.%d.%y] %-19.19n - %?M?(%3M)&%02e/%02E? %s%> %?y?[%Y]?"
+# set index_format="%3C %Z %[!%m.%d.%y] %-19.19n - %?X?%X& ? %?M?*%M*&%02e/%02E? %s%> %?y?[%Y]?"
+set index_format="%3C %Z %[!%m.%d.%y] %-19.19n %?X?(%1X)& ? %?M?(%02M)& ? %s%> %?y?[%Y]?"
+set index_format="%Z %3C %{%b %d} %-17.17n (%5c) %s"
+set index_format="%3C %Z %{%b %d} %-19.19n (%5c) %?X?(%1X)& ? %?M?(%02M)& ? %s%> %?y?[%Y]?"
+

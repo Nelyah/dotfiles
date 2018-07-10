@@ -1,0 +1,13 @@
+# vim: filetype=muttrc
+
+### BEGIN NOTMUCH-MUTT SETTINGS
+bind index u noop
+macro index  \
+      "unset wait_key~/.mutt/mutt-notmuch.pl --prompt search~/.cache/mutt_results" "search mail (using notmuch)"
+macro index  \
+      "unset wait_key~/.mutt/mutt-notmuch.pl thread~/.cache/mutt_resultsset wait_key" "search and reconstruct owning thread (using notmuch)"
+           
+# 'L' performs a notmuch query, showing only the results
+    macro index L "<enter-command>unset wait_key<enter><shell-escape>read -p 'notmuch query: ' x; echo \$x >~/.cache/mutt_terms<enter><limit>~i \"\`notmuch search --output=messages \$(cat ~/.cache/mutt_terms) | head -n 600 | perl -le '@a=<>;chomp@a;s/\^id:// for@a;$,=\"|\";print@a'\`\"<enter>" "show only messages matching a notmuch pattern"
+    # 'a' shows all messages again (supersedes default <alias> binding)
+    macro index a "<limit>all\n" "show all messages (undo limit)"
