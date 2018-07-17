@@ -1,7 +1,8 @@
 text/html; firefox %s
 text/html; w3m -I %{charset} -T text/html; copiousoutput
-application/pdf; ~/.mutt/scripts/mutt_bgrun evince %s
+application/pdf; ~/.mutt/scripts/mutt_bgrun evince %s; copiousoutput
 # text/calendar; ~/.mutt/scripts/vcalendar-filter; copiousoutput
 text/calendar; mutt-ics; copiousoutput
 application/ics; mutt-ics; copiousoutput 
+application/*; xdg-open %s
 

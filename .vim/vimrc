@@ -24,7 +24,7 @@ call plug#begin('~/.vim/plugged')
       Plug 'roxma/nvim-yarp'
       Plug 'roxma/vim-hug-neovim-rpc'
     endif
-    Plug 'nicoe/deoplete-khard' " Offers address mail completion
+    Plug 'Nelyah/deoplete-khard' " Offers address mail completion
     Plug 'zchee/deoplete-jedi'
     Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
     Plug 'roxma/clang_complete'                " auto completion

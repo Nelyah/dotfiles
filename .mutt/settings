@@ -83,6 +83,8 @@ bind editor ^T    complete
 set edit_headers = yes
 set editor = 'nvim +/^$ +nohlsearch +Goyo' # Move past headers.
 set sleep_time = 0
+set autoedit
+set edit_headers
 
 # Allow Mutt to open a new IMAP connection automatically.
 unset imap_passive
