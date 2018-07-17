@@ -1,0 +1,36 @@
+[calendars]
+
+[[contact_birthdays]]
+path = ~/.calendars/contact_birthdays
+type = calendar
+
+[[health]]
+path = ~/.calendars/health
+type = calendar
+
+[[hobbies]]
+path = ~/.calendars/hobbies
+type = calendar
+
+[[personal]]
+path = ~/.calendars/personal
+type = calendar
+
+[[reminders]]
+path = ~/.calendars/reminders
+type = calendar
+
+[[social]]
+path = ~/.calendars/social
+type = calendar
+
+[[work]]
+path = ~/.calendars/work
+type = calendar
+
+[locale]
+timeformat = %H:%M
+dateformat = %d/%m/%Y
+longdateformat = %d/%m/%Y
+datetimeformat = %d/%m/%Y %H:%M
+longdatetimeformat = %d/%m/%Y %H:%M
