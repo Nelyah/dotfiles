@@ -6,6 +6,9 @@ from os import getenv
 class base(ColorScheme):
     progress_bar_color = 1
     ls_colors = getenv('LS_COLORS').split(':')
+    if ls_colors is None:
+        ls_colors = []
+
     ls_colors_keys = [k.split('=') for k in ls_colors if k != '']
     tup_ls_colors = [(k[0].split('*.')[1], k[1]) for k in ls_colors_keys
                      if '*.' in k[0]]
