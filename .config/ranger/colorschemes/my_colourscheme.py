@@ -1,23 +1,40 @@
 from ranger.gui.colorscheme import ColorScheme
-from ranger.gui.color import *
-
-import ranger.container.fsobject as e
+import ranger.gui.color as style
+from os import getenv
 
 
 class base(ColorScheme):
     progress_bar_color = 1
+    ls_colors = getenv('LS_COLORS').split(':')
+    ls_colors_keys = [k.split('=') for k in ls_colors if k != '']
+    tup_ls_colors = [(k[0].split('*.')[1], k[1]) for k in ls_colors_keys
+                     if '*.' in k[0]]
+
+    def get_attr_from_lscolors(self, attr):
+        if attr == '00':
+            return None
+        elif attr == '01':
+            return style.bold
+        elif attr == '04':
+            return style.underline
+        elif attr == '05':
+            return style.blink
+        elif attr == '07':
+            return style.reverse
+        elif attr == '08':
+            return style.invisible
 
     def use(self, context):
-        fg, bg, attr = default_colors
+        fg, bg, attr = style.default_colors
 
         if context.reset:
-            return default_colors
+            return style.default_colors
 
         elif context.in_browser:
             if context.selected:
-                attr = reverse
+                attr = style.reverse
             else:
-                attr = normal
+                attr = style.normal
             if context.empty or context.error:
                 fg = 37
                 bg = 1
@@ -32,30 +49,27 @@ class base(ColorScheme):
             if context.document:
                 fg = 196
             if context.container:
-                attr |= bold
+                attr |= style.bold
                 fg = 206
-            if context.directory:
-                attr |= bold
-                fg = 242
             elif context.executable and not \
                     any((context.media, context.container,
                        context.fifo, context.socket)):
-                attr |= bold
-                fg = green
+                attr |= style.bold
+                fg = style.green
             if context.socket:
                 fg = 3
-                attr |= bold
+                attr |= style.bold
             if context.fifo or context.device:
                 fg = 10
                 if context.device:
-                    attr |= bold
+                    attr |= style.bold
             if context.link:
                 fg = context.good and 7 or 8
-                bg = cyan
+                bg = style.cyan
             if context.bad:
                 fg = 1
             if context.tag_marker and not context.selected:
-                attr |= bold
+                attr |= style.bold
                 if fg in (7, 8):
                     fg = 1
                 else:
@@ -65,18 +79,18 @@ class base(ColorScheme):
                 bg = 8
             if context.main_column:
                 if context.selected:
-                    attr |= bold
+                    attr |= style.bold
                 if context.marked:
-                    attr |= bold
+                    attr |= style.bold
                     fg = 8
             if context.badinfo:
-                if attr & reverse:
+                if attr & style.reverse:
                     bg = 1
                 else:
                     fg = 7
 
         elif context.in_titlebar:
-            attr |= bold
+            attr |= style.bold
             if context.hostname:
                 fg = context.bad and 8 or 7
             elif context.directory:
@@ -94,32 +108,31 @@ class base(ColorScheme):
                 elif context.bad:
                     fg = 8
             if context.marked:
-                attr |= bold | reverse
+                attr |= style.bold | style.reverse
                 fg = 8
             if context.message:
                 if context.bad:
-                    attr |= bold
+                    attr |= style.bold
                     fg = 10
             if context.loaded:
                 bg = self.progress_bar_color
             if context.vcsinfo:
                 fg = 10
-                attr &= ~bold
+                attr &= ~style.bold
             if context.vcscommit:
                 fg = 5
-                attr &= ~bold
-
+                attr &= ~style.bold
 
         if context.text:
             if context.highlight:
-                attr |= reverse
+                attr |= style.reverse
 
         if context.in_taskview:
             if context.title:
                 fg = 8
 
             if context.selected:
-                attr |= reverse
+                attr |= style.reverse
 
             if context.loaded:
                 if context.selected:
@@ -127,9 +140,8 @@ class base(ColorScheme):
                 else:
                     bg = self.progress_bar_color
 
-
         if context.vcsfile and not context.selected:
-            attr &= ~bold
+            attr &= ~style.bold
             if context.vcsconflict:
                 fg = 11
             elif context.vcschanged:
@@ -144,7 +156,7 @@ class base(ColorScheme):
                 fg = 141
 
         elif context.vcsremote and not context.selected:
-            attr &= ~bold
+            attr &= ~style.bold
             if context.vcssync:
                 fg = 12
             elif context.vcsbehind:
@@ -156,5 +168,19 @@ class base(ColorScheme):
             elif context.vcsunknown:
                 fg = 11
 
-        return fg, bg, attr
+        for key, colour in self.tup_ls_colors:
+            if getattr(context, key):
+                colour = colour.split(';')
+                k = self.get_attr_from_lscolors(colour[0])
+                if k is not None:
+                    attr |= k
+                try:
+                    fg = int(colour[1])
+                    fg = int(colour[3])
+                except IndexError:
+                    pass
+        if context.directory:
+            attr |= style.bold
+            fg = 242
 
+        return fg, bg, attr
