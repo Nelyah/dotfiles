@@ -4,6 +4,8 @@ import ranger.gui.context
 from os import getenv
 
 ls_colors = getenv('LS_COLORS').split(':')
+if ls_colors is None:
+    ls_colors = []
 ls_colors_keys = [k.split('=')[0] for k in ls_colors if k != '']
 ls_colors_keys = [k.split('*.')[1] for k in ls_colors_keys if '*.' in k]
 
