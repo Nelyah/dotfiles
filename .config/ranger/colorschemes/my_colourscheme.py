@@ -11,7 +11,18 @@ class base(ColorScheme):
 
     ls_colors_keys = [k.split('=') for k in ls_colors if k != '']
     tup_ls_colors = [(k[0].split('*.')[1], k[1]) for k in ls_colors_keys
-                     if '*.' in k[0]]
+                     if '*.' in k[0]] 
+
+    # Not considering file extensions
+    for key in [k for k in ls_colors_keys if '.*' not in k]:
+        if key[0] == 'ex':
+            tup_ls_colors += [('executable', key[1])]
+        elif key[0] == 'pi':
+            tup_ls_colors += [('fifo', key[1])]
+        elif key[0] == 'ln':
+            tup_ls_colors += [('link', key[1])]
+        elif key[0] == 'di':
+            tup_ls_colors += [('directory', key[1])]
 
     def get_attr_from_lscolors(self, attr):
         if attr == '00':
@@ -171,17 +182,28 @@ class base(ColorScheme):
             elif context.vcsunknown:
                 fg = 11
 
+        # Values found from 
+        # http://www.bigsoft.co.uk/blog/2008/04/11/configuring-ls_colors
         for key, colour in self.tup_ls_colors:
             if getattr(context, key):
                 colour = colour.split(';')
-                k = self.get_attr_from_lscolors(colour[0])
-                if k is not None:
-                    attr |= k
-                try:
-                    fg = int(colour[1])
-                    fg = int(colour[3])
-                except IndexError:
-                    pass
+                for val in colour:
+                    val = int(val)
+                    # This is an attribute
+                    if val <= 4:
+                        k = self.get_attr_from_lscolors(val)
+                        if k is not None:
+                            attr |= k
+                    elif ((val >= 31 and val <= 37)
+                          or (val >= 90 and val <= 96)):
+                        fg = val
+                    elif ((val >= 40 and val <= 47)
+                          or (val >= 100 and val <= 106)):
+                        bg = val
+                    else:
+                        fg = val
+
+        # For some reason, my directory background keeps appearing in green.
         if context.directory:
             attr |= style.bold
             fg = 242
