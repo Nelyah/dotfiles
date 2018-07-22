@@ -30,7 +30,7 @@ unset record
 set record = '+upmc/Sent'
 
 macro index E "<change-folder>+upmc/Archive<enter><limit>~B " "search everything"
-macro index,pager a "<enter-command>unset resolve<enter><clear-flag>N<save-message>+upmc/Archive<enter><enter-command>set revolve<enter>" "move message to the archive"
+macro index,pager a "<enter-command>unset resolve<enter><clear-flag>N<save-message>+upmc/Archive<enter><enter-command>set resolve<enter><next-entry>" "move message to the archive"
 macro index D "<clear-flag>N<save-message>+upmc/Trash<enter>" "move message to the trash"
 macro index S "<clear-flag>N<save-message>+upmc/Junk<enter>" "mark message as spam"
 

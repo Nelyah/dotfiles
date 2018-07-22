@@ -31,7 +31,7 @@ unset record
 set record = '+perso/Sent'
 
 macro index E "<change-folder>+perso/Archive<enter><limit>~B " "search everything"
-macro index,pager a "<enter-command>unset resolve<enter><clear-flag>N<enter><save-message>+perso/Archive<enter><enter-command>set revolve<enter>" "move message to the archive"
+macro index,pager a "<enter-command>unset resolve<enter><clear-flag>N<enter><save-message>+perso/Archive<enter><enter-command>set resolve<enter><next-entry>" "move message to the archive"
 macro index D "<clear-flag>N<save-message>+perso/Trash<enter>" "move message to the trash"
 macro index S "<clear-flag>N<save-message>+perso/Junk<enter>" "mark message as spam"
 
