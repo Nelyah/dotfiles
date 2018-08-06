@@ -68,7 +68,8 @@ set header_cache = ~/.cache/mutt
 bind attach,index,pager \CD next-page
 bind attach,index,pager \CB previous-page
 bind index,pager,attach g noop
-bind index,pager,attach \CR group-reply
+bind index,pager,attach r group-reply
+bind index,pager,attach \CR reply
 bind pager gg top
 bind pager G bottom
 bind attach,index G last-entry
@@ -82,6 +83,7 @@ set query_command= "khard email --parsable --search-in-source-files '%s'"
 bind editor ^T    complete
 set edit_headers = yes
 set editor = 'nvim +/^$ +nohlsearch +Goyo' # Move past headers.
+
 set sleep_time = 0
 set autoedit
 set edit_headers
