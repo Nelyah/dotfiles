@@ -1,3 +1,4 @@
+"Init module for config languages (e.g. Apache, nginx configs)."
 (use-package evil
   :demand
   :config (evil-mode 1))
@@ -11,7 +12,7 @@
 (setq-default indent-tabs-mode nil)
 
 
-; Evil mode
+;; Evil mode
 (defun evil-leader/remap-range (begin-key end-key make-leader-binding &optional reserved)
   "Remap a range of keys from 'ctl-x-map', from BEGIN-KEY to END-KEY inclusive to an Evil leader binding.
 Convert the key from the map to an Evil leader binding using MAKE-LEADER-BINDING.
@@ -40,17 +41,11 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
                          (lambda (key) (char-to-string key))
                          '(?f ?m ?r ?s ?t ?d))
 
-(defun set-x-caps-escape ()
-  "Set CAPSLOCK to be another ESC key in X."
-  (interactive)
-  (shell-command "setxkbmap -option caps:escape"))
 
 
 (evil-leader/set-key
   "w" 'save-buffer
-  "b" 'helm-buffer-list
-  "k" 'kill-buffer
-  "i" 'helm-swoop
+  "b" 'fzf-switch-buffer
   "c" 'comment-region
   "C" 'uncomment-region
   "n" 'treemacs
@@ -75,9 +70,9 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
 
 (evil-leader/set-key
   "fi" 'find-init-file
-  "fo" 'helm-find-files
-)
-(evil-leader/set-key "p" 'popup-imenu)
+  "fo" 'fzf-find-file
+  )
+;; (evil-leader/set-key "p" 'popup-imenu)
 
 (evil-leader/set-key "xE" 'eval-buffer)
 
@@ -90,7 +85,7 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
 (define-key evil-visual-state-map (kbd "J") (kbd "M-5 j"))
 (define-key evil-visual-state-map (kbd "K") (kbd "M-5 k"))
 
-; Moving around
+                                      ; Moving around
 (define-key evil-normal-state-map (kbd "w") 'evil-forward-WORD-begin)
 (define-key evil-normal-state-map (kbd "W") 'evil-forward-word-begin)
 (define-key evil-normal-state-map (kbd "b") 'evil-backward-WORD-begin)
@@ -105,9 +100,7 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
 (define-key evil-visual-state-map (kbd "e") 'evil-forward-WORD-end)
 (define-key evil-visual-state-map (kbd "E") 'evil-forward-word-end)
 
-; Moving across windows
-(evil-leader/set-key "sh" 'split-window-right)
-(evil-leader/set-key "sv" 'split-window-below)
+                                      ; Moving across windows
 (define-key evil-normal-state-map (kbd "M-l") 'evil-window-right)
 (define-key evil-normal-state-map (kbd "M-h") 'evil-window-left)
 (define-key evil-normal-state-map (kbd "M-k") 'evil-window-up)

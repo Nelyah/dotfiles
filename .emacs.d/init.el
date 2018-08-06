@@ -1,8 +1,3 @@
-(eval-when-compile
-  (require 'use-package))
-(require 'diminish)                ;; if you use :diminish
-(require 'bind-key)                ;; if you use any :bind variant
-
 (require 'package)
 
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
@@ -15,6 +10,16 @@
     (prefer-coding-system 'utf-8-dos)
   (prefer-coding-system 'utf-8-unix))
 
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+(require 'bind-key)                ;; if you use any :bind variant
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -26,35 +31,44 @@
  '(fci-rule-color "color-237")
  '(package-selected-packages
    (quote
-    (fzf company-statistics company-box treemacs all-the-icons-dired all-the-icons telephone-line paredit popup-imenu company-lsp lsp-ui flycheck lsp-mode which-key company-files company-keywords company evil-leader markdown-mode helm atom-dark-theme evil-visual-mark-mode))))
+    (magit docker-compose-mode dockerfile-mode docker projectile fzf company-statistics company-box treemacs all-the-icons-dired all-the-icons telephone-line paredit popup-imenu company-lsp lsp-ui flycheck lsp-mode which-key company-files company-keywords company evil-leader markdown-mode helm atom-dark-theme evil-visual-mark-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(company-box-annotation ((t (:inherit company-tooltip-annotation :background "dim gray"))))
- '(company-box-background ((t (:inherit company-tooltip :background "#383c44" :box (:line-width 2 :color "grey75" :style released-button)))))
+ '(company-box-background ((t (:inherit company-tooltip :background "#383c44" :box (:line-width 5 :color "grey75" :style released-button)))))
  '(company-box-selection ((t (:inherit company-tooltip-selection :foreground "sandy brown")))))
-;; '(company-box-annotation ((t (:inherit company-tooltip-annotation :background "dim gray"))))
-;;  '(company-box-background ((t (:inherit company-tooltip :background "#383c44" :box (:line-width 2 :color "grey75" :style released-button)))))
-;;  '(company-box-selection ((t (:inherit company-tooltip-selection :foreground "sandy brown"))))
-; Always use the use-package forother packages
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(require 'use-package)
 (setq use-package-always-ensure t) ; Make sure we always install them if they are not already
-
-
-(load "~/.emacs.d/my-module.el")
-(load "~/.emacs.d/my-evil.el")
-(load "~/.emacs.d/my-company.el")
-
-
-
 (setq package-enable-at-startup nil)
 
+
+
+;; (load "~/.emacs.d/modules/module.el")
+(load "~/.emacs.d/modules/functions.el")
+(load "~/.emacs.d/modules/evil.el")
+(load "~/.emacs.d/modules/helm.el")
+(load "~/.emacs.d/modules/hydra.el")
+(load "~/.emacs.d/modules/general.el")
+(load "~/.emacs.d/git_packages/fzf.el/fzf.el")
+(load "~/.emacs.d/modules/company.el")
+(load "~/.emacs.d/modules/magit.el")
+
+(load "~/.emacs.d/modules/configs.el")
+(load "~/.emacs.d/modules/markdown.el")
+(load "~/.emacs.d/modules/json.el")
+(load "~/.emacs.d/modules/docker.el")
+(load "~/.emacs.d/modules/xml.el")
+(load "~/.emacs.d/modules/yaml.el")
+
+(load "~/.emacs.d/modules/sql.el")
+(load "~/.emacs.d/modules/php.el")
+(load "~/.emacs.d/modules/python.el")
+(load "~/.emacs.d/modules/java.el")
+(load "~/.emacs.d/modules/javascript.el")
+
+(use-package csv-mode)
 
 ; Theme
 (load-theme 'atom-one-dark t)
@@ -63,110 +77,51 @@
 
 (use-package which-key
   :config (which-key-mode)
-  :demand)
-
-(use-package markdown-mode :ensure t)
-(use-package helm
-  :diminish helm-mode
-  :init
-  (progn
-    (require 'helm-config)
-    (setq helm-candidate-number-limit 100)
-    ;; From https://gist.github.com/antifuchs/9238468
-    (setq helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
-          helm-input-idle-delay 0.01  ; this actually updates things
-                                        ; reeeelatively quickly.
-          helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-          helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-          helm-yas-display-key-on-candidate t
-          helm-quick-update t
-          helm-M-x-requires-pattern nil
-          helm-mode-fuzzy-match t
-          helm-completion-in-region-fuzzy-match t
-          helm-M-x-fuzzy-match t
-          helm-ff-skip-boring-files t)
-    (helm-mode))
-  :bind (("C-c h" . helm-mini)
-         ("C-h a" . helm-apropos)
-         ("C-x C-b" . helm-buffers-list)
-         ("C-x b" . helm-buffers-list)
-         ("M-y" . helm-show-kill-ring)
-         ("M-x" . helm-M-x)
-         ("C-x c o" . helm-occur)
-         ("C-x c s" . helm-swoop)
-         ("C-x c y" . helm-yas-complete)
-         ("C-x c Y" . helm-yas-create-snippet-on-region)
-         ("C-x c b" . my/helm-do-grep-book-notes)
-         ("M-x" . helm-M-x)
-         ("C-x c SPC" . helm-all-mark-rings))
-  )
-
-
-(use-package helm-swoop
- :bind
- (("M-I" . helm-swoop-back-to-last-point)
-  ("C-c M-i" . helm-multi-swoop)
-  ("C-x M-i" . helm-multi-swoop-all)
-  )
- :config
- (progn
-   (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
-   (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop))
+  :demand
 )
 
 ; Language Server Protocol
 (use-package lsp-mode)
-(use-package flycheck :config (add-hook 'prog-mode-hook 'flycheck-mode)) ;; used by lsp-ui for fancy displays
+;; (use-package flycheck :config (add-hook 'prog-mode-hook 'flycheck-mode)) ;; used by lsp-ui for fancy displays
+;; (use-package lsp-ui :config (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+;; (use-package paredit)
 
-(use-package lsp-ui :config (add-hook 'lsp-mode-hook 'lsp-ui-mode))
-(use-package paredit)
+(use-package projectile
+  :config
+    (projectile-mode)
+    (setq projectile-enable-caching t)
+    (setq projectile-project-search-path '("~/projects/" "~/work/"))
+    (evil-leader/set-key "p" 'projectile-command-map)
+)
 
-;; (add-hook 'emacs-lisp-mode-hook 'prettify-symbols-mode)
-;; (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
-; (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'emacs-lisp-mode-hook 'flycheck-mode)
 
 
-
-(use-package fzf)
-
 (show-paren-mode 1) ;; turn on bracket match highlight
-(setq make-backup-files nil) ;; stop creating those backup~ files
 (define-key global-map (kbd "RET") 'newline-and-indent) ;; Auto indent
 (global-auto-revert-mode 1) ;; when a file is updated outside emacs, make it update if it's already opened in emacs
+(tool-bar-mode -1)
+(menu-bar-mode -1)
 
-(defun find-init-file ()
-  (interactive)
-  (find-file "~/.emacs.d/init.el")
-)
+(unless (frame-parameter nil 'tty)
+    (scroll-bar-mode -1))
+
+(setq inhibit-splash-screen t
+      ring-bell-function 'ignore
+      make-backup-files nil) ;; stop creating those backup~ files)
 
 (add-hook 'prog-mode-hook 'column-number-mode)
-
-(defun enable-line-numbers ()
-  (setq display-line-numbers t))
-
 (if (< emacs-major-version 26)
     (add-hook 'prog-mode-hook 'linum-mode)
   (add-hook 'prog-mode-hook 'enable-line-numbers))
 (use-package popup-imenu)
 
-  
-
-
-(tool-bar-mode -1)
-
-(menu-bar-mode -1)
-(unless (frame-parameter nil 'tty)
-    (scroll-bar-mode -1))
-
-(setq inhibit-splash-screen t
-      ring-bell-function 'ignore)
 
 (use-package telephone-line
   :config (progn
             (require 'telephone-line-config)
             (telephone-line-evil-config)
-            (setq telephone-line-height 24)))
+            (setq telephone-line-height 20)))
 (use-package all-the-icons)
 
 (use-package all-the-icons-dired
@@ -174,4 +129,10 @@
 
 (use-package treemacs
   :config (add-to-list 'evil-emacs-state-modes  'treemacs-mode))
+
+
+(defun set-x-caps-escape ()
+"Set CAPSLOCK to be another ESC key in X."
+(interactive)
+(shell-command "setxkbmap -option caps:escape"))
 

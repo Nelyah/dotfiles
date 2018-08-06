@@ -1,8 +1,8 @@
-(defgroup init-modules nil
-  "The init modules customization group.")
-
 (defvar init-modules-defs-plist nil
   "The module definitions plist.")
+
+(defgroup init-modules nil
+  "The init modules customization group.")
 
 (defun init-module-load (name)
   "Load the module NAME."
@@ -45,23 +45,6 @@
          (message "Evaluating %s on first def" (quote ,module-name))
          ,@body))))
 
-
-(defmodule python3
-  "Init module for Python 3 development."
-  (use-package pyvenv)
-  (use-package lsp-python
-    :config (add-hook 'python-mode-hook 'lsp-python-enable)))
-
-
-(defmodule javascript
-  "Init module for JavaScript (including React/JSX)."
-  (use-package prettier-js)
-  (use-package rjsx-mode :mode "\\.jsx?$")
-
-  (use-package lsp-javascript-typescript
-    :config (progn
-              (add-hook 'js-mode-hook #'lsp-javascript-typescript-enable)
-              (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable))))
 
 
 (defmodule java

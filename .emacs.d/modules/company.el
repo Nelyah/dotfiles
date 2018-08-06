@@ -22,11 +22,10 @@
 
 (use-package company-box
   :hook (company-mode . company-box-mode)
-  ;; :config ('((company-box-background (:background "#383c44")))))
   :custom-face
-    '(company-box-annotation ((t (:inherit company-tooltip-annotation :background "dim gray"))))
-    '(company-box-background ((t (:inherit company-tooltip :background "#383c44" :box (:line-width 2 :color "grey75" :style released-button)))))
-    '(company-box-selection ((t (:inherit company-tooltip-selection :foreground "sandy brown")))))
+    (company-box-annotation ((t (:inherit company-tooltip-annotation :background "dim gray"))))
+    (company-box-background ((t (:inherit company-tooltip :background "#383c44" :box (:line-width 5 :color "grey75" :style released-button)))))
+    (company-box-selection ((t (:inherit company-tooltip-selection :foreground "sandy brown")))))
 
 (use-package company-statistics
   :config
