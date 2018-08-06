@@ -30,6 +30,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'roxma/clang_complete'                " auto completion
     Plug 'davidhalter/jedi-vim'                " auto completion
     Plug 'easymotion/vim-easymotion'
+    Plug 'rhysd/vim-grammarous'
 
     Plug 'w0rp/ale' " lint checker
     Plug 'ludovicchabant/vim-gutentags'
@@ -180,6 +181,8 @@ vmap > >gv
 " Used for filetype specific editing
 autocmd FileType tex,mail set spell
 autocmd FileType tex,mail set spelllang=en_gb,fr
+autocmd FileType mail set textwidth=0
+autocmd FileType mail set wrapmargin=0
 autocmd FileType tex set iskeyword+=:,-
 
 let g:tex_flavor='latex'
