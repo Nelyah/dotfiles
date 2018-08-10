@@ -4,8 +4,3 @@
 (use-package syslog-mode
   :load-path "~/.emacs.d/syslog-mode.el"
   :mode "\\.log$")
-
-(evil-leader/set-key
-  "mca" 'apache-mode
-  "mcs" 'syslog-mode
-  "mcn" 'nginx-mode)

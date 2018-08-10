@@ -23,19 +23,21 @@
 (use-package company-box
   :hook (company-mode . company-box-mode)
   :custom-face
-    (company-box-annotation ((t (:inherit company-tooltip-annotation :background "dim gray"))))
+    (company-box-annotation ((t (:inherit company-tooltip-annotation :background "#383c44" :foreground "dim gray"))))
     (company-box-background ((t (:inherit company-tooltip :background "#383c44" :box (:line-width 5 :color "grey75" :style released-button)))))
     (company-box-selection ((t (:inherit company-tooltip-selection :foreground "sandy brown")))))
 
-(use-package company-statistics
-  :config
-    (add-hook 'after-init-hook 'company-statistics-mode))
+;; (use-package company-statistics
+;;   :config
+;;     (add-hook 'after-init-hook 'company-statistics-mode))
 
-(use-package company-jedi
+(use-package company-anaconda
   :config
-  (progn
-    (defun my/python-mode-hook ()
-      (add-to-list 'company-backends 'company-jedi))
-    (add-hook 'python-mode-hook 'my/python-mode-hook)
-  )
+  (add-to-list 'company-backends 'company-anaconda)
+  (add-hook 'python-mode-hook 'anaconda-mode)
 )
+
+;; Standard Jedi.el setting
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)
+
