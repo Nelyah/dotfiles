@@ -24,11 +24,17 @@ call plug#begin('~/.vim/plugged')
       Plug 'roxma/nvim-yarp'
       Plug 'roxma/vim-hug-neovim-rpc'
     endif
+    Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+
+
     Plug 'Nelyah/deoplete-khard' " Offers address mail completion
-    Plug 'zchee/deoplete-jedi'
     Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
     Plug 'roxma/clang_complete'                " auto completion
-    Plug 'davidhalter/jedi-vim'                " auto completion
+    " Plug 'zchee/deoplete-jedi'
+    " Plug 'davidhalter/jedi-vim'                " auto completion
     Plug 'easymotion/vim-easymotion'
     Plug 'rhysd/vim-grammarous'
 
@@ -151,6 +157,7 @@ vnoremap  <leader>y  "+y
 " noremap j h
 noremap gV `[V`]
 noremap ; :
+noremap <leader>d /
 
 " Switching panes using the ctrl key
 nnoremap <M-h> <C-w>h
@@ -258,10 +265,10 @@ let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
 " ------ jedi-python ------"
-let g:jedi#popup_on_dot = 1
-let g:jedi#usages_command = ""
-let g:jedi#documentation_command = "D"
-map <Leader>b Oimport pdb; pdb.set_trace() # BREAKPOINT<C-c>
+" let g:jedi#popup_on_dot = 1
+" let g:jedi#usages_command = ""
+" let g:jedi#documentation_command = "D"
+" map <Leader>b Oimport pdb; pdb.set_trace() # BREAKPOINT<C-c>
 
 " ------ Airline Plugin ------ "
 let g:airline_theme = 'onedark'
@@ -451,7 +458,56 @@ call deoplete#custom#var('omni', 'input_patterns', {
       \ 'tex' : g:vimtex#re#deoplete,
 \})
 
+"""""""""""""""""""""""""""
+"  LanguageClient-neovim  "
+"""""""""""""""""""""""""""
+let g:LanguageClient_autoStart = 1
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+    \ 'javascript': ['javascript-typescript-stdio'],
+    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+    \ 'python': ['pyls'],
+    \ }
 
+nnoremap <F5> :call LanguageClient_contextMenu()<CR>
+" Or map each action separately
+nnoremap <silent> gd :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gh :call LanguageClient#textDocument_definition()<CR>
+" Map renaming in python
+autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>r :call LanguageClient_textDocument_rename()<cr>
+
+
+" Automatically start language servers.
+let g:LanguageClient_autoStart = 1
+
+" Use location list instead of quickfix
+let g:LanguageClient_diagnosticsList = 'location'
+
+augroup LanguageClientConfig
+  autocmd!
+
+  " <leader>ld to go to definition
+  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>ld :call LanguageClient_textDocument_definition()<cr>
+  " <leader>lf to autoformat document
+  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>lf :call LanguageClient_textDocument_formatting()<cr>
+  " <leader>lh for type info under cursor
+  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>lh :call LanguageClient_textDocument_hover()<cr>
+  " <leader>lr to rename variable under cursor
+  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>lr :call LanguageClient_textDocument_rename()<cr>
+  " <leader>lc to switch omnifunc to LanguageClient
+  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>lc :setlocal omnifunc=LanguageClient#complete<cr>
+  " <leader>ls to fuzzy find the symbols in the current document
+  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>ls :call LanguageClient_textDocument_documentSymbol()<cr>
+
+  " Use as omnifunc by default
+  autocmd FileType javascript,python,typescript,json,css,less,html,reason setlocal omnifunc=LanguageClient#complete
+augroup END
+
+let g:LanguageClient_serverCommands = {}
+
+if executable('pyls')
+  let g:LanguageClient_serverCommands.python = ['pyls']
+endif
 
 
 " ------ Tmux-Complete ------ "
