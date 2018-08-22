@@ -67,6 +67,8 @@ set header_cache = ~/.cache/mutt
 # Navigation
 bind attach,index,pager \CD next-page
 bind attach,index,pager \CB previous-page
+bind index,pager \Cb half-up
+bind index,pager \Cd half-down
 bind index,pager,attach g noop
 bind index,pager,attach r group-reply
 bind index,pager,attach \CR reply
@@ -80,9 +82,11 @@ bind attach,pager J next-entry
 bind attach,pager K previous-entry
 bind editor <Tab> complete-query
 set query_command= "khard email --parsable --search-in-source-files '%s'"
+set query_command = "( khard email --parsable '%s' | sed -n '1!p'; mu cfind --format=mutt-ab '%s' )"
 bind editor ^T    complete
 set edit_headers = yes
 set editor = 'nvim +/^$ +nohlsearch +Goyo' # Move past headers.
+set editor = "emacsclient -nw" # Move past headers.
 
 set sleep_time = 0
 set autoedit
@@ -183,4 +187,12 @@ macro generic \Cx1 "\Cx| ~/.mutt/accounts/ovh\"\n\Cx&0\"<enter><change-folder>!<
 set index_format="%3C %Z %[!%m.%d.%y] %-19.19n %?X?(%1X)& ? %?M?(%02M)& ? %s%> %?y?[%Y]?"
 set index_format="%Z %3C %{%b %d} %-17.17n (%5c) %s"
 set index_format="%3C %Z %{%b %d} %-19.19n (%5c) %?X?(%1X)& ? %?M?(%02M)& ? %s%> %?y?[%Y]?"
+macro index L "<enter-command>unset wait_key<enter><shell-escape>read -p 'mu query: ' x; echo \$x >~/.mu/search_term<enter><limit>~i \"\`mu find -f i \$(cat ~/.mu/search_term) | head -n 600 | perl -le '@a=<>;chomp@a;s/\^id:// for@a;$,=\"|\";print@a'\`\"<enter>" "show only messages matching a notmuch pattern"
+macro index \cf "<change-folder-readonly>~/.mu/results<enter>" "mu find results"
 
+macro index,pager \cb "<pipe-message> urlscan<Enter>" "call urlscan to extract URLs out of a message"
+macro attach,compose \cb "<pipe-entry> urlscan<Enter>" "call urlscan to extract URLs out of a message"
+
+# Sync all email
+# If you want to make everything indexable after syncing email, use the office-alias
+macro index,pager O "<shell-escape>mbsync -a<enter>" "run mbsync to sync all mail"

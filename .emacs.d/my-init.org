@@ -1,134 +1,205 @@
 #+STARTUP: overview
-* Emacs' customise
-#+BEGIN_SRC emacs-lisp
-;;; Keep emacs Custom-settings in separate file.
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load-if-exists custom-file)
-
-#+END_SRC
-
 * Repos
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 
 #+END_SRC
+* My functions
+#+BEGIN_SRC emacs-lisp
+(defun load-if-exists (f)
+    "load the elisp file only if it exists and is readable"
+    (if (file-readable-p f)
+        (load-file f))
+)
+
+(defun find-init-file ()
+  (interactive)
+  (find-file "~/.emacs.d/my-init.org")
+)
+
+#+END_SRC
+* Emacs' customise
+#+BEGIN_SRC emacs-lisp
+;;; Keep emacs Custom-settings in separate file.
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load-if-exists custom-file)
+#+END_SRC
+
 * Sanity defaults
 #+BEGIN_SRC emacs-lisp
 
-;; Ido, Yes!
-(use-package ido
-  :config
-  (ido-mode t)
-  (setq ido-enable-flex-matching t))
+  ;; Ido, Yes!
+  (use-package ido
+    :config
+    (ido-mode t)
+    (setq ido-enable-flex-matching t))
 
-;; Full path in frame title
-(when window-system
-  (setq frame-title-format '(buffer-file-name "%f" ("%b"))))
+  ;; Full path in frame title
+  (when window-system
+    (setq frame-title-format '(buffer-file-name "%f" ("%b"))))
 
-;; Auto refresh buffers when edits occur outside emacs
-(global-auto-revert-mode 1)
+  ;; Auto refresh buffers when edits occur outside emacs
+  (global-auto-revert-mode 1)
 
-;; Also auto refresh Dired, but be quiet about it
-(setq global-auto-revert-non-file-buffers t)
-(setq auto-revert-verbose nil)
-;; Quickly copy/move file in Dired
-(setq dired-dwim-target t)
+  ;; Also auto refresh Dired, but be quiet about it
+  (setq global-auto-revert-non-file-buffers t)
+  (setq auto-revert-verbose nil)
+  ;; Quickly copy/move file in Dired
+  (setq dired-dwim-target t)
 
-;; Show keystrokes in progress
-;; (setq echo-keystrokes 0.1)
+  ;; Show keystrokes in progress
+  ;; (setq echo-keystrokes 0.1)
 
-;; Move files to trash when deleting
-(setq delete-by-moving-to-trash t)
+  ;; Move files to trash when deleting
+  (setq delete-by-moving-to-trash t)
 
-;; Transparently open compressed files
-(auto-compression-mode t)
+  ;; Transparently open compressed files
+  (auto-compression-mode t)
 
-;; Enable syntax highlighting for older Emacsen that have it off
-(global-font-lock-mode t)
+  ;; Enable syntax highlighting for older Emacsen that have it off
+  (global-font-lock-mode t)
 
-;; Show matching parens
-(setq show-paren-delay 0)
-(show-paren-mode 1)
+  ;; Show matching parens
+  (setq show-paren-delay 0)
+  (show-paren-mode 1)
 
-;; Auto-close brackets and double quotes
-(electric-pair-mode 1)
+  ;; Auto-close brackets and double quotes
+  (electric-pair-mode 1)
 
-;; Answering just 'y' or 'n' will do
-(defalias 'yes-or-no-p 'y-or-n-p)
+  ;; Answering just 'y' or 'n' will do
+  (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; UTF-8 please
-(setq locale-coding-system 'utf-8) ; pretty
-(set-terminal-coding-system 'utf-8) ; pretty
-(set-keyboard-coding-system 'utf-8) ; pretty
-(set-selection-coding-system 'utf-8) ; please
-(prefer-coding-system 'utf-8) ; with sugar on top
+  ;; UTF-8 please
+  (setq locale-coding-system 'utf-8) ; pretty
+  (set-terminal-coding-system 'utf-8) ; pretty
+  (set-keyboard-coding-system 'utf-8) ; pretty
+  (set-selection-coding-system 'utf-8) ; please
+  (prefer-coding-system 'utf-8) ; with sugar on top
 
-;; Remove text in active region if inserting text
-(delete-selection-mode 1)
+  ;; Remove text in active region if inserting text
+  (delete-selection-mode 1)
 
-;; Always display line and column numbers
-(setq line-number-mode t)
-(setq column-number-mode t)
+  ;; Always display line and column numbers
+  (global-display-line-numbers-mode)
+  (setq column-number-mode t)
 
-;; Lines should be 80 characters wide, not 72
-(setq fill-column 80)
+  ;; Lines should be 80 characters wide, not 72
+  (setq fill-column 80)
 
-;; Smooth Scroll:
-(setq mouse-wheel-scroll-amount '(1 ((shift) .1))) ;; one line at a time
+  ;; Smooth Scroll:
+  (setq mouse-wheel-scroll-amount '(1 ((shift) .1))) ;; one line at a time
 
-;; Scrol one line when hitting bottom of window
-(setq scroll-conservatively 10000)
+  ;; Scrol one line when hitting bottom of window
+  (setq scroll-conservatively 10000)
 
-;; Change Cursor
-(setq-default cursor-type 'box)
-(blink-cursor-mode -1)
+  ;; Change Cursor
+  (setq-default cursor-type 'box)
+  (blink-cursor-mode -1)
 
-;; Remove alarm (bell) on scroll
-(setq ring-bell-function 'ignore)
+  ;; Remove alarm (bell) on scroll
+  (setq ring-bell-function 'ignore)
 
-;; Set default tab width
-(setq default-tab-width 4)
+  ;; Set default tab width
+  (setq default-tab-width 4)
 
-;; Never insert tabs
-(set-default 'indent-tabs-mode nil)
+  ;; Never insert tabs
+  (set-default 'indent-tabs-mode nil)
 
-;; Easily navigate sillycased words
-(global-subword-mode 1)
+  ;; Easily navigate sillycased words
+  (global-subword-mode 1)
 
-;; Word Wrap (t is no wrap, nil is wrap)
-(setq-default truncate-lines nil)
+  ;; Word Wrap (t is no wrap, nil is wrap)
+  ;; (setq-default truncate-lines t)
 
-;; Sentences do not need double spaces to end. Period.
-(set-default 'sentence-end-double-space nil)
+  ;; Line wrap
+  (global-visual-line-mode t)
 
-;; Real emacs knights don't use shift to mark things
-(setq shift-select-mode nil)
+  ;; Sentences do not need double spaces to end. Period.
+  (set-default 'sentence-end-double-space nil)
 
-;; Add parts of each file's directory to the buffer name if not unique
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'forward)
+  ;; Real emacs knights don't use shift to mark things
+  (setq shift-select-mode nil)
 
-;; eval-expression-print-level needs to be set to nil (turned off) so
-;; that you can always see what's happening.
-(setq eval-expression-print-level nil)
+  ;; Add parts of each file's directory to the buffer name if not unique
+  (require 'uniquify)
+  (setq uniquify-buffer-name-style 'forward)
 
-;; from 'better-defaults.el'
-;; Allow clipboard from outside emacs
-(setq x-select-enable-clipboard t
-      save-interprogram-paste-before-kill t
-      apropos-do-all t
-      mouse-yank-at-point t)
+  ;; eval-expression-print-level needs to be set to nil (turned off) so
+  ;; that you can always see what's happening.
+  (setq eval-expression-print-level nil)
 
-; Highlights the current cursor line
-(global-hl-line-mode t)
+  ;; from 'better-defaults.el'
+  ;; Allow clipboard from outside emacs
+  (setq x-select-enable-clipboard t
+        save-interprogram-paste-before-kill t
+        apropos-do-all t
+        mouse-yank-at-point t)
 
-; flashes the cursor's line when you scroll
-(use-package beacon
-  :config
-  (beacon-mode 1)
-  ;; (setq beacon-color "#666600")
-)
-#+END_SRC
+  ; Highlights the current cursor line
+  (global-hl-line-mode t)
+
+  (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+  (add-to-list 'auto-mode-alist '("neomutt.*\\'" . mu4e-compose-mode))
+  
+  ;; When on a tab, make the cursor the tab length.
+  (setq-default x-stretch-cursor t)
+
+  ;;; Fix empty pasteboard error.
+  (setq save-interprogram-paste-before-kill nil)
+
+  ;; Don't automatically copy selected text
+  (setq select-enable-primary nil)
+
+  ;; Enable some commands.
+  (put 'downcase-region 'disabled nil)
+  (put 'upcase-region 'disabled nil)
+  (put 'narrow-to-region 'disabled nil)
+  (put 'erase-buffer 'disabled nil)
+
+  ;; Add filepath to frame title
+  (setq-default frame-title-format
+                '(:eval (format "%s (%s)"
+                                (buffer-name)
+                                (when (buffer-file-name)
+                                  (abbreviate-file-name (buffer-file-name))))))
+
+  (setq use-package-always-ensure t) ; Make sure we always install them if they are not already
+  (setq package-enable-at-startup nil)
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (eval-when-compile
+    (require 'use-package))
+  (require 'bind-key)                ;; if you use any :bind variant
+
+  ;; No splash screen please.
+  (setq inhibit-startup-message t)
+
+  ;; No fascists.
+  (setq initial-scratch-message nil)
+
+  ;; Productive default mode
+  (setq initial-major-mode 'org-mode)
+
+  ;; No alarms.
+  (setq ring-bell-function 'ignore)
+
+  ;; Backup files
+  (setq
+     backup-by-copying t      ; don't clobber symlinks
+     backup-directory-alist
+      '(("." . "~/.saves/"))    ; don't litter my fs tree
+     delete-old-versions t
+     kept-new-versions 6
+     kept-old-versions 2
+     version-control t)       ; use versioned backups
+
+  #+END_SRC
 
 * Interface, general config and keybindings
 ** Evil
@@ -136,14 +207,12 @@
 "Init module for config languages (e.g. Apache, nginx configs)."
 (use-package evil
   :demand
-  :config (evil-mode 1))
-
-;; (use-package evil-leader
-;;   :demand
-;;   :config (progn
-;;             (setq evil-leader/in-all-states t)
-;;             (global-evil-leader-mode)
-;;             (evil-leader/set-leader "SPC")))
+  :init
+    (setq evil-want-integration nil) ;; required by evil-collection
+  :config
+    (evil-mode 1)
+    (setq evil-ex-complete-emacs-commands nil)
+)
 (setq-default indent-tabs-mode nil)
 
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
@@ -159,60 +228,160 @@
   (define-key evil-motion-state-map (kbd ";") 'evil-ex))
 
 #+END_SRC
-
-** Helm
+*** Evil-collection
 #+BEGIN_SRC emacs-lisp
-(use-package helm
-  :diminish helm-mode
+(use-package evil-collection
   :init
-  (progn
-    (require 'helm-config)
-    (setq helm-candidate-number-limit 100)
-    ;; From https://gist.github.com/antifuchs/9238468
-    (setq helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
-          helm-input-idle-delay 0.01  ; this actually updates things
-                                        ; reeeelatively quickly.
-          helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-          helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-          helm-yas-display-key-on-candidate t
-          helm-quick-update t
-          helm-M-x-requires-pattern nil
-          helm-mode-fuzzy-match t
-          helm-completion-in-region-fuzzy-match t
-          helm-M-x-fuzzy-match t
-          helm-ff-skip-boring-files t)
-    (helm-mode))
-  :bind (("C-c h" . helm-mini)
-         ("C-h a" . helm-apropos)
-         ("C-x C-b" . helm-buffers-list)
-         ("C-x b" . helm-buffers-list)
-         ("M-y" . helm-show-kill-ring)
-         ("M-x" . helm-M-x)
-         ("C-x c o" . helm-occur)
-         ("C-x c s" . helm-swoop)
-         ("C-x c y" . helm-yas-complete)
-         ("C-x c Y" . helm-yas-create-snippet-on-region)
-         ("C-x c b" . my/helm-do-grep-book-notes)
-         ("M-x" . helm-M-x)
-         ("C-x c SPC" . helm-all-mark-rings))
-  :config
-    (evil-leader/set-key "i" 'helm-swoop)
-  )
-
-
-(use-package helm-swoop
- :bind
- (("M-I" . helm-swoop-back-to-last-point)
-  ("C-c M-i" . helm-multi-swoop)
-  ("C-x M-i" . helm-multi-swoop-all)
-  )
- :config
- (progn
-   (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
-   (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop))
+    (evil-collection-init)
 )
 
+
 #+END_SRC
+*** Evil lion
+#+BEGIN_SRC emacs-lisp
+  ;; gl and gL operators, like vim-lion
+  (use-package evil-lion
+    :bind (:map evil-normal-state-map
+                ("g l " . evil-lion-left)
+                ("g L " . evil-lion-right)
+                :map evil-visual-state-map
+                ("g l " . evil-lion-left)
+                ("g L " . evil-lion-right)))
+#+END_SRC
+*** Evil commentary
+#+BEGIN_SRC emacs-lisp
+
+  ;; gc operator, like vim-commentary
+  (use-package evil-commentary
+    :bind (:map evil-normal-state-map
+                ("gc" . evil-commentary)))
+
+#+END_SRC
+
+*** Evil surround
+like vim-surround
+#+BEGIN_SRC emacs-lisp
+
+  (use-package evil-surround
+    :commands
+    (evil-surround-edit
+     evil-Surround-edit
+     evil-surround-region
+     evil-Surround-region)
+    :init
+    (evil-define-key 'operator global-map "s" 'evil-surround-edit)
+    (evil-define-key 'operator global-map "S" 'evil-Surround-edit)
+    (evil-define-key 'visual global-map "S" 'evil-surround-region)
+    (evil-define-key 'visual global-map "gS" 'evil-Surround-region))
+
+#+END_SRC
+*** Evil expat
+#+BEGIN_SRC emacs-lisp
+    (use-package evil-expat
+    ;; optional, defer loading until 1 second of inactivity,
+    ;; hence not affecting emacs startup time
+    :defer 1)
+
+#+END_SRC
+** Helm
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package helm
+  ;;   :diminish helm-mode
+  ;;   :init
+  ;;   (progn
+  ;;     (require 'helm-config)
+  ;;     (setq helm-candidate-number-limit 100)
+  ;;     ;; From https://gist.github.com/antifuchs/9238468
+  ;;     (setq helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
+  ;;           helm-input-idle-delay 0.01  ; this actually updates things
+  ;;                                         ; reeeelatively quickly.
+  ;;           helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+  ;;           helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+  ;;           helm-yas-display-key-on-candidate t
+  ;;           helm-quick-update t
+  ;;           helm-M-x-requires-pattern nil
+  ;;           helm-mode-fuzzy-match t
+  ;;           helm-completion-in-region-fuzzy-match t
+  ;;           helm-M-x-fuzzy-match t
+  ;;           helm-ff-skip-boring-files t)
+  ;;     (helm-mode))
+  ;;   :bind (("C-c h" . helm-mini)
+  ;;          ("C-h a" . helm-apropos)
+  ;;          ("C-x C-b" . helm-buffers-list)
+  ;;          ("C-x b" . helm-buffers-list)
+  ;;          ("M-y" . helm-show-kill-ring)
+  ;;          ("M-x" . helm-M-x)
+  ;;          ("C-x c o" . helm-occur)
+  ;;          ("C-x c s" . helm-swoop)
+  ;;          ("C-x c y" . helm-yas-complete)
+  ;;          ("C-x c Y" . helm-yas-create-snippet-on-region)
+  ;;          ("C-x c b" . my/helm-do-grep-book-notes)
+  ;;          ("M-x" . helm-M-x)
+  ;;          ("C-x c SPC" . helm-all-mark-rings))
+  ;;   :config
+  ;;     (evil-leader/set-key "i" 'helm-swoop)
+  ;;   )
+
+
+  ;; (use-package helm-swoop
+  ;;  :bind
+  ;;  (("M-I" . helm-swoop-back-to-last-point)
+  ;;   ("C-c M-i" . helm-multi-swoop)
+  ;;   ("C-x M-i" . helm-multi-swoop-all)
+  ;;   )
+  ;;  :config
+  ;;  (progn
+  ;;    (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
+  ;;    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop))
+  ;; )
+
+#+END_SRC
+** Swiper / Ivy / Counsel
+  Swiper gives us a really efficient incremental search with regular expressions
+  and Ivy / Counsel replace a lot of ido or helms completion functionality
+  #+BEGIN_SRC emacs-lisp
+
+   (use-package counsel
+        :bind
+        (("M-y" . counsel-yank-pop)
+        :map ivy-minibuffer-map
+        ("M-y" . ivy-next-line))
+    )
+
+  (use-package counsel-projectile
+  :config (define-key projectile-mode-map (kbd "SPC p") 'projectile-command-map)
+  )
+
+  (use-package ivy
+  :diminish (ivy-mode)
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "%d/%d ")
+  (setq ivy-display-style 'fancy))
+
+
+  (use-package swiper
+  :bind (("C-s" . swiper)
+     ("C-r" . swiper)
+     ("C-c C-r" . ivy-resume)
+     ("M-x" . counsel-M-x)
+     ("C-x C-f" . counsel-find-file))
+  :config
+  (progn
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-display-style 'fancy)
+    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+    )
+  )
+
+  (setq ivy-re-builders-alist
+    '((swiper . ivy--regex-plus)
+    (t      . ivy--regex-fuzzy))
+  )
+  #+END_SRC
+
 ** Projectile
 #+BEGIN_SRC emacs-lisp
     (use-package projectile
@@ -220,202 +389,6 @@
         (setq projectile-project-search-path '("~/projects/" "~/work/"))
         ;; (evil-leader/set-key "p" 'projectile-command-map)
     )
-
-#+END_SRC
-** General
-#+BEGIN_SRC emacs-lisp
-(use-package general)
-
-;; * Global Keybindings
-;; `general-define-key' acts like `evil-define-key' when :states is specified
-(general-define-key
- :states 'motion
- ;; swap ; and :
- ";" 'evil-ex
- ":" 'evil-repeat-find-char)
-;; same as
-(general-define-key
- :states 'motion
- ";" 'evil-ex
- ":" 'evil-repeat-find-char)
-;; `general-def' can be used instead for `evil-global-set-key'-like syntax
-(general-def 'motion
-  ";" 'evil-ex
-  ":" 'evil-repeat-find-char)
-
-;; alternative using `general-translate-key'
-;; swap ; and : in `evil-motion-state-map'
-(general-swap-key nil 'motion
-  ";" ":")
-
-(general-create-definer my-leader-def
-  ;; :prefix my-leader
-  :prefix "SPC")
-
-
-(defun general/remap-range (begin-key end-key make-leader-binding &optional reserved)
-  "Remap a range of keys from 'ctl-x-map', from BEGIN-KEY to END-KEY inclusive to an Evil leader binding.
-Convert the key from the map to an Evil leader binding using MAKE-LEADER-BINDING.
-RESERVED is a list of keys: if specified, do not create bindings for these."
-  (let ((bindings-plist '()))
-    (map-char-table
-     (lambda (key value)
-       (when (and (>= key begin-key)
-                  (<= key end-key)
-                  (not (member key reserved)))
-         (add-to-list 'bindings-plist (funcall make-leader-binding key) t)
-         (add-to-list 'bindings-plist value t)))
-     (cadr ctl-x-map))
-    (apply 'general-define-key :states 'normal :prefix "SPC" bindings-plist)))
-
-
-(mapcar
- (lambda (prefix-key)
-   (general/remap-range ?\C-a
-                        ?\C-z
-                        (lambda (key) (format "%c%s" prefix-key (char-to-string (+ 96 key))))))
- '(?f ?x))
-
-
-(general/remap-range ?0
-                     ?z
-                     (lambda (key) (char-to-string key))
-                     '(?f ?m ?r ?s ?t ?d))
-
-
-(general-define-key
- :prefix "SPC"
- :states '(normal visual emacs)
- :keymaps 'override
- "w" 'save-buffer
- "b" 'fzf-switch-buffer
- "c" 'comment-region
- "C" 'uncomment-region
- "n" 'treemacs
- "X" 'delete-trailing-whitespace
- "p" '(:keymap projectile-command-map :package projectile) ;; Switch to projectile mode
- "o" '(:keymap org-capture-mode-map :package org) ;; Switch to projectile mode
-)
-
-(general-define-key
- :states '(normal emacs)
- :keymaps 'override
- "M-l" 'evil-window-right
- "M-h" 'evil-window-left
- "M-k" 'evil-window-up
- "M-j" 'evil-window-down
-)
-
-
-(general-define-key
- :prefix "SPC m"
- :keymaps 'override
- :states '(normal emacs)
- "a" 'apache-mode
- "d" 'markdown-mode
- "h" 'html-mode
- "j" 'javascript-mode
- "n" 'nginx-mode
- "o" 'org-mode
- "p" 'python-mode
- "s" 'shell-script-mode
- "x" 'nxml-mode
- "y" 'syslog-mode
-)
-
-(general-define-key
- :prefix "SPC r"
- :keymaps 'override
- :states '(normal)
- "rd" 'run-dig ;; not exactly a REPL, but fits nonetheless
- "rf" 'run-fsharp
- "ri" 'ielm
- "rp" 'run-python
- )
-
-(general-define-key
- :prefix "SPC f"
- :keymaps 'override
- :states '(normal)
- "i" 'find-init-file
- "o" 'fzf-find-file
- )
-
-(general-define-key
- :prefix "SPC s"
- :keymaps 'override
- :states '(normal)
- "p" 'sql-postgres
- "s" 'sql-sqlite
-)
-
-(general-define-key
- :prefix "SPC g"
- :keymaps '(override magit-status-mode-map)
- :states '(normal)
- "s" 'magit-status
- "q" 'magit-quit-session
-)
-
-;; (evil-leader/set-key "p" 'popup-imenu)
-(general-define-key
- :prefix "SPC j"
- :keymaps '(override json-mode)
- :states '(normal)
- "np" 'json-navigator-navigate-after-point
- "nr" 'json-navigator-navigate-region
- "pb" 'json-pretty-print-buffer
- "pr" 'json-pretty-print
- "r" 'json-reformat-region
- )
-
-
-;; to prevent your leader keybindings from ever being overridden (e.g. an evil
-;; package may bind "SPC"), use :keymaps 'override
-;; (my-leader-def
-;;   :states 'normal
-;;   :keymaps 'override
-;;   "a" 'org-agenda)
-;; ;; or
-;; (my-leader-def 'normal 'override
-;;   "a" 'org-agenda)
-
-;; ;; ** Mode Keybindings
-;; (my-local-leader-def
-;;   :states 'normal
-;;   :keymaps 'org-mode-map
-;;   "y" 'org-store-link
-;;   "p" 'org-insert-link
-;;   ;; ...
-;;   )
-;; ;; `general-create-definer' creates wrappers around `general-def', so
-;; ;; `evil-define-key'-like syntax is also supported
-;; (my-local-leader-def 'normal org-mode-map
-;;   "y" 'org-store-link
-;;   "p" 'org-insert-link
-;;   )
-
-;; * Setings
-;; change evil's search module after evil has been loaded (`setq' will not work)
-(general-setq evil-search-module 'evil-search)
-(general-override-mode)
-
-
-
-
-
-#+END_SRC
-** My functions
-#+BEGIN_SRC emacs-lisp
-(defun load-if-exists (f)
-"load the elisp file only if it exists and is readable"
-(if (file-readable-p f)
-    (load-file f))
-
-(defun find-init-file ()
-  (interactive)
-  (find-file "~/.emacs.d/init.el")
-)
 
 #+END_SRC
 ** My bindings
@@ -434,155 +407,616 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
 
 #+END_SRC
 ** Themes and modeline
-  #+BEGIN_SRC emacs-lisp 
+  #+BEGIN_SRC emacs-lisp
 
-        (use-package color-theme-modern)
-    
-        ;(use-package zenburn-theme
-        ;  :ensure t
-        ;  :config (load-theme 'zenburn t))
-
-        ;(use-package spacemacs-theme
-        ;  :ensure t
-        ;  ;:init
-        ;  ;(load-theme 'spacemacs-dark t)
-        ;  )
-        (use-package base16-theme
-        (use-package moe-theme)
-
-
-        (use-package alect-themes)
-
-        ;(use-package zerodark-theme
-        ;:ensure t)
-
-        ;;(load-theme 'zerodark t)
-        ;;(zerodark-setup-modeline-format)
         (use-package telephone-line
         :config (progn
                     (require 'telephone-line-config)
                     (telephone-line-evil-config)
                     (setq telephone-line-height 20)))
 
-        (use-package all-the-icons
-        :config
-        (all-the-icons-install-fonts)
-        )
+        (use-package all-the-icons)
+        ;; This should be run afterwards (once)
+        ;; (all-the-icons-install-fonts)
 
         (load-theme 'atom-one-dark t)
 
   #+END_SRC
+** Folding
+#+BEGIN_SRC emacs-lisp
+
+(use-package vimish-fold)
+(vimish-fold-global-mode 1)
+#+END_SRC
+** General
+#+BEGIN_SRC emacs-lisp
+      (use-package general)
+
+      ;; * Global Keybindings
+      ;; `general-define-key' acts like `evil-define-key' when :states is specified
+      (general-define-key
+       :states '(motion normal visual)
+       ;; swap ; and :
+       ";" 'evil-ex
+       ":" 'evil-ex
+       "," 'ivy-switch-buffer
+  )
+
+      (general-create-definer my-leader-def
+        ;; :prefix my-leader
+        :prefix "SPC")
+
+
+      (defun general/remap-range (begin-key end-key make-leader-binding &optional reserved)
+        "Remap a range of keys from 'ctl-x-map', from BEGIN-KEY to END-KEY inclusive to an Evil leader binding.
+      Convert the key from the map to an Evil leader binding using MAKE-LEADER-BINDING.
+      RESERVED is a list of keys: if specified, do not create bindings for these."
+        (let ((bindings-plist '()))
+          (map-char-table
+           (lambda (key value)
+             (when (and (>= key begin-key)
+                        (<= key end-key)
+                        (not (member key reserved)))
+               (add-to-list 'bindings-plist (funcall make-leader-binding key) t)
+               (add-to-list 'bindings-plist value t)))
+           (cadr ctl-x-map))
+          (apply 'general-define-key :states 'normal :prefix "SPC" bindings-plist)))
+
+
+      (mapcar
+       (lambda (prefix-key)
+         (general/remap-range ?\C-a
+                              ?\C-z
+                              (lambda (key) (format "%c%s" prefix-key (char-to-string (+ 96 key))))))
+       '(?f ?x))
+
+
+      (general/remap-range ?0
+                           ?z
+                           (lambda (key) (char-to-string key))
+                           '(?f ?m ?r ?s ?t ?d))
+
+
+      (general-define-key
+       :prefix "SPC"
+       :states '(normal visual emacs)
+       :keymaps 'override
+       "w" 'save-buffer
+       "c" 'comment-region
+       "C" 'uncomment-region
+       "n" 'treemacs
+       "X" 'delete-trailing-whitespace
+       "a" 'evil-ex-nohighlight
+       "p" '(:keymap projectile-command-map :package projectile) ;; Switch to projectile mode
+       "o" '(:keymap org-capture-mode-map :package org) ;; Switch to projectile mode
+       "s" 'avy-goto-char-2
+      )
+
+    ;(general-define-key
+    ;:prefix)
+    ;; counsel-projectile-switch-project 	Switch project
+    ;; C-c p f 	counsel-projectile-find-file 	Jump to a project file
+    ;; C-c p g 	counsel-projectile-find-file-dwim 	Jump to a project file using completion based on context
+    ;; C-c p d 	counsel-projectile-find-dir 	Jump to a project directory
+    ;; C-c p b 	counsel-projectile-switch-to-buffer 	Jump to a project buffer
+    ;; C-c p s g 	counsel-projectile-grep 	Search project with grep
+    ;; C-c p s s 	counsel-projectile-ag 	Search project with ag
+    ;; C-c p s r 	counsel-projectile-rg
+
+      (general-define-key
+       :states '(normal emacs)
+       :keymaps 'override
+       "M-l" 'evil-window-right
+       "M-h" 'evil-window-left
+       "M-k" 'evil-window-up
+       "M-j" 'evil-window-down
+      )
+
+
+      (general-define-key
+       :prefix "SPC m"
+       :keymaps 'override
+       :states '(normal emacs)
+       "a" 'apache-mode
+       "d" 'markdown-mode
+       "h" 'html-mode
+       "j" 'javascript-mode
+       "n" 'nginx-mode
+       "o" 'org-mode
+       "p" 'python-mode
+       "s" 'shell-script-mode
+       "x" 'nxml-mode
+       "y" 'syslog-mode
+      )
+
+      (general-define-key
+       :prefix "SPC r"
+       :keymaps 'override
+       :states '(normal)
+       "rd" 'run-dig ;; not exactly a REPL, but fits nonetheless
+       "rf" 'run-fsharp
+       "ri" 'ielm
+       "rp" 'run-python
+       )
+
+      (general-define-key
+       :prefix "SPC f"
+       :keymaps 'override
+       :states '(normal)
+       "i" 'find-init-file
+       "o" 'fzf-find-file
+       "d" '(lambda () (interactive) (fzf-find-file-in-dir "~/"))
+       )
+
+      (general-define-key
+       :prefix "SPC g"
+       :keymaps '(override magit-status-mode-map)
+       :states '(normal)
+       "s" 'magit-status
+       "q" 'magit-quit-session
+      )
+
+      ;; (evil-leader/set-key "p" 'popup-imenu)
+      (general-define-key
+       :prefix "SPC j"
+       :keymaps '(override json-mode)
+       :states '(normal)
+       "np" 'json-navigator-navigate-after-point
+       "nr" 'json-navigator-navigate-region
+       "pb" 'json-pretty-print-buffer
+       "pr" 'json-pretty-print
+       "r" 'json-reformat-region
+       )
+
+      ;; * Settings
+      ;; change evil's search module after evil has been loaded (`setq' will not work)
+      (general-setq evil-search-module 'evil-search)
+      (general-override-mode)
+#+END_SRC
+* Mail
+** Emacs config
+#+BEGIN_SRC emacs-lisp
+(setq notmuch-search-oldest-first nil
+      message-sendmail-envelope-from 'header
+      mail-specify-envelope-from 'header
+      mail-envelope-from 'header
+      message-send-mail-function 'message-send-mail-with-sendmail
+      sendmail-program "/usr/bin/msmtp"
+      message-sendmail-extra-arguments '("-a" "ovh")
+
+      message-sendmail-f-is-evil 't
+      message-sendmail-extra-arguments '("--read-envelope-from")
+      mail-host-address "dequeker.me"
+      mail-interactive t
+      user-full-name "Chloé Dequeker"
+      user-mail-address "chloe@dequeker.me"
+      message-kill-buffer-on-exit t
+      mail-user-agent 'message-user-agent
+
+  )
+
+;; Choose account label to feed msmtp -a option based on From header in Message buffer;
+;; This function must be added to message-send-mail-hook for on-the-fly change of From address
+;; before sending message since message-send-mail-hook is processed right before sending message.
+(defun cg-feed-msmtp ()
+  (if (message-mail-p)
+      (save-excursion
+        (let* ((from
+                (save-restriction
+                  (message-narrow-to-headers)
+                  (message-fetch-field "from")))
+               (account
+                (cond
+                 ;; I use email address as account label in ~/.msmtprc
+                 ((string-match "chloe@dequeker.me" from)"ovh")
+                 ;; Add more string-match lines for your email accounts
+                 ((string-match "chloe.dequeker@upmc.fr" from)"upmc"))))
+          (setq message-sendmail-extra-arguments (list '"-a" account)))))) ; the original form of this script did not have the ' before "a" which causes a very difficult to track bug --frozencemetery
+
+(setq message-sendmail-envelope-from 'header)
+(add-hook 'message-send-mail-hook 'cg-feed-msmtp)
+
+(add-to-list 'auto-mode-alist '("/mutt" . mail-mode))
+#+END_SRC
+** mu4e
+#+BEGIN_SRC emacs-lisp
+(require 'mu4e)
+
+(setq
+    mu4e-maildir "~/.mail"
+    mu4e-sent-folder "/perso/Sent"
+    mu4e-drafts-folder "/perso/Drafts"
+    mu4e-refile-folder "/perso/Archive"
+    mu4e-trash-folder "/perso/Trash"
+)
+
+(setq
+    mu4e-get-mail-command "mbsync -a"
+    mu4e-update-interval 60
+)
+
+(defvar my-mu4e-account-alist
+  '(("perso"
+     (mu4e-sent-folder "/perso/Sent")
+     (mu4e-drafts-folder "/perso/Drafts")
+     (mu4e-refile-folder "/perso/Archive")
+     (mu4e-trash-folder "/perso/Trash")
+     (user-mail-address "chloe@dequeker.me")
+     )
+    ("upmc"
+     (mu4e-sent-folder "/upmc/Sent")
+     (mu4e-drafts-folder "/upmc/Drafts")
+     (mu4e-refile-folder "/upmc/Archive")
+     (mu4e-trash-folder "/upmc/Trash")
+     (user-mail-address "chloe.dequeker@upmc.fr")
+     )
+    )
+  )
+;; Be sure to only delete, not push to Trash
+(add-hook 'mu4e-headers-mode-hook
+          (lambda ()
+            (local-set-key (kbd "!") 'mu4e-headers-mark-for-read)
+            )
+)
+
+
+
+(add-hook 'mu4e-headers-mode-hook 'my-header-view)
+;; (add-hook 'mu4e-compose-pre-hook 'my-set-from-address)
+(add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account)
+(add-hook 'mu4e-compose-pre-hook 'my-do-compose-stuff)
+;; (add-hook 'mu4e-compose-pre-hook 'my-add-bcc)
+
+(add-hook 'mu4e-headers-mode-hook 'display-line-numbers-mode)
+
+
+
+(setq mu4e-maildir-shortcuts
+      '(  ("/perso/Inbox"      . ?i)
+          ("/perso/Archive"   . ?a)
+          ("/perso/lists"     . ?l)
+          ("/perso/Sent"      . ?s)
+          ("/upmc/Inbox"      . ?I)
+          ("/upmc/Archive"   . ?A)
+          ("/upmc/lists"     . ?L)
+          ("/upmc/Sent"      . ?S)
+          )
+      )
+
+
+
+(setq
+ mu4e-html2text-command "w3m -dump -T text/html -cols 80 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
+ mu4e-confirm-quit nil
+ mu4e-view-show-addresses t
+ mu4e-headers-include-related t
+ mu4e-headers-skip-duplicates t
+ mu4e-compose-dont-reply-to-self t
+
+ mu4e-headers-fields '(
+                       (:flags         . 5)
+                       (:human-date    . 12)
+                       ;(:acctshortname . 4)
+                       (:from-or-to    . 25)
+                       (:size          . 6)
+                       (:subject       . nil)
+)
+
+mu4e-context-policy 'pick-first
+mu4e-compose-context-policy 'ask
+ )
+
+
+(evil-collection-mu4e-set-bindings)
+;; show images
+(setq mu4e-show-images nil)
+
+
+#+END_SRC
+** mu4e function
+#+BEGIN_SRC emacs-lisp
+(defun my-mu4e-set-account ()
+  "Set the account for composing a message."
+  (let* ((account
+          (if mu4e-compose-parent-message
+              (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
+                (string-match "/\\(.*?\\)/" maildir)
+                (match-string 1 maildir))
+            (completing-read (format "Compose with account: (%s) "
+                                     (mapconcat #'(lambda (var) (car var))
+                                                my-mu4e-account-alist "/"))
+                             (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
+                             nil t nil nil (caar my-mu4e-account-alist))))
+         (account-vars (cdr (assoc account my-mu4e-account-alist))))
+    (if account-vars
+        (mapc #'(lambda (var)
+                  (set (car var) (cadr var)))
+              account-vars)
+      (error "No email account found"))))
+
+(defun my-set-from-address ()
+  "Set the From address based on the To address of the original."
+  (let ((msg mu4e-compose-parent-message)) ;; msg is shorter
+    (setq user-mail-address
+          (cond
+           ((mu4e-message-contact-field-matches msg :to "chloe@dequeker.me")
+            "chloe@dequeker.me")
+           ((mu4e-message-contact-field-matches msg :to "chloe.dequeker@upmc.fr")
+            "chloe.dequeker@upmc.fr")
+           (t "chloe@dequeker.me")
+           )
+          )
+    )
+  )
+
+(defun my-do-compose-stuff ()
+  "My settings for message composition."
+  (flyspell-mode)
+  )
+
+(defun my-add-bcc ()
+  "Add a Bcc: header."
+  (save-excursion (message-add-header "Bcc: "))
+  )
+
+
+(defun my-header-view ()
+  "Sets parameters for my header view"
+  (setq
+   mu4e-headers-visible-columns 115
+   )
+  (display-line-numbers-mode)
+  )
+
+(defun mu4e-headers-view-message ()
+  "View message at point.
+If there's an existing window for the view, re-use that one. If
+not, create a new one, depending on the value of
+`mu4e-split-view': if it's a symbol `horizontal' or `vertical',
+split the window accordingly; if it is nil, replace the current
+window. "
+  (interactive)
+  (unless (eq major-mode 'mu4e-headers-mode)
+    (mu4e-error "Must be in mu4e-headers-mode (%S)" major-mode))
+  (let* ((msg (mu4e-message-at-point))
+         (docid (or (mu4e-message-field msg :docid)
+                    (mu4e-warn "No message at point")))
+         ;; decrypt (or not), based on `mu4e-decryption-policy'.
+         (decrypt
+          (and (member 'encrypted (mu4e-message-field msg :flags))
+               (if (eq mu4e-decryption-policy 'ask)
+                   (yes-or-no-p (mu4e-format "Decrypt message?"))
+                 mu4e-decryption-policy)))
+         (viewwin (mu4e~headers-redraw-get-view-window)))
+    (unless (window-live-p viewwin)
+      (mu4e-error "Cannot get a message view"))
+    (select-window viewwin)
+    (switch-to-buffer (mu4e~headers-get-loading-buf))
+    (mu4e~proc-view docid mu4e-view-show-images decrypt)
+                                        ;(switch-to-buffer (mu4e-get-headers-buffer))
+    )
+
+  )
+
+;; Allows to also set the bindings to visual mode as well as normal
+(defun evil-collection-mu4e-set-bindings ()
+  "Set the bindings."
+  ;; WARNING: With lexical binding, lambdas from `mapc' and `dolist' become
+  ;; closures in which we must use `evil-define-key*' instead of
+  ;; `evil-define-key'.
+  (dolist (binding evil-collection-mu4e-mode-map-bindings)
+    (apply #'evil-collection-define-key '(normal visual) binding))
+  (evil-collection-define-key 'visual 'mu4e-compose-mode-map
+    "gg" 'mu4e-compose-goto-top
+    "G" 'mu4e-compose-goto-bottom)
+  (evil-collection-define-key 'operator 'mu4e-view-mode-map
+    "u" '(menu-item
+          ""
+          nil
+          :filter (lambda (&optional _)
+                    (when (memq evil-this-operator
+                                '(evil-yank evil-cp-yank evil-sp-yank lispyville-yank))
+                      (setq evil-inhibit-operator t)
+                      #'mu4e-view-save-url)))))
+
+#+END_SRC
+** mu4e-maildirs-extension
+#+BEGIN_SRC emacs-lisp
+(use-package mu4e-maildirs-extension)
+(mu4e-maildirs-extension)
+
+#+END_SRC
+** mu4e-conversation
+
+#+BEGIN_SRC emacs-lisp
+;; 
+;; (use-package mu4e-conversation
+;;   :config
+;;     (global-mu4e-conversation-mode)
+;; )
+;; 
+;; (defun mu4e-conversation--to-name (message)
+;;   "Return a string describing the sender (the 'To' field) of MESSAGE."
+;;   (mapconcat '(lambda (x) 
+;;                 (if (car x)
+;;                     (concat (format "%s <%s>" (car x) (cdr (last x))))
+;;                   (format "%s" (cdr x))
+;;                   )
+;;                 )
+;;              (mu4e-message-field message :to)
+;;              ", "
+;;              )
+;;   )
+;; 
+;; (defun mu4e-conversation--cc-name (message)
+;;   "Return a string describing the sender (the 'Cc' field) of MESSAGE."
+;;   (mapconcat '(lambda (x) 
+;;                 (if (car x)
+;;                     (concat 
+;;                      (format "%s <%s>" (car x) (cdr (last x)))
+;;                      )
+;;                   (format "%s" (cdr x))
+;;                   )
+;;                 )
+;;              (mu4e-message-field message :cc)
+;;              ", "
+;;              )
+;;   )
+;; 
+;; (defun mu4e-conversation-print-linear (index thread-content &optional _thread-headers)
+;;   "Insert formatted message found at INDEX in THREAD-CONTENT."
+;;   (let* ((msg (nth index thread-content))
+;;          (from (car (mu4e-message-field msg :from)))
+;;          (from-me-p (member (cdr from) mu4e-user-mail-address-list))
+;;          (sender-face (or (get-text-property (point) 'face)
+;;                           (and from-me-p 'mu4e-conversation-sender-me)
+;;                           (and (/= 0 mu4e-conversation-max-colors)
+;;                                (mu4e-conversation--get-message-face
+;;                                 index
+;;                                 thread-content))
+;;                           'default)))
+;;         
+;;     (insert (propertize (format "%s, %s %s\nTo: %s\nCc: %s\n"
+;;                                 (mu4e-conversation--from-name msg)
+;;                                 (current-time-string (mu4e-message-field msg :date))
+;;                                 (mu4e-message-field msg :flags)
+;;                                 (mu4e-conversation--to-name msg)
+;;                                 (mu4e-conversation--cc-name msg))
+;;                         'face 'mu4e-conversation-header)
+;;             (or (mu4e~view-construct-attachments-header msg) "") ; TODO: Append newline?
+;;             ;; TODO: Add button to display trimmed quote of current message only.
+;;             (let ((s (mu4e-message-body-text msg)))
+;;               (add-face-text-property 0 (length s) sender-face nil s)
+;;               (mu4e-conversation--propertize-quote s)
+;;               (when (memq 'unread (mu4e-message-field msg :flags))
+;;                 (add-face-text-property 0 (length s) 'mu4e-conversation-unread nil s))
+;;               s))))
+
+#+END_SRC
+* git
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :defer 2
+  :diminish magit-auto-revert-mode
+  :config
+  (add-to-list 'evil-emacs-state-modes 'magit-mode)
+  (add-to-list 'evil-emacs-state-modes 'magit-blame-mode)
+  )
+
+(general-define-key
+ :prefix "SPC g"
+ :keymaps '(override magit-status-mode-map)
+ :states '(normal)
+ "s" 'magit-status
+ "q" 'magit-quit-session
+)
+#+END_SRC
 * Org mode
   Org bullets makes things look pretty
   #+BEGIN_SRC emacs-lisp
 
-  (use-package org 
-  :pin org)
+(use-package org)
 
-    (setenv "BROWSER" "google-chrome-stable")
+(setenv "BROWSER" "firefox")
 
-        (use-package org-bullets
-        :ensure t
-        :config
-        (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+(use-package org-bullets
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
-            (custom-set-variables
-             '(org-directory "~/Dropbox/orgfiles")
-             '(org-default-notes-file (concat org-directory "/notes.org"))
-             '(org-export-html-postamble nil)
-             '(org-hide-leading-stars t)
-             '(org-startup-folded (quote overview))
-             '(org-startup-indented t)
-             )
+(custom-set-variables
+ '(org-directory "~/Dropbox/orgfiles")
+ '(org-default-notes-file (concat org-directory "/notes.org"))
+ '(org-export-html-postamble nil)
+ '(org-hide-leading-stars t)
+ '(org-startup-folded (quote overview))
+ '(org-startup-indented t)
+ )
 
-            (setq org-file-apps
-          (append '(
-                    ("\\.pdf\\'" . "evince %s")
-                    ) org-file-apps ))
+(setq org-file-apps
+      (append '(
+                ("\\.pdf\\'" . "evince %s")
+                ) org-file-apps ))
 
-            (global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-ca" 'org-agenda)
 
-            (setq org-agenda-custom-commands
-            '(("c" "Simple agenda view"
-            ((agenda "")
-            (alltodo "")))))
+(setq org-agenda-custom-commands
+      '(("c" "Simple agenda view"
+         ((agenda "")
+          (alltodo "")))))
 
-            (global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c c") 'org-capture)
 
-            (setq org-agenda-files (list "~/Dropbox/orgfiles/gcal.org"
+(setq org-agenda-files (list "~/Dropbox/orgfiles/gcal.org"
                              "~/Dropbox/orgfiles/i.org"
                              "~/Dropbox/orgfiles/schedule.org"))
-            (setq org-capture-templates
-                        '(("a" "Appointment" entry (file  "~/Dropbox/orgfiles/gcal.org" )
-                             "* %?\n\n%^T\n\n:PROPERTIES:\n\n:END:\n\n")
-                            ("l" "Link" entry (file+headline "~/Dropbox/orgfiles/links.org" "Links")
-                             "* %? %^L %^g \n%T" :prepend t)
-                            ("b" "Blog idea" entry (file+headline "~/Dropbox/orgfiles/i.org" "Blog Topics:")
-                             "* %?\n%T" :prepend t)
-                            ("t" "To Do Item" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
-                             "* TODO %?\n%u" :prepend t)
-                        ("m" "Mail To Do" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
-                         "* TODO %a\n %?" :prepend t)
-                        ("g" "GMail To Do" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
-                         "* TODO %^L\n %?" :prepend t)
-                        ("n" "Note" entry (file+headline "~/Dropbox/orgfiles/i.org" "Note space")
-                             "* %?\n%u" :prepend t)
-                        ))
-            ;; (setq org-capture-templates
-        ;;             '(("a" "Appointment" entry (file  "~/Dropbox/orgfiles/gcal.org" )
-        ;;                  "* TODO %?\n:PROPERTIES:\nDEADLINE: %^T \n\n:END:\n %i\n")
-        ;;                 ("l" "Link" entry (file+headline "~/Dropbox/orgfiles/links.org" "Links")
-        ;;                  "* %? %^L %^g \n%T" :prepend t)
-        ;;                 ("b" "Blog idea" entry (file+headline "~/Dropbox/orgfiles/i.org" "Blog Topics:")
-        ;;                  "* %?\n%T" :prepend t)
-        ;;                 ("t" "To Do Item" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
-        ;;                  "* TODO %?\n%u" :prepend t)
-        ;;                 ("n" "Note" entry (file+headline "~/Dropbox/orgfiles/i.org" "Note space")
-        ;;                  "* %?\n%u" :prepend t)
+(setq org-capture-templates
+      '(("a" "Appointment" entry (file  "~/Dropbox/orgfiles/gcal.org" )
+         "* %?\n\n%^T\n\n:PROPERTIES:\n\n:END:\n\n")
+        ("l" "Link" entry (file+headline "~/Dropbox/orgfiles/links.org" "Links")
+         "* %? %^L %^g \n%T" :prepend t)
+        ("b" "Blog idea" entry (file+headline "~/Dropbox/orgfiles/i.org" "Blog Topics:")
+         "* %?\n%T" :prepend t)
+        ("t" "To Do Item" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
+         "* TODO %?\n%u" :prepend t)
+        ("m" "Mail To Do" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
+         "* TODO %a\n %?" :prepend t)
+        ("g" "GMail To Do" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
+         "* TODO %^L\n %?" :prepend t)
+        ("n" "Note" entry (file+headline "~/Dropbox/orgfiles/i.org" "Note space")
+         "* %?\n%u" :prepend t)
+        ))
+;; (setq org-capture-templates
+;;             '(("a" "Appointment" entry (file  "~/Dropbox/orgfiles/gcal.org" )
+;;                  "* TODO %?\n:PROPERTIES:\nDEADLINE: %^T \n\n:END:\n %i\n")
+;;                 ("l" "Link" entry (file+headline "~/Dropbox/orgfiles/links.org" "Links")
+;;                  "* %? %^L %^g \n%T" :prepend t)
+;;                 ("b" "Blog idea" entry (file+headline "~/Dropbox/orgfiles/i.org" "Blog Topics:")
+;;                  "* %?\n%T" :prepend t)
+;;                 ("t" "To Do Item" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
+;;                  "* TODO %?\n%u" :prepend t)
+;;                 ("n" "Note" entry (file+headline "~/Dropbox/orgfiles/i.org" "Note space")
+;;                  "* %?\n%u" :prepend t)
 
-        ;;                 ("j" "Journal" entry (file+datetree "~/Dropbox/journal.org")
-        ;;                  "* %?\nEntered on %U\n  %i\n  %a")
-            ;;                                ("s" "Screencast" entry (file "~/Dropbox/orgfiles/screencastnotes.org")
-            ;;                                "* %?\n%i\n")))
+;;                 ("j" "Journal" entry (file+datetree "~/Dropbox/journal.org")
+;;                  "* %?\nEntered on %U\n  %i\n  %a")
+;;                                ("s" "Screencast" entry (file "~/Dropbox/orgfiles/screencastnotes.org")
+;;                                "* %?\n%i\n")))
 
 
-        (defadvice org-capture-finalize 
-            (after delete-capture-frame activate)  
-        "Advise capture-finalize to close the frame"  
-        (if (equal "capture" (frame-parameter nil 'name))  
-        (delete-frame)))
+(defadvice org-capture-finalize
+    (after delete-capture-frame activate)
+  "Advise capture-finalize to close the frame"
+  (if (equal "capture" (frame-parameter nil 'name))
+      (delete-frame)))
 
-        (defadvice org-capture-destroy 
-            (after delete-capture-frame activate)  
-        "Advise capture-destroy to close the frame"  
-        (if (equal "capture" (frame-parameter nil 'name))  
-        (delete-frame)))  
+(defadvice org-capture-destroy
+    (after delete-capture-frame activate)
+  "Advise capture-destroy to close the frame"
+  (if (equal "capture" (frame-parameter nil 'name))
+      (delete-frame)))
 
-        (use-package noflet
-        :ensure t )
-        (defun make-capture-frame ()
-        "Create a new frame and run org-capture."
-        (interactive)
-        (make-frame '((name . "capture")))
-        (select-frame-by-name "capture")
-        (delete-other-windows)
-        (noflet ((switch-to-buffer-other-window (buf) (switch-to-buffer buf)))
-            (org-capture)))
+(use-package noflet
+  :ensure t )
+(defun make-capture-frame ()
+  "Create a new frame and run org-capture."
+  (interactive)
+  (make-frame '((name . "capture")))
+  (select-frame-by-name "capture")
+  (delete-other-windows)
+  (noflet ((switch-to-buffer-other-window (buf) (switch-to-buffer buf)))
+    (org-capture)))
 
 (require 'ox-beamer)
-; for inserting inactive dates
+                                        ; for inserting inactive dates
 (define-key org-mode-map (kbd "C-c >") (lambda () (interactive (org-time-stamp-inactive))))
 
 
   #+END_SRC
 
-  #+RESULTS:
-  : make-capture-frame
-
 * Auto-completion
 ** Autocomplete
   #+BEGIN_SRC emacs-lisp  :tangle no
-    ;; (use-package auto-complete 
+    ;; (use-package auto-complete
     ;; :ensure t
     ;; :init
     ;; (progn
@@ -601,6 +1035,7 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
           (setq company-show-numbers t)
       (setq company-idle-delay 0)
       (setq company-minimum-prefix-length 2)
+      (setq company-auto-complete-chars (quote (41 46)))
       (set 'company-auto-complete t)
       (add-hook 'prog-mode-hook 'company-mode)
       (add-hook 'after-init-hook 'global-company-mode)
@@ -611,9 +1046,8 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
     (define-key company-active-map (kbd "M-p") nil)
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-p") #'company-select-previous)
-    (define-key company-active-map (kbd "SPC") 'company-abort)
+    ;; (define-key company-active-map (kbd "SPC") 'company-abort)
   )
-
   (global-company-mode t)
 
 #+END_SRC
@@ -641,7 +1075,7 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
 
 
   (use-package company-irony
-    :config 
+    :config
     (add-to-list 'company-backends 'company-irony)
   )
 
@@ -691,7 +1125,7 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
 (setq python-shell-interpreter "python3")
 
 (use-package elpy
-  :config 
+  :config
   (elpy-enable)
 )
 
@@ -721,7 +1155,7 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
 
   (use-package ggtags
   :ensure t
-  :config 
+  :config
   (add-hook 'c-mode-common-hook
             (lambda ()
               (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
@@ -755,104 +1189,88 @@ RESERVED is a list of keys: if specified, do not create bindings for these."
 
 *** Javascript
 #+BEGIN_SRC emacs-lisp
-(use-package prettier-js)
-(use-package rjsx-mode :mode "\\.jsx?$")
+  (use-package prettier-js)
+  (use-package rjsx-mode :mode "\\.jsx?$")
 
-(use-package lsp-javascript-typescript
-  :config (progn
-            (add-hook 'js-mode-hook #'lsp-javascript-typescript-enable)
-            (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable)))
+  (use-package lsp-javascript-typescript
+    :config (progn
+              (add-hook 'js-mode-hook #'lsp-javascript-typescript-enable)
+              (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable)))
 
-(use-package js2-mode
-:ensure t
-:ensure ac-js2
-:init
-(progn
-(add-hook 'js-mode-hook 'js2-minor-mode)
-(add-hook 'js2-mode-hook 'ac-js2-mode)
-))
+  (use-package js2-mode
+  :ensure t
+  :ensure ac-js2
+  :init
+  (progn
+  (add-hook 'js-mode-hook 'js2-minor-mode)
+  (add-hook 'js2-mode-hook 'ac-js2-mode)
+  ))
 
-(use-package js2-refactor
-:ensure t
-:config 
-(progn
-(js2r-add-keybindings-with-prefix "C-c C-m")
-;; eg. extract function with `C-c C-m ef`.
-(add-hook 'js2-mode-hook #'js2-refactor-mode)))
-(use-package tern
-:ensure tern
-:ensure tern-auto-complete
-:config
-(progn
-(add-hook 'js-mode-hook (lambda () (tern-mode t)))
-(add-hook 'js2-mode-hook (lambda () (tern-mode t)))
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-;;(tern-ac-setup)
-))
-
-;;(use-package jade
-;;:ensure t
-;;)
-
-;; use web-mode for .jsx files
-(add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
-
-
-;; turn on flychecking globally
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
-;; disable jshint since we prefer eslint checking
-(setq-default flycheck-disabled-checkers
-  (append flycheck-disabled-checkers
-    '(javascript-jshint)))
-
-;; use eslint with web-mode for jsx files
-(flycheck-add-mode 'javascript-eslint 'web-mode)
-
-;; customize flycheck temp file prefix
-(setq-default flycheck-temp-prefix ".flycheck")
-
-;; disable json-jsonlist checking for json files
-(setq-default flycheck-disabled-checkers
-  (append flycheck-disabled-checkers
-    '(json-jsonlist)))
-
-;; adjust indents for web-mode to 2 spaces
-(defun my-web-mode-hook ()
-  "Hooks for Web mode. Adjust indents"
-  ;;; http://web-mode.org/
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-css-indent-offset 2)
-  (setq web-mode-code-indent-offset 2))
-(add-hook 'web-mode-hook  'my-web-mode-hook)
-
-#+END_SRC 
-
-*** Reveal.js
-  #+BEGIN_SRC emacs-lisp 
-  (use-package ox-reveal
+  (use-package js2-refactor
   :ensure t
   :config
-    (require 'ox-reveal)
-    (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
-    (setq org-reveal-mathjax t)
-)
-    (use-package htmlize
-    :ensure t)
+  (progn
+  (js2r-add-keybindings-with-prefix "C-c C-m")
+  ;; eg. extract function with `C-c C-m ef`.
+  (add-hook 'js2-mode-hook #'js2-refactor-mode)))
+  (use-package tern
+  :ensure tern
+  :ensure tern-auto-complete
+  :config
+  (progn
+  (add-hook 'js-mode-hook (lambda () (tern-mode t)))
+  (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  ;;(tern-ac-setup)
+  ))
 
-  #+END_SRC
+  ;;(use-package jade
+  ;;:ensure t
+  ;;)
 
-  #+RESULTS:
-  : t
-  
-** Haskell 
+  ;; use web-mode for .jsx files
+  (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+
+
+  ;; turn on flychecking globally
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+
+  ;; disable jshint since we prefer eslint checking
+  ;; (setq-default flycheck-disabled-checkers
+  ;;   (append flycheck-disabled-checkers
+  ;;     '(javascript-jshint)))
+
+  ;; use eslint with web-mode for jsx files
+  ;; (flycheck-add-mode 'javascript-eslint 'web-mode)
+
+  ;; ;
+                                          ; customize flycheck temp file prefix
+  (setq-default flycheck-temp-prefix ".flycheck")
+
+  ;; disable json-jsonlist checking for json files
+  ;; (setq-default flycheck-disabled-checkers
+  ;;   (append flycheck-disabled-checkers
+  ;;     '(json-jsonlist)))
+
+  ;; adjust indents for web-mode to 2 spaces
+  (defun my-web-mode-hook ()
+    "Hooks for Web mode. Adjust indents"
+    ;;; http://web-mode.org/
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-css-indent-offset 2)
+    (setq web-mode-code-indent-offset 2))
+  (add-hook 'web-mode-hook  'my-web-mode-hook)
+
+#+END_SRC
+
+** Haskell
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
-:ensure t
-:config
-(require 'haskell-interactive-mode)
-(require 'haskell-process)
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+    :ensure t
+    :config
+    (require 'haskell-interactive-mode)
+    (require 'haskell-process)
+    (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
 )
 
@@ -928,48 +1346,15 @@ Init module for php. Uses web-mode for Cake templates.
   (use-package maven-test-mode)
 
 #+END_SRC
-* Text searching 
-** Swiper / Ivy / Counsel
-  Swiper gives us a really efficient incremental search with regular expressions
-  and Ivy / Counsel replace a lot of ido or helms completion functionality
-  #+BEGIN_SRC emacs-lisp
-
-   (use-package counsel
-  :bind
-  (("M-y" . counsel-yank-pop)
-   :map ivy-minibuffer-map
-   ("M-y" . ivy-next-line)))
-
-  (use-package ivy
-  :diminish (ivy-mode)
-  :bind (("C-x b" . ivy-switch-buffer))
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "%d/%d ")
-  (setq ivy-display-style 'fancy))
-
-
-  (use-package swiper
-  :bind (("C-s" . swiper)
-     ("C-r" . swiper)
-     ("C-c C-r" . ivy-resume)
-     ("M-x" . counsel-M-x)
-     ("C-x C-f" . counsel-find-file))
-  :config
-  (progn
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-    ))
-  #+END_SRC
-
+* Text searching
 ** Avy - navigate by searching for a letter on the screen and jumping to it
   See https://github.com/abo-abo/avy for more info
   #+BEGIN_SRC emacs-lisp
-  (use-package avy
-  :bind ("M-s" . avy-goto-word-1)) ;; changed from char as per jcs
+  (use-package avy) ;; changed from char as per jcs
+(defun avy-goto-paren ()
+  (interactive)
+  (avy--generic-jump "(" nil 'pre))
+(global-set-key (kbd "M-g p") 'avy-goto-paren)
   #+END_SRC
 ** Silversearcher
 #+BEGIN_SRC emacs-lisp
@@ -1010,24 +1395,6 @@ Init module for php. Uses web-mode for Cake templates.
                 flycheck-mode-map))
 
   #+END_SRC
-* git
-#+BEGIN_SRC emacs-lisp
-(use-package magit
-  :defer 2
-  :diminish magit-auto-revert-mode
-  :config
-  (add-to-list 'evil-emacs-state-modes 'magit-mode)
-  (add-to-list 'evil-emacs-state-modes 'magit-blame-mode)
-  )
-
-(general-define-key
- :prefix "SPC g"
- :keymaps '(override magit-status-mode-map)
- :states '(normal)
- "s" 'magit-status
- "q" 'magit-quit-session
-)
-#+END_SRC
 * Origami folding
 #+BEGIN_SRC emacs-lisp
 (use-package origami)
@@ -1057,6 +1424,7 @@ Init module for php. Uses web-mode for Cake templates.
       (treemacs-follow-mode t)
       (treemacs-filewatch-mode t))
       (add-to-list 'evil-emacs-state-modes  'treemacs-mode)
+  )
 
   (use-package treemacs-projectile
     :defer t
@@ -1075,7 +1443,7 @@ Init module for php. Uses web-mode for Cake templates.
 #+END_SRC
 
 * Shell
-** shell-pop 
+** shell-pop
 #+BEGIN_SRC emacs-lisp
 (use-package shell-pop
 :ensure t
@@ -1094,7 +1462,7 @@ Init module for php. Uses web-mode for Cake templates.
 
   (use-package shell-switcher
     :ensure t
-    :config 
+    :config
     (setq shell-switcher-mode t)
     :bind (("C-'" . shell-switcher-switch-buffer)
        ("C-x 4 '" . shell-switcher-switch-buffer-other-window)
@@ -1194,10 +1562,10 @@ Eshell prompt
                            (propertize (format " +%d ~%d -%d" added modified deleted) 'face 'font-lock-comment-face)))
                        (propertize "]" 'face 'font-lock-keyword-face)))))
                 (when (and (boundp #'venv-current-name) venv-current-name)
-                  (concat 
-                    (epe-colorize-with-face " [" 'epe-venv-face) 
+                  (concat
+                    (epe-colorize-with-face " [" 'epe-venv-face)
                     (propertize venv-current-name 'face `(:foreground "#2E8B57" :slant italic))
-                    (epe-colorize-with-face "]" 'epe-venv-face))) 
+                    (epe-colorize-with-face "]" 'epe-venv-face)))
                 (propertize " $ " 'face 'font-lock-constant-face))))
 #+END_SRC
 #+RESULTS:
@@ -1231,6 +1599,7 @@ Eshell prompt
 ** Writing packages
 #+BEGIN_SRC emacs-lisp
     (use-package writeroom-mode)
+
     (use-package writegood-mode)
 #+END_SRC
 ** PDF tools
@@ -1247,3 +1616,4 @@ Eshell prompt
 #+BEGIN_SRC emacs-lisp
     (use-package popup-imenu)
 #+END_SRC
+
