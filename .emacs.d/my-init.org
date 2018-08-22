@@ -419,6 +419,7 @@ like vim-surround
         ;; This should be run afterwards (once)
         ;; (all-the-icons-install-fonts)
 
+        (use-package atom-one-dark-theme)
         (load-theme 'atom-one-dark t)
 
   #+END_SRC
@@ -1114,7 +1115,7 @@ window. "
 #+END_SRC
 *** auto-yasnippet
 #+BEGIN_SRC emacs-lisp
-    (use-package auto-yasnippet)
+;    (use-package auto-yasnippet)
 #+END_SRC
 
 * Programming languages
