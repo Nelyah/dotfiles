@@ -1,0 +1,22 @@
+calc() {
+  echo "$*" | bc -l;
+}
+
+meteo() {
+	local LOCALE=`echo ${LANG:-en} | cut -c1-2`
+	if [ $# -eq 0 ]; then
+		local LOCATION=`curl -s ipinfo.io/loc`
+	else
+		local LOCATION=$1
+	fi
+	curl -s "$LOCALE.wttr.in/$LOCATION"
+}
+
+e() {
+    local dir
+    dir=$(fasd -Rdl |\
+        sed "s:$HOME:~:" |\
+        fzf --no-sort +m -q "$*" |\
+        sed "s:~:$HOME:")\
+    && pushd "$dir"
+}
