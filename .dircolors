@@ -65,9 +65,9 @@ LINK    01;37       # symbolic link.  (If you set this to 'target' instead of a
 FIFO    01;33       # pipe
 SOCK    01;35       # socket
 DOOR    01;35       # door
-BLK     01;33;01    # block device driver
-CHR     01;33;01    # character device driver
-ORPHAN  01;31;01    # symlink to nonexistent file
+BLK     01;33    # block device driver
+CHR     01;33    # character device driver
+ORPHAN  01;31    # symlink to nonexistent file
 EXEC    38;5;70     #This is for files with execute permission:
 
  

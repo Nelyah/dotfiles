@@ -5,7 +5,6 @@ alias egrep="egrep --color=always"
 if [ "$TERM" != "dumb" ]; then
     export LS_OPTIONS="--color=always --time-style=long-iso -G"
     export LS_DIRFIRST='--group-directories-first'
-    eval `dircolors ~/.dircolors`
 fi
 
 # Aliases

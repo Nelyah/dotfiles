@@ -12,6 +12,7 @@ else
     export PATH=$OLDPATH
 fi
 
+
 export ATTRACTDIR=$HOME/lib/attract/bin/ 
 export ATTRACTTOOLS=$ATTRACTDIR/../tools
 export PYTHONPATH=$PYTHONPATH:$HOME/mapping/scripts/lib:~/.local/venvs
@@ -21,6 +22,9 @@ export HEX_ROOT=$HOME/lib/hex
 export HEX_VERSION=8.0.0
 export HEX_CACHE=$HOME/lib/hex_cache
 export PATH="$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$HEX_ROOT/bin:$HOME/.local/bin:$PATH"
+
+eval "$(dircolors $HOME/.dircolors)"
+export $LS_COLORS
 
 if type nvim &> /dev/null; then
     export EDITOR=nvim

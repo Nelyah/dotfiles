@@ -182,8 +182,8 @@ noremap <Leader>x "+
 map q: :q
 
 " Align blocks of texte and keep them selected
-vmap < <gv
-vmap > >gv
+vnoremap < <gv
+vnoremap > >gv
 
 " Used for filetype specific editing
 autocmd FileType tex,mail set spell
@@ -204,10 +204,10 @@ nnoremap <Leader>c ggVG:!column -t<CR>
 
 " Close the current buffer and move to the previous one
 " This replicates the idea of closing a tab
-nmap <Leader>q :bp <BAR> bd #<CR>
+nnoremap <Leader>q :bp <BAR> bd #<CR>
 
 " Visual mode enhancements
-nmap <Leader><Leader> V
+nnoremap <Leader><Leader> V
 
 " Turn off highlight after search
 nnoremap <Leader>a :noh<CR>
@@ -238,10 +238,10 @@ else
     colorscheme ir_black
 endif
 
-nmap <silent> <c-up> <c-w>3+
-nmap <silent> <c-down> <c-w>3-
-nmap <silent> <c-left> <c-w>3<
-nmap <silent> <c-right> <c-w>3>
+nnoremap <silent> <c-up> <c-w>3+
+nnoremap <silent> <c-down> <c-w>3-
+nnoremap <silent> <c-left> <c-w>3<
+nnoremap <silent> <c-right> <c-w>3>
 
 
 """""""""""""""""""""""""""
@@ -277,8 +277,8 @@ set laststatus=2
 
 " ------ VimTex ------ "
 let g:vimtex_compiler_method = 'latexmk'
-autocmd FileType tex nmap <Leader>c :VimtexTocToggle<CR>
-autocmd FileType tex nmap <F5> :VimtexCompile<CR>
+autocmd FileType tex nnoremap <Leader>c :VimtexTocToggle<CR>
+autocmd FileType tex nnoremap <F5> :VimtexCompile<CR>
 
 " ------ fzf plugin ------ "
 autocmd CompleteDone * pclose
@@ -299,9 +299,9 @@ let g:fzf_colors =
   \ 'pointer': ['fg', 'Exception'],
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
-nmap <Leader>i :Ag<CR>
+nnoremap <Leader>i :Ag<CR>
 
-nmap , :Buffers<CR>
+nnoremap , :Buffers<CR>
 nnoremap <Leader>o :FZF<CR>
 nnoremap <Leader>t :Tags<CR>
 nnoremap <Leader>T :BTags<CR>
@@ -311,11 +311,11 @@ autocmd  FileType fzf set laststatus=0 noshowmode noruler
 
 
 " ------ Tagbar ------ "
-nmap <F8> :TagbarToggle<CR>
+nnoremap <F8> :TagbarToggle<CR>
 
 " ------ Expand regions  ------ "
-vmap v <Plug>(expand_region_expand)
-vmap <C-v> <Plug>(expand_region_shrink)
+vnoremap v <Plug>(expand_region_expand)
+vnoremap <C-v> <Plug>(expand_region_shrink)
 
 
 " ------ Python folding  ------ "
@@ -326,8 +326,8 @@ let g:SimpylFold_docstring_preview = 1
 set diffopt+=vertical
 
 " ------ Tabular ------ "
-nmap <Leader>a= :Tabularize /=<CR>
-vmap <Leader>a= :Tabularize /=<CR>
+nnoremap <Leader>a= :Tabularize /=<CR>
+vnoremap <Leader>a= :Tabularize /=<CR>
 
 " For it to be working with vimtex
 let g:vimtex_compiler_progname = 'nvr'
@@ -360,13 +360,13 @@ let g:polyglot_disabled = ['latex']
 let g:python_highlight_all = 1
 
 " ------ git-gutter ------ "
-nmap <Leader>gp <Plug>GitGutterPreviewHunk
-nmap <Leader>gs <Plug>GitGutterStageHunk
-nmap <Leader>gu <Plug>GitGutterUndoHunk
+nnoremap <Leader>gp <Plug>GitGutterPreviewHunk
+nnoremap <Leader>gs <Plug>GitGutterStageHunk
+nnoremap <Leader>gu <Plug>GitGutterUndoHunk
 
 " ------ easymotion ------ "
 map  <Leader>s <Plug>(easymotion-bd-w)
-nmap <Leader>s <Plug>(easymotion-overwin-w)
+nnoremap <Leader>s <Plug>(easymotion-overwin-w)
 " Gif config
 map  / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-tn)
@@ -463,9 +463,6 @@ call deoplete#custom#var('omni', 'input_patterns', {
 """""""""""""""""""""""""""
 let g:LanguageClient_autoStart = 1
 let g:LanguageClient_serverCommands = {
-    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
-    \ 'javascript': ['javascript-typescript-stdio'],
-    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
     \ 'python': ['pyls'],
     \ }
 
@@ -526,7 +523,7 @@ function! s:Repl()
     let s:restore_reg = @"
     return "p@=RestoreRegister()\<cr>"
 endfunction
-vmap <silent> <expr> p <sid>Repl()
+vnoremap <silent> <expr> p <sid>Repl()
 
 " Keep undo history across sessions by storing it in a file
 if has('persistent_undo')

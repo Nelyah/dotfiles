@@ -17,15 +17,6 @@
         "id": "aee7e655-a789-4027-9d8e-8c49010b4f73", 
         "icon": "/usr/share/ulauncher/media/wikipedia-icon.png"
     }, 
-    "d9597dc4-0052-4d00-9808-28cde67bf33f": {
-        "added": 1520943391.545121, 
-        "name": "Google Maps", 
-        "keyword": "gm", 
-        "cmd": "https://www.google.fr/maps/search/%s/", 
-        "is_default_search": false, 
-        "id": "d9597dc4-0052-4d00-9808-28cde67bf33f", 
-        "icon": "~/.config/ulauncher/googlemaps_logo.png"
-    }, 
     "fb424c50-0b21-4d02-be2d-5f598f89e24c": {
         "added": 1520941352.639546, 
         "name": "Google Search", 
@@ -34,6 +25,15 @@
         "is_default_search": true, 
         "id": "fb424c50-0b21-4d02-be2d-5f598f89e24c", 
         "icon": "/usr/share/ulauncher/media/google-search-icon.png"
+    }, 
+    "d9597dc4-0052-4d00-9808-28cde67bf33f": {
+        "added": 1520943391.545121, 
+        "name": "Google Maps", 
+        "keyword": "gm", 
+        "cmd": "https://www.google.fr/maps/search/%s/", 
+        "is_default_search": false, 
+        "id": "d9597dc4-0052-4d00-9808-28cde67bf33f", 
+        "icon": "~/.config/ulauncher/googlemaps_logo.png"
     }, 
     "eddfc622-c5ca-4056-8813-ee8f68017cde": {
         "added": 1520941352.63962, 

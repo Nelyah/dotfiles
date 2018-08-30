@@ -85,8 +85,8 @@ set query_command= "khard email --parsable --search-in-source-files '%s'"
 set query_command = "( khard email --parsable '%s' | sed -n '1!p'; mu cfind --format=mutt-ab '%s' )"
 bind editor ^T    complete
 set edit_headers = yes
-set editor = 'nvim +/^$ +nohlsearch +Goyo' # Move past headers.
 set editor = "emacsclient -nw" # Move past headers.
+set editor = 'nvim +/^$ +nohlsearch +Goyo' # Move past headers.
 
 set sleep_time = 0
 set autoedit
@@ -100,7 +100,7 @@ set imap_keepalive = 300
 
 auto_view text/html text/calendar application/ics # view html automatically
 
-alternative_order text/plain text/enriched text/html text/*
+alternative_order text/enriched text/plain text/html text/*
 
 macro attach \CE "<pipe-message>khal import<enter>"
 
