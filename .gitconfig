@@ -4,6 +4,7 @@
         status          = auto
         interactive     = auto
         status          = auto
+	ui = true
 [alias]
         st              = status
         ci              = commit
@@ -32,6 +33,7 @@
         autocrlf        = input
         excludesfile    = ~/.gitignore
         eol             = lf
+	pager = diff-so-fancy | less --tabs=4 -RFX
 [mergetool]
         keepBackup = true
 [http]
@@ -46,3 +48,15 @@
     tool   = vimdiff
 [difftool]
     prompt = false
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+[color "diff"]
+	meta = yellow
+	frag = magenta bold
+	commit = yellow bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
