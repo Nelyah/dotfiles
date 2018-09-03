@@ -21,6 +21,8 @@ TERM xterm-color
 TERM xterm-256color
 TERM xterm-24bit
 TERM xterm-kitty
+TERM tmux-256color
+TERM screen-256color
 TERM xterm-debian     
 TERM gnome-color
 TERM gnome-256color
