@@ -53,6 +53,8 @@ set forward_format = "Fwd: %s"
 set include
 set forward_quote
 
+set smileys="(>From )|(:[-^]?[][)(><|/DPp])"
+
 
 # Headers infos
 ignore *                               # first, ignore all headers
@@ -187,8 +189,18 @@ macro generic \Cx1 "\Cx| ~/.mutt/accounts/ovh\"\n\Cx&0\"<enter><change-folder>!<
 set index_format="%3C %Z %[!%m.%d.%y] %-19.19n %?X?(%1X)& ? %?M?(%02M)& ? %s%> %?y?[%Y]?"
 set index_format="%Z %3C %{%b %d} %-17.17n (%5c) %s"
 set index_format="%3C %Z %{%b %d} %-19.19n (%5c) %?X?(%1X)& ? %?M?(%02M)& ? %s%> %?y?[%Y]?"
-macro index L "<enter-command>unset wait_key<enter><shell-escape>read -p 'mu query: ' x; echo \$x >~/.mu/search_term<enter><limit>~i \"\`mu find -f i \$(cat ~/.mu/search_term) | head -n 600 | perl -le '@a=<>;chomp@a;s/\^id:// for@a;$,=\"|\";print@a'\`\"<enter>" "show only messages matching a notmuch pattern"
-macro index \cf "<change-folder-readonly>~/.mu/results<enter>" "mu find results"
+# macro index L "<enter-command>unset wait_key<enter><shell-escape>read -p 'mu query: ' x; echo \$x >~/.mu/search_term<enter><limit>~i \"\`mu find -f i \$(cat ~/.mu/search_term) | head -n 600 | perl -le '@a=<>;chomp@a;s/\^id:// for@a;$,=\"|\";print@a'\`\"<enter>" "show only messages matching a notmuch pattern"
+macro index L "<enter-command>unset wait_key<enter><shell-escape>read -p 'mu query: ' x; echo \$x >~/.mu/search_term<enter><shell-escape>mu find --format=links --linksdir=~/.mail/search/ --clearlinks \$(cat ~/.mu/search_term)<enter><enter-command>set wait_key<enter>" "show only messages matching a notmuch pattern"
+
+macro index gf "<change-folder-readonly>~/.mail/search<enter>" "mu find results"
+macro index \cl "<enter-command>unset wait_key<enter><shell-escape>mu find --format=links --linksdir=~/testmail/ --clearlinks \$(cat ~/.mu/search_term)<enter><enter-command>set wait_key<enter>" "mu find results"
+
+macro index <F8> \
+    "<enter-command>unset wait_key<enter><shell-escape>~/bin/mutt-notmuch --prompt search<enter><change-folder-readonly>~/.cache/mutt_results<enter>" \
+    "search mail (using notmuch)"
+macro index <F9> \
+    "<enter-command>unset wait_key<enter><pipe-message>~/bin/mutt-notmuch thread<enter><change-folder-readonly>~/.cache/mutt_results<enter><enter-command>set wait_key<enter>" \
+    "search and reconstruct owning thread (using notmuch)"
 
 macro index,pager \cu "<pipe-message> urlscan<Enter>" "call urlscan to extract URLs out of a message"
 macro attach,compose \cu "<pipe-entry> urlscan<Enter>" "call urlscan to extract URLs out of a message"
@@ -198,3 +210,4 @@ macro attach,compose \cu "<pipe-entry> urlscan<Enter>" "call urlscan to extract 
 macro index,pager O "<shell-escape>mbsync -a<enter>" "run mbsync to sync all mail"
 macro index zc "<collapse-thread>" "collapse thread"
 macro index zo "<collapse-thread>" "collapse thread"
+
