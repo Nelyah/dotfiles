@@ -1,0 +1,39 @@
+extends py
+
+snippet argp "Argparse setup"
+parser = argparse.ArgumentParser("${1:Description}")
+parser.add_argument(
+    "${2:Short option}",
+    "${3:Long option}",
+    dest="${4:Variable name}",
+    default="${5:default}",
+    required=${6:False or True},
+    help="${7:Help message}")
+
+parser.add_argument(
+    '-v', '--verbose', action='store_true', help='Increase output verbosity')
+
+args = parser.parse_args()
+endsnippet
+
+snippet addarg "Argparse adding argument"
+parser.add_argument(
+    "${2:Short option}",
+    "${3:Long option}",
+    dest="${4:Variable name}",
+    default="${5:default}",
+    required=${6:False or True},
+    help="${7:Help message}")
+endsnippet
+
+snippet np "import numpy"
+import numpy as np
+endsnippet
+
+snippet pd "import pandas"
+import pandas as pd
+endsnippet
+
+snippet pr "import protein"
+import protein as pr
+endsnippet

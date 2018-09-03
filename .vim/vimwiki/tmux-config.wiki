@@ -1,5 +1,0 @@
-== My tmux configuration ==
-
-For monitoring CPU usage: https://github.com/mixu/tmux-cpu
-To install:
-    `sudo npm install -g tmux-cpu`

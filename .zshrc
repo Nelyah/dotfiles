@@ -10,11 +10,13 @@ export ZSH=$HOME/.oh-my-zsh
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 ZSH_THEME="steeef"
 
+eval `dircolors ~/.dircolors`
 
 # Uncomment the following line to change how often to auto-update (in days).
 export UPDATE_ZSH_DAYS=1
 
 plugins=(
+  zsh-autosuggestions,
   git,
   colorize,
   cp,

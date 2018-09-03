@@ -1,11 +1,6 @@
 set nocompatible               " Be iMproved
 filetype off                  " required
 
-""""""""""""""
-"  Vim-wiki  "
-""""""""""""""
-let g:vimwiki_map_prefix = '<Leader>e'
-let g:vimwiki_list = [{'path': '~/.vim/vimwiki/'}]
 
 " Required:
 call plug#begin('~/.vim/plugged')
@@ -31,8 +26,17 @@ call plug#begin('~/.vim/plugged')
 
 
     Plug 'Nelyah/deoplete-khard' " Offers address mail completion
+    Plug 'Nelyah/deoplete-mu' " Offers address mail completion
     Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
-    Plug 'roxma/clang_complete'                " auto completion
+    Plug 'Shougo/neco-vim'
+    Plug 'jeaye/color_coded', {
+                \ 'do': 'rm -f CMakeCache.txt && cmake . -DDOWNLOAD_CLANG=0 && make && make install',
+                \ 'for': ['c', 'cpp', 'objc', 'objcpp'],
+                \ 'build_commands' : ['cmake', 'make']
+                \}
+    " Plug 'jeaye/color_coded'
+    " Plug 'roxma/clang_complete'                " auto completion
+    Plug 'zchee/deoplete-clang'
     " Plug 'zchee/deoplete-jedi'
     " Plug 'davidhalter/jedi-vim'                " auto completion
     Plug 'easymotion/vim-easymotion'
@@ -65,6 +69,9 @@ call plug#begin('~/.vim/plugged')
     Plug 'sheerun/vim-polyglot'
     Plug 'vim-python/python-syntax'
 
+    Plug 'bfredl/nvim-ipy'
+    Plug 'szymonmaszke/vimpyter'
+
     Plug 'tpope/vim-commentary'                  " comments based on the file type
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-sensible'
@@ -85,8 +92,9 @@ call plug#begin('~/.vim/plugged')
     Plug 'ymatz/vim-latex-completion'
 
 call plug#end()
+" }}}
 
-" ------ Basic VIM modifications ------ "
+" {{{ Basic VIM modifications
 
 set guioptions=M
 set mouse=a " Use the mouse to slide panes size or scrolling, and copying
@@ -150,14 +158,14 @@ filetype plugin indent on
 " Copy to clipboard
 vnoremap  <leader>y  "+y
 
-" Some remaps
-" noremap m l
-" noremap l k
-" noremap k j
-" noremap j h
 noremap gV `[V`]
-noremap ; :
-noremap <leader>d /
+nnoremap ; :
+
+" Performs a regular search
+nnoremap <leader>d /
+inoremap kj <esc>
+tnoremap <Esc> <C-\><C-n>
+tnoremap kj <C-\><C-n>
 
 " Switching panes using the ctrl key
 nnoremap <M-h> <C-w>h
@@ -177,6 +185,8 @@ nnoremap <Leader>w :w<CR>
 
 " Save the copy buffer
 noremap <Leader>x "+
+vnoremap <leader>y "+y
+vnoremap <leader>p "+p
 
 " Stupid window...
 map q: :q
@@ -193,12 +203,14 @@ autocmd FileType mail set wrapmargin=0
 autocmd FileType tex set iskeyword+=:,-
 
 let g:tex_flavor='latex'
+" }}}
 
-" ------ Buffer ------ "
+" {{{ Buffer
 nnoremap <Leader>l :bn<CR><return>
 nnoremap <Leader>h :bp<CR>
 nnoremap gl :ls<CR>
 nnoremap gb :ls<CR>:b
+" }}}
 
 nnoremap <Leader>c ggVG:!column -t<CR>
 
@@ -243,44 +255,52 @@ nnoremap <silent> <c-down> <c-w>3-
 nnoremap <silent> <c-left> <c-w>3<
 nnoremap <silent> <c-right> <c-w>3>
 
+set foldmethod=marker
+
 
 """""""""""""""""""""""""""
 "        PLUGINS          "
 """""""""""""""""""""""""""
 
-" ------ Clang-complete ------ "
+" {{{ Clang-complete
 let g:clang_library_path='/usr/lib64/libclang.so'
+" }}}
 
-" ------ ALE ------ "
+" {{{ ALE
 " Prevents from continuously checking for errors
 " and eating up battery
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_sign_column_always = 1
 let g:ale_linters = {'python': ['flake8']}
 let g:ale_fixers = {'python': ['remove_trailing_lines', 'trim_whitespace', 'yapf'], 'javascript': ['eslint']}
+" }}}
 
-" ------ NERDtree ------"
+" {{{ NERDtree
 map <Leader>n :NERDTreeToggle<return><CR>
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
+" }}}
 
-" ------ jedi-python ------"
+" {{{ jedi-python
 " let g:jedi#popup_on_dot = 1
 " let g:jedi#usages_command = ""
 " let g:jedi#documentation_command = "D"
 " map <Leader>b Oimport pdb; pdb.set_trace() # BREAKPOINT<C-c>
+" }}}
 
-" ------ Airline Plugin ------ "
+" {{{ Airline
 let g:airline_theme = 'onedark'
 let g:airline#extensions#tabline#enabled = 1
 set laststatus=2
+" }}}
 
-" ------ VimTex ------ "
+" {{{ VimTex
 let g:vimtex_compiler_method = 'latexmk'
 autocmd FileType tex nnoremap <Leader>c :VimtexTocToggle<CR>
 autocmd FileType tex nnoremap <F5> :VimtexCompile<CR>
+" }}}
 
-" ------ fzf plugin ------ "
+" {{{ fzf plugin
 autocmd CompleteDone * pclose
 let g:fzf_history_dir = '~/.local/share/fzf-history'
 " [Buffers] Jump to the existing window if possible
@@ -308,24 +328,29 @@ nnoremap <Leader>T :BTags<CR>
 autocmd! FileType fzf
 autocmd  FileType fzf set laststatus=0 noshowmode noruler
   \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+" }}}
 
-
-" ------ Tagbar ------ "
+" {{{ Tagbar
 nnoremap <F8> :TagbarToggle<CR>
 
-" ------ Expand regions  ------ "
+" }}}
+
+" {{{ Expand regions
 vnoremap v <Plug>(expand_region_expand)
 vnoremap <C-v> <Plug>(expand_region_shrink)
+" }}}
 
-
-" ------ Python folding  ------ "
+" {{{ Python folding
 " Be able to read doc
 let g:SimpylFold_docstring_preview = 1
 
-" ------ Git plugin ------ "
-set diffopt+=vertical
+" }}}
 
-" ------ Tabular ------ "
+" {{{ Git plugin
+set diffopt+=vertical
+" }}}
+
+" {{{ Tabular
 nnoremap <Leader>a= :Tabularize /=<CR>
 vnoremap <Leader>a= :Tabularize /=<CR>
 
@@ -346,33 +371,38 @@ augroup END
 
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" }}}
 
-" ------ Ultisnips ------ "
+" {{{ Ultisnips
 let g:UltiSnipsExpandTrigger="<c-c>"
 let g:UltiSnipsJumpForwardTrigger="<c-c>"
 let g:UltiSnipsJumpBackwardTrigger="<c-b>"
+" }}}
 
-" ------ VIM polyglot ------ "
+" {{{ VIM polyglot
 let g:polyglot_disabled = ['python']
 let g:polyglot_disabled = ['latex']
+" }}}
 
-" ------ python-syntax ------ "
+" {{{ python-syntax
 let g:python_highlight_all = 1
+" }}}
 
-" ------ git-gutter ------ "
+" {{{ git-gutter
 nnoremap <Leader>gp <Plug>GitGutterPreviewHunk
 nnoremap <Leader>gs <Plug>GitGutterStageHunk
 nnoremap <Leader>gu <Plug>GitGutterUndoHunk
+" }}}
 
-" ------ easymotion ------ "
+" {{{ easymotion
 map  <Leader>s <Plug>(easymotion-bd-w)
 nnoremap <Leader>s <Plug>(easymotion-overwin-w)
 " Gif config
 map  / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-tn)
+" }}}
 
-
-" ------ Goyo ------ "
+" {{{ Goyo
 function! s:goyo_enter()
   let b:quitting = 0
   let b:quitting_bang = 0
@@ -393,8 +423,9 @@ endfunction
 
 autocmd! User GoyoEnter call <SID>goyo_enter()
 autocmd! User GoyoLeave call <SID>goyo_leave()
+" }}}
 
-" ------ vim-tmux-navigator ------ "
+" {{{ vim-tmux-navigator
 let g:tmux_navigator_no_mappings = 1
 
 map <silent> <m-h> :TmuxNavigateLeft<cr>
@@ -402,11 +433,13 @@ map <silent> <m-j> :TmuxNavigateDown<cr>
 map <silent> <m-k> :TmuxNavigateUp<cr>
 map <silent> <m-l> :TmuxNavigateRight<cr>
 map <silent> <m-\> :TmuxNavigatePrevious<cr>
+" }}}
 
-" ------ Gutentags ------ "
+" {{{ Gutentags
 let g:gutentags_cache_dir = '~/.vim/gutentags'
+" }}}
 
-" ------ Deoplete ------ "
+" {{{ Deoplete
 let g:deoplete#enable_at_startup = 1
 
 " Whether to include the types of the completions in the result data. Default: 0
@@ -469,7 +502,7 @@ let g:LanguageClient_serverCommands = {
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 " Or map each action separately
 nnoremap <silent> gd :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> gh :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> D :call LanguageClient#textDocument_definition()<CR>
 " Map renaming in python
 autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>r :call LanguageClient_textDocument_rename()<cr>
 
@@ -505,13 +538,13 @@ let g:LanguageClient_serverCommands = {}
 if executable('pyls')
   let g:LanguageClient_serverCommands.python = ['pyls']
 endif
+" }}}
 
-
-" ------ Tmux-Complete ------ "
+" {{{ Tmux-Complete
 let g:tmuxcomplete#trigger = ''
+" }}}
 
-
-" ------ Useful function ------ "
+" {{{ Useful function
 command! -nargs=1 Ssh :r scp://<args>/
 
 " pasting doesn't replace paste buffer
@@ -534,4 +567,11 @@ if has('persistent_undo')
     set undodir=$HOME/.vim/undo_dir
     set undofile
 endif
+" }}}
 
+" {{{ Vimwiki
+let g:vimwiki_map_prefix = '<Leader>e'
+let g:vimwiki_list = [{'path': '~/cloud/utils/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_folding = 'custom'
+autocmd FileType vimwiki setlocal fdm=marker
+" }}}

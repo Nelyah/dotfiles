@@ -1,3 +1,0 @@
-== My vim wiki ==
-
-* [[tmux-config|tmux configuration]]
