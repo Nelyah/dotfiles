@@ -8,7 +8,7 @@ export ZSH=$HOME/.oh-my-zsh
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="steeef"
+# ZSH_THEME="steeef"
 
 eval `dircolors ~/.dircolors`
 
@@ -17,7 +17,6 @@ export UPDATE_ZSH_DAYS=1
 
 plugins=(
   zsh-autosuggestions,
-  git,
   colorize,
   cp,
   dotenv,
@@ -97,40 +96,40 @@ function virtualenv_info {
     [ $VIRTUAL_ENV ] && echo '('%F{blue}`basename $VIRTUAL_ENV`%f') '
 }
 
-PR_GIT_UPDATE=1
-# enable VCS systems you use
-zstyle ':vcs_info:*' enable git svn
-PR_RST="%f"
-FMT_BRANCH="(%{$turquoise%}%b%u%c${PR_RST})"
-FMT_ACTION="(%{$limegreen%}%a${PR_RST})"
-FMT_UNSTAGED="%{$orange%}●"
-FMT_STAGED="%{$limegreen%}●"
+# PR_GIT_UPDATE=1
+# # enable VCS systems you use
+# zstyle ':vcs_info:*' enable git svn
+# PR_RST="%f"
+# FMT_BRANCH="(%{$turquoise%}%b%u%c${PR_RST})"
+# FMT_ACTION="(%{$limegreen%}%a${PR_RST})"
+# FMT_UNSTAGED="%{$orange%}●"
+# FMT_STAGED="%{$limegreen%}●"
 
-zstyle ':vcs_info:*:prompt:*' unstagedstr   "${FMT_UNSTAGED}"
-zstyle ':vcs_info:*:prompt:*' stagedstr     "${FMT_STAGED}"
-zstyle ':vcs_info:*:prompt:*' actionformats "${FMT_BRANCH}${FMT_ACTION}"
-zstyle ':vcs_info:*:prompt:*' formats       "${FMT_BRANCH}"
-zstyle ':vcs_info:*:prompt:*' nvcsformats   ""
+# zstyle ':vcs_info:*:prompt:*' unstagedstr   "${FMT_UNSTAGED}"
+# zstyle ':vcs_info:*:prompt:*' stagedstr     "${FMT_STAGED}"
+# zstyle ':vcs_info:*:prompt:*' actionformats "${FMT_BRANCH}${FMT_ACTION}"
+# zstyle ':vcs_info:*:prompt:*' formats       "${FMT_BRANCH}"
+# zstyle ':vcs_info:*:prompt:*' nvcsformats   ""
 
 
-function steeef_chpwd {
-    PR_GIT_UPDATE=1
-}
-add-zsh-hook chpwd steeef_chpwd
+# function steeef_chpwd {
+#     PR_GIT_UPDATE=1
+# }
+# add-zsh-hook chpwd steeef_chpwd
 
-function steeef_precmd {
-    if [[ -n "$PR_GIT_UPDATE" ]] ; then
-# check for untracked files or updated submodules, since vcs_info doesn't
-        if git ls-files --other --exclude-standard 2> /dev/null | grep -q "."; then
-            PR_GIT_UPDATE=1
-            FMT_BRANCH="(%{$turquoise%}%b%u%c%{$hotpink%}●${PR_RST})"
-        else
-            FMT_BRANCH="(%{$turquoise%}%b%u%c${PR_RST})"
-        fi
-        zstyle ':vcs_info:*:prompt:*' formats "${FMT_BRANCH} "
+# function steeef_precmd {
+#     if [[ -n "$PR_GIT_UPDATE" ]] ; then
+# # check for untracked files or updated submodules, since vcs_info doesn't
+#         if git ls-files --other --exclude-standard 2> /dev/null | grep -q "."; then
+#             PR_GIT_UPDATE=1
+#             FMT_BRANCH="(%{$turquoise%}%b%u%c%{$hotpink%}●${PR_RST})"
+#         else
+#             FMT_BRANCH="(%{$turquoise%}%b%u%c${PR_RST})"
+#         fi
+#         zstyle ':vcs_info:*:prompt:*' formats "${FMT_BRANCH} "
 
-        vcs_info 'prompt'
-        PR_GIT_UPDATE=
-    fi
-}
-add-zsh-hook precmd steeef_precmd
+#         vcs_info 'prompt'
+#         PR_GIT_UPDATE=
+#     fi
+# }
+# add-zsh-hook precmd steeef_precmd
