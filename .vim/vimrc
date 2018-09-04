@@ -63,6 +63,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'tmhedberg/SimpylFold'
     Plug 'godlygeek/tabular'                        " Tabuliarise and align based on pattern
     Plug 'plasticboy/vim-markdown'
+    Plug 'vim-pandoc/vim-pandoc'
+    Plug 'vim-pandoc/vim-pandoc-syntax'
 
     Plug 'junegunn/goyo.vim'
 
