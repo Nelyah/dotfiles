@@ -192,7 +192,7 @@ set index_format="%3C %Z %{%b %d} %-19.19n (%5c) %?X?(%1X)& ? %?M?(%02M)& ? %s%>
 # macro index L "<enter-command>unset wait_key<enter><shell-escape>read -p 'mu query: ' x; echo \$x >~/.mu/search_term<enter><limit>~i \"\`mu find -f i \$(cat ~/.mu/search_term) | head -n 600 | perl -le '@a=<>;chomp@a;s/\^id:// for@a;$,=\"|\";print@a'\`\"<enter>" "show only messages matching a notmuch pattern"
 macro index L "<enter-command>unset wait_key<enter><shell-escape>read -p 'mu query: ' x; echo \$x >~/.mu/search_term<enter><shell-escape>mu find --format=links --linksdir=~/.mail/search/ --clearlinks \$(cat ~/.mu/search_term)<enter><enter-command>set wait_key<enter>" "show only messages matching a notmuch pattern"
 
-macro index gf "<change-folder-readonly>~/.mail/search<enter>" "mu find results"
+macro index gf "<change-folder>~/.mail/search<enter>" "mu find results"
 macro index \cl "<enter-command>unset wait_key<enter><shell-escape>mu find --format=links --linksdir=~/testmail/ --clearlinks \$(cat ~/.mu/search_term)<enter><enter-command>set wait_key<enter>" "mu find results"
 
 macro index <F8> \
@@ -207,7 +207,7 @@ macro attach,compose \cu "<pipe-entry> urlscan<Enter>" "call urlscan to extract 
 
 # Sync all email
 # If you want to make everything indexable after syncing email, use the office-alias
-macro index,pager O "<shell-escape>mbsync -a<enter>" "run mbsync to sync all mail"
+macro index,pager P "<shell-escape>mbsync -a<enter>" "run mbsync to sync all mail"
 macro index zc "<collapse-thread>" "collapse thread"
 macro index zo "<collapse-thread>" "collapse thread"
 
