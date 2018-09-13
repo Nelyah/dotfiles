@@ -1,12 +1,11 @@
 # vim: filetype=muttrc
 
-set realname   = "Chloé Dequeker"
-set from       = "chloe.dequeker@upmc.fr"
+set realname   = "`bw --session $BW_SESSION get username fullname`"
+set from       = `bw --session $BW_SESSION get username 'email work'`
 
 set ssl_starttls=yes
 set ssl_force_tls=yes
 
-set realname = 'Chloé Dequeker'
 set use_from = yes
 set sendmail  = "msmtp -a upmc"
 
