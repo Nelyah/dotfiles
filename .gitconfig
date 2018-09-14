@@ -39,7 +39,7 @@
 [http]
 [user]
 	name  = Chloé Dequeker
-	email = chloe@dequeker.me
+	email = noreply@nelyah.eu
 [filter "media"]
 	clean    = git media clean %f
 	smudge   = git media smudge %f
