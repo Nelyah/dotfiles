@@ -22,6 +22,7 @@ export HEX_ROOT=$HOME/lib/hex
 export HEX_VERSION=8.0.0
 export HEX_CACHE=$HOME/lib/hex_cache
 export PATH="$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$HEX_ROOT/bin:$HOME/.local/bin:$PATH"
+export BW_SESSION="2+FE0jOAaD2DeldvwvY4NpBBwdKUeqZ67Z/GfJbXo1c761irHtP06KXkzyPsmh2Hkpcov5d0K6Qk5N6sLYr7xw=="
 
 eval "$(dircolors $HOME/.dircolors)"
 export $LS_COLORS
