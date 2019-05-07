@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+
+import uuid
+import os
+import shutil
+import parser
+import sys
+
+
+def get_new_name(fname, dir_dest):
+    return os.path.join(
+                    dir_dest,
+                    # construct a new filename, composed of a made-up ID and the flags part
+                    # of the original filename.
+                    str(uuid.uuid1()) + ':' + os.path.basename(fname).split(':')[-1]
+                )
+
+def move(file_source, dir_dest):
+    '''
+    Move mail in folder dir_dest
+    '''
+
+    # identify and move messages
+    to_delete_fnames = []
+    try:
+        shutil.copy2(file_source, get_new_name(file_source, dir_dest))
+        to_delete_fnames.append(file_source)
+        os.remove(file_source)
+    except shutil.Error as e:
+        raise e
+
+
+if __name__ == "__main__":
+    if sys.argv[1] == "move":
+        file_source = sys.argv[2]
+        dir_dest = sys.argv[3]
+        move(file_source, dir_dest)

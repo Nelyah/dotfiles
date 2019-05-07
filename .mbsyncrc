@@ -1,105 +1,3 @@
-##########
-#  UPMC  #
-##########
-
-IMAPAccount upmc
-    Host courriel.upmc.fr
-    User dequeker
-    PassCmd "bw --session $BW_SESSION get password 'UPMC - teacher'"
-    SSLType IMAPS
-    SSLVersions TLSv1.2
-    CertificateFile /etc/ssl/certs/ca-certificates.crt
-
-# Remote storage
-IMAPStore upmc-remote
-    Account upmc
-
-# Local storage
-MaildirStore upmc-local
-    Path ~/.mail/upmc/
-    Inbox ~/.mail/upmc/Inbox
-    SubFolders Verbatim
-
-Channel upmc-inbox
-    Master :upmc-remote:"INBOX"
-    Slave :upmc-local:Inbox
-    Create Both
-    Expunge Both
-
-Channel upmc-archive
-    Master :upmc-remote:"Archive"
-    Slave :upmc-local:Archive
-    Create Both
-    Expunge Both
-
-Channel upmc-teaching
-    Master :upmc-remote:"Teaching"
-    Slave :upmc-local:Teaching
-    Create Both
-    Expunge Both
-
-Channel upmc-2i012
-    Master :upmc-remote:"INBOX/Teaching/[2I012]"
-    Slave :upmc-local:"Teaching/[2I012]"
-    Create Both
-    Expunge Both
-
-Channel upmc-1i002
-    Master :upmc-remote:"INBOX/Teaching/[1I002]"
-    Slave :upmc-local:"Teaching/[1I002]"
-    Create Both
-    Expunge Both
-
-Channel upmc-mailing-list
-    Master :upmc-remote:"INBOX/Mailing list"
-    Slave :upmc-local:"Mailing list"
-    Create Both
-    Expunge Both
-
-Channel upmc-mailing-list-ibps
-    Master :upmc-remote:"INBOX/Mailing list/ibps"
-    Slave :upmc-local:"Mailing list/ibps"
-    Create Both
-    Expunge Both
-
-Channel upmc-drafts
-    Master :upmc-remote:"Drafts"
-    Slave :upmc-local:Drafts
-    Create Both
-    Expunge Both
-
-Channel upmc-sent
-    Master :upmc-remote:"Sent"
-    Slave :upmc-local:Sent
-    Create Both
-    Expunge Both
-
-Channel upmc-trash
-    Master :upmc-remote:"Trash"
-    Slave :upmc-local:Trash
-    Create Both
-    Expunge Both
-
-Channel upmc-junk
-    Master :upmc-remote:"Junk"
-    Slave :upmc-local:Junk
-    Create Both
-    Expunge Both
-
-Group upmc
-    Channel upmc-inbox
-    Channel upmc-archive
-    Channel upmc-drafts
-    Channel upmc-sent
-    Channel upmc-trash
-    Channel upmc-junk
-    Channel upmc-teaching
-    Channel upmc-1i002
-    Channel upmc-2i012
-    Channel upmc-mailing-list
-    Channel upmc-mailing-list-ibps
-
-
 ###########
 #  perso  #
 ###########
@@ -117,6 +15,7 @@ IMAPAccount perso
     CertificateFile /etc/ssl/certs/ca-certificates.crt
     AuthMech LOGIN
 
+
 IMAPStore perso-remote
     Account perso
 
@@ -125,67 +24,21 @@ MaildirStore perso-local
     Inbox ~/.mail/perso/Inbox
     SubFolders Verbatim
 
+Channel perso-folders
+  Master :perso-remote:
+  Slave :perso-local:
+  Patterns "Inbox" "Drafts" "Archive" "Sent Items" "Trash" "Junk" "Update" "Mailing*"
+  Create Both
+  Expunge Both
+  SyncState *
+
 Channel perso-inbox
     Master :perso-remote:"Inbox"
     Slave :perso-local:Inbox
     Create Both
     Expunge Both
 
-Channel perso-archive
-    Master :perso-remote:"Archive"
-    Slave :perso-local:Archive
-    Create Both
-    Expunge Both
-
-Channel perso-drafts
-    Master :perso-remote:"Drafts"
-    Slave :perso-local:Drafts
-    Create Both
-    Expunge Both
-
-Channel perso-sent
-    Master :perso-remote:"Sent"
-    Slave :perso-local:Sent
-    Create Both
-    Expunge Both
-
-Channel perso-trash
-    Master :perso-remote:"Trash"
-    Slave :perso-local:Trash
-    Create Both
-    Expunge Both
-
-Channel perso-junk
-    Master :perso-remote:"Junk"
-    Slave :perso-local:Junk
-    Create Both
-    Expunge Both
-
-Channel perso-update
-    Master :perso-remote:Update
-    Slave :perso-local:Update
-    Create Both
-    Expunge Both
-
-Channel perso-mailing-lists
-    Master :perso-remote:"Mailing lists"
-    Slave :perso-local:"Mailing lists"
-    Create Both
-    Expunge Both
-
-Channel perso-mailing-lists-sfbi
-    Master :perso-remote:"Mailing lists/SFBI"
-    Slave :perso-local:"Mailing lists/SFBI"
-    Create Both
-    Expunge Both
 
 Group perso
     Channel perso-inbox
-    Channel perso-archive
-    Channel perso-drafts
-    Channel perso-sent
-    Channel perso-trash
-    Channel perso-junk
-    Channel perso-update
-    Channel perso-mailing-lists
-    Channel perso-mailing-lists-sfbi
+    Channel perso-folders

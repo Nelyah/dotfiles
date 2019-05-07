@@ -1,1 +1,4 @@
 .ssh/config
+.profile
+.mutt/account/*
+.msmtprc

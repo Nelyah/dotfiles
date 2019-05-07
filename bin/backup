@@ -55,7 +55,7 @@ if [[ -n $BACKUP_FILE ]]; then
     done
 else
     # Default backup list
-    LIST_BACK=($BACKUP_HOME/Documents $BACKUP_HOME/Music $BACKUP_HOME/Pictures)
+    LIST_BACK=($BACKUP_HOME/Documents $BACKUP_HOME/Music $BACKUP_HOME/Pictures $BACKUP_HOME/.mail)
 fi
 
 # Setting the USER and REMOTE values

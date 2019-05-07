@@ -1,0 +1,107 @@
+{
+    "astroid": {
+        "debug": {
+            "dryrun_sending": "false"
+        },
+        "hints": {
+            "level": "-1"
+        }
+    },
+    "mail": {
+        "reply": "quote_processor"
+    },
+    "thread_index": {
+        "page_jump_rows": "6",
+        "sort_order": "newest",
+        "thread_load_step": "250",
+        "cell": {
+            "font_description": "default",
+            "line_spacing": "3",
+            "date_length": "10",
+            "message_count_length": "5",
+            "authors_length": "35",
+            "subject_color": "#807d74",
+            "subject_color_selected": "#000000",
+            "background_color_selected": "",
+            "tags_length": "42",
+            "tags_upper_color": "#e5e5e5",
+            "tags_lower_color": "#444444",
+            "tags_alpha": "0.5",
+            "tags_color": "#000000",
+            "tags_blend_color": "#000000",
+            "tags_blend_weight": "0.5",
+            "tags_background_color": "#666666",
+            "tags_background_color_selected": "#666666"
+        },
+        "open_default_paned": "false"
+    },
+    "general": {
+        "time": {
+            "clock_format": "24h",
+            "same_year": "%b %-e",
+            "diff_year": "%x"
+        }
+    },
+    "accounts": {
+        "ovh": {
+            "name": "Chloé Dequeker",
+            "email": "chloe@dequeker.me",
+            "save_sent_to": "/home/chloe/.mail/perso/Sent/",
+            "save_drafts_to": "/home/chloe/.mail/perso/Drafts/",
+            "sendmail": "msmtp -a ovh --read-envelope-from -i -t"
+        }
+    },
+    "editor": {
+        "cmd": "gnome-terminal --wait -- nvim -f -c 'set ft=mail' '+set fileencoding=utf-8' '+set ff=unix' '+set enc=utf-8' '+set fo+=w' %1",
+        "external_editor": "true",
+        "charset": "utf-8",
+        "save_draft_on_force_quit": "true",
+        "attachment_words": "attach,pj,pièce jointe,pièce-jointe,pièces-jointes,ci-joint",
+        "attachment_directory": "~",
+        "markdown_processor": "cmark",
+        "markdown_on": "true"
+    },
+    "mail": {
+        "reply": {
+            "quote_line": "↪ %1 \/ %2:",
+            "mailinglist_reply_to_sender": "true"
+        },
+        "forward": {
+            "quote_line": "✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉",
+            "disposition": "attachment"
+        },
+        "sent_tags": "sent,new",
+        "send_delay": "2"
+    },
+    "poll": {
+        "interval": "50"
+    },
+    "attachment": {
+        "external_open_cmd": "xdg-open"
+    },
+    "thread_view": {
+        "preferred_html_only": "true",
+        "preferred_type": "html",
+        "open_html_part_external":"false",
+        "default_save_directory": "~",
+        "indent_messages": "false",
+        "open_external_link": "xdg-open",
+        "gravatar": {
+            "enable": "true"
+        },
+        "mark_unread_delay": "0.5",
+        "expand_flagged": "true"
+    },
+    "saved_searches": {
+        "show_on_startup": "false",
+        "save_history": "true",
+        "history_lines_to_show": "30",
+        "history_lines": "1000"
+    },
+    "startup": {
+        "queries": {
+            "   📥   ": "tag:inbox and not tag:update",
+            "   Updates   ": "tag:update and tag:inbox"
+        }
+    }
+}
