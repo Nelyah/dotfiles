@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function pac(){
-    SOFT_MANAGER=yay
+    SOFT_MANAGER="yay --sudoloop"
     case $1 in
         update|up )
             shift

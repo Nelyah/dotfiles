@@ -12,37 +12,19 @@ call plug#begin('~/.vim/plugged')
     Plug 'mileszs/ack.vim'                     " Fuzzy search
 
     Plug 'wellle/tmux-complete.vim'
-    if has('nvim')
-      Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    else
-      Plug 'Shougo/deoplete.nvim'
-      Plug 'roxma/nvim-yarp'
-      Plug 'roxma/vim-hug-neovim-rpc'
-    endif
-    Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
 
+    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
 
-    Plug 'Nelyah/deoplete-khard' " Offers address mail completion
-    Plug 'Nelyah/deoplete-mu' " Offers address mail completion
-    Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
     Plug 'Shougo/neco-vim'
     Plug 'jeaye/color_coded', {
                 \ 'do': 'rm -f CMakeCache.txt && cmake . -DDOWNLOAD_CLANG=0 && make && make install',
                 \ 'for': ['c', 'cpp', 'objc', 'objcpp'],
                 \ 'build_commands' : ['cmake', 'make']
                 \}
-    " Plug 'jeaye/color_coded'
-    " Plug 'roxma/clang_complete'                " auto completion
-    Plug 'zchee/deoplete-clang'
-    " Plug 'zchee/deoplete-jedi'
-    " Plug 'davidhalter/jedi-vim'                " auto completion
+
     Plug 'easymotion/vim-easymotion'
     Plug 'rhysd/vim-grammarous'
 
-    Plug 'w0rp/ale' " lint checker
     Plug 'ludovicchabant/vim-gutentags'
 
     Plug 'vim-airline/vim-airline'               " line with useful infos
@@ -97,6 +79,10 @@ call plug#end()
 " }}}
 
 " {{{ Basic VIM modifications
+
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
 
 set guioptions=M
 set mouse=a " Use the mouse to slide panes size or scrolling, and copying
@@ -199,7 +185,7 @@ vnoremap > >gv
 
 " Used for filetype specific editing
 autocmd FileType tex,mail set spell
-autocmd FileType tex,mail set spelllang=en_gb,fr
+autocmd FileType vimwiki,tex,mail set spelllang=en_gb,fr
 autocmd FileType mail set textwidth=0
 autocmd FileType mail set wrapmargin=0
 autocmd FileType tex set iskeyword+=:,-
@@ -283,6 +269,7 @@ set foldmethod=marker
 " Hide default mode text (i.e. INSERT below status line)
 set noshowmode
 
+
 " Show cursor position in bottom right
 set ruler
 
@@ -344,6 +331,17 @@ let NERDTreeDirArrows = 1
 let g:airline_theme = 'onedark'
 let g:airline#extensions#tabline#enabled = 1
 set laststatus=2
+
+" if you want to disable auto detect, comment out those two lines
+"let g:airline#extensions#disable_rtp_load = 1
+"let g:airline_extensions = ['branch', 'hunks', 'coc']
+
+let g:airline_section_error = '%{airline#util#wrap(airline#extensions#coc#get_error(),0)}'
+let g:airline_section_warning = '%{airline#util#wrap(airline#extensions#coc#get_warning(),0)}'
+let airline#extensions#coc#error_symbol = 'E:'
+let airline#extensions#coc#warning_symbol = 'W:'
+let airline#extensions#coc#stl_format_err = '%E{[%e(#%fe)]}'
+let airline#extensions#coc#stl_format_warn = '%W{[%w(#%fw)]}'
 " }}}
 
 " {{{ VimTex
@@ -494,104 +492,51 @@ map <silent> <m-\> :TmuxNavigatePrevious<cr>
 let g:gutentags_cache_dir = '~/.vim/gutentags'
 " }}}
 
-" {{{ Deoplete
-let g:deoplete#enable_at_startup = 1
 
-" Whether to include the types of the completions in the result data. Default: 0
-let g:deoplete#sources#ternjs#types = 1
+" {{{ CoC nvim
 
-" Whether to include the distance (in scopes for variables, in prototypes for 
-" properties) between the completions and the origin position in the result 
-" data. Default: 0
-let g:deoplete#sources#ternjs#depths = 1
+" Better display for messages
+set cmdheight=2
 
-" Whether to include documentation strings (if found) in the result data.
-" Default: 0
-let g:deoplete#sources#ternjs#docs = 1
+" Use `[c` and `]c` to navigate diagnostics
+nmap <silent> [c <Plug>(coc-diagnostic-prev)
+nmap <silent> ]c <Plug>(coc-diagnostic-next)
 
-" When on, only completions that match the current word at the given point will
-" be returned. Turn this off to get all results, so that you can filter on the 
-" client side. Default: 1
-let g:deoplete#sources#ternjs#filter = 0
-
-" Whether to use a case-insensitive compare between the current word and 
-" potential completions. Default 0
-let g:deoplete#sources#ternjs#case_insensitive = 1
-
-" When completing a property and no completions are found, Tern will use some 
-" heuristics to try and return some properties anyway. Set this to 0 to 
-" turn that off. Default: 1
-let g:deoplete#sources#ternjs#guess = 0
-
-" Determines whether the result set will be sorted. Default: 1
-let g:deoplete#sources#ternjs#sort = 0
-
-" When disabled, only the text before the given position is considered part of 
-" the word. When enabled (the default), the whole variable name that the cursor
-" is on will be included. Default: 1
-let g:deoplete#sources#ternjs#expand_word_forward = 0
-
-" Whether to ignore the properties of Object.prototype unless they have been 
-" spelled out by at least two characters. Default: 1
-let g:deoplete#sources#ternjs#omit_object_prototype = 0
-
-" Whether to include JavaScript keywords when completing something that is not 
-" a property. Default: 0
-let g:deoplete#sources#ternjs#include_keywords = 1
-
-" If completions should be returned when inside a literal. Default: 1
-let g:deoplete#sources#ternjs#in_literal = 0
-
-call deoplete#custom#var('omni', 'input_patterns', {
-      \ 'tex' : g:vimtex#re#deoplete,
-\})
-" }}}
-
-" {{{ LanguageClient-neovim
-
-let g:LanguageClient_autoStart = 1
-let g:LanguageClient_serverCommands = {
-    \ 'python': ['pyls'],
-    \ }
-
-nnoremap <F5> :call LanguageClient_contextMenu()<CR>
-" Or map each action separately
-nnoremap <silent> gd :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> D :call LanguageClient#textDocument_definition()<CR>
-" Map renaming in python
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
 
-" Automatically start language servers.
-let g:LanguageClient_autoStart = 1
 
-" Use location list instead of quickfix
-let g:LanguageClient_diagnosticsList = 'location'
+" Use K to show documentation in preview window
+" nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-augroup LanguageClientConfig
-  autocmd!
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
 
-  " <leader>ld to go to definition
-  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>ld :call LanguageClient_textDocument_definition()<cr>
-  " <leader>lf to autoformat document
-  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>lf :call LanguageClient_textDocument_formatting()<cr>
-  " <leader>lh for type info under cursor
-  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>lh :call LanguageClient_textDocument_hover()<cr>
-  " <leader>lr to rename variable under cursor
-  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>lr :call LanguageClient_textDocument_rename()<cr>
-  " <leader>lc to switch omnifunc to LanguageClient
-  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>lc :setlocal omnifunc=LanguageClient#complete<cr>
-  " <leader>ls to fuzzy find the symbols in the current document
-  autocmd FileType javascript,python,typescript,json,css,less,html,reason nnoremap <buffer> <leader>ls :call LanguageClient_textDocument_documentSymbol()<cr>
+" Use `:Fold` to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 
-  " Use as omnifunc by default
-  autocmd FileType javascript,python,typescript,json,css,less,html,reason setlocal omnifunc=LanguageClient#complete
-augroup END
+" Using CocList
+" Show all diagnostics
+nnoremap <silent> <space><space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent> <space><space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent> <space><space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent> <space><space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space><space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space><space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space><space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space><space>p  :<C-u>CocListResume<CR>
 
-let g:LanguageClient_serverCommands = {}
-
-if executable('pyls')
-  let g:LanguageClient_serverCommands.python = ['pyls']
-endif
 " }}}
 
 " {{{ Tmux-Complete
