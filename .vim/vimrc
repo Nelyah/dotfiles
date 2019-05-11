@@ -2,6 +2,7 @@ set nocompatible               " Be iMproved
 filetype off                  " required
 
 
+"{{{ Plugins
 " Required:
 call plug#begin('~/.vim/plugged')
 
@@ -10,8 +11,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'junegunn/fzf.vim'
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'mileszs/ack.vim'                     " Fuzzy search
-
-    Plug 'wellle/tmux-complete.vim'
 
     Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
 
@@ -202,6 +201,7 @@ nnoremap gb :ls<CR>:b
 
 nnoremap <Leader>c ggVG:!column -t<CR>
 
+
 " Close the current buffer and move to the previous one
 " This replicates the idea of closing a tab
 nnoremap <Leader>q :bp <BAR> bd #<CR>
@@ -227,7 +227,11 @@ set autoread
 " Don't redraw while executing macros, etc
 set lazyredraw
 
+" Better display for messages
+set cmdheight=2
+
 " Colors & Syntax Highlighting {{{
+
 " Only highlight first 500 chars for better performance
 set synmaxcol=500
 " Color scheme
@@ -375,8 +379,13 @@ nnoremap , :Buffers<CR>
 nnoremap <Leader>o :FZF<CR>
 nnoremap <Leader>t :Tags<CR>
 nnoremap <Leader>T :BTags<CR>
+
+nnoremap <c-x>h :Helptags<CR>
+inoremap <c-x>h :Helptags<CR>
+nnoremap <M-x> :Commands<CR>
+inoremap <M-x> :Commands<CR>
 " Fuzzy search help <leader>?
-nnoremap <leader>? :Helptags<CR>
+
 
 autocmd! FileType fzf
 autocmd  FileType fzf set laststatus=0 noshowmode noruler
@@ -495,8 +504,6 @@ let g:gutentags_cache_dir = '~/.vim/gutentags'
 
 " {{{ CoC nvim
 
-" Better display for messages
-set cmdheight=2
 
 " Use `[c` and `]c` to navigate diagnostics
 nmap <silent> [c <Plug>(coc-diagnostic-prev)
@@ -536,6 +543,10 @@ nnoremap <silent> <space><space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space><space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space><space>p  :<C-u>CocListResume<CR>
+
+autocmd FileType mail call coc#config('suggest', {
+    \ 'autoTrigger': 'trigger',
+    \})
 
 " }}}
 
