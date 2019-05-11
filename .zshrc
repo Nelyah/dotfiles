@@ -63,7 +63,7 @@ done
 
 if [[ $KNOWN_USER == 0 ]]
 then
-    PS1_USER="Chloé"
+    PS1_USER=""
 else
     PS1_USER="%n"
 fi
@@ -90,7 +90,11 @@ autoload -U colors && colors
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-PROMPT="$yellow%~ ${pink}${PS1_USER}${PS1_HOST} $ %{$reset_color%}%"
+if [[ -n $PS1_USER ]]; then
+    PROMPT="$yellow%~ ${pink}${PS1_USER}${PS1_HOST} $ %{$reset_color%}%"
+else
+    PROMPT="$yellow%~ ${pink}${PS1_USER}${PS1_HOST}$ %{$reset_color%}%"
+fi
 
 function virtualenv_info {
     [ $VIRTUAL_ENV ] && echo '('%F{blue}`basename $VIRTUAL_ENV`%f') '

@@ -3,6 +3,7 @@
 if [[ ! "$PATH" == */home/chloe/.fzf/bin* ]]; then
   export PATH="${PATH:+${PATH}:}/home/chloe/.fzf/bin"
 fi
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
 
 # Auto-completion
 # ---------------

@@ -25,6 +25,8 @@ alias llt="ls -lht $LS_OPTIONS"
 alias lld="ls -lhd $LS_OPTIONS"
 alias llad="ls -lhad $LS_OPTIONS"
 alias llda="ls -lhad $LS_OPTIONS"
+alias llta="ls -lht $LS_OPTIONS"
+alias llat="ls -laht $LS_OPTIONS"
 
 alias rm="rm -i"
 alias rebash="source ~/.bashrc"
