@@ -28,6 +28,7 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'vim-airline/vim-airline'               " line with useful infos
     Plug 'vim-airline/vim-airline-themes'
+    Plug 'jreybert/vimagit'
     Plug 'airblade/vim-gitgutter'                " git info on the left
     Plug 'ap/vim-css-color'                      " Color highlighter
     Plug 'joshdick/onedark.vim'                  " Colour scheme
