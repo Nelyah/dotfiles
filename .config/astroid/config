@@ -7,9 +7,6 @@
             "level": "-1"
         }
     },
-    "mail": {
-        "reply": "quote_processor"
-    },
     "thread_index": {
         "page_jump_rows": "6",
         "sort_order": "newest",
@@ -46,13 +43,15 @@
         "ovh": {
             "name": "Chloé Dequeker",
             "email": "chloe@dequeker.me",
-            "save_sent_to": "/home/chloe/.mail/perso/Sent/",
+            "save_sent": "true",
+            "save_sent_to": "/home/chloe/.mail/perso/Sent Items/",
             "save_drafts_to": "/home/chloe/.mail/perso/Drafts/",
+            "additional_sent_tags": "sent,*",
             "sendmail": "msmtp -a ovh --read-envelope-from -i -t"
         }
     },
     "editor": {
-        "cmd": "gnome-terminal --wait -- nvim -f -c 'set ft=mail' '+set fileencoding=utf-8' '+set ff=unix' '+set enc=utf-8' '+set fo+=w' %1",
+        "cmd": "gnome-terminal --wait -- nvim -f -c 'set ft=mail' '+set fileencoding=utf-8' '+set ff=unix' '+set enc=utf-8' '+set fo+=w' '+Goyo' %1",
         "external_editor": "true",
         "charset": "utf-8",
         "save_draft_on_force_quit": "true",
@@ -70,7 +69,7 @@
             "quote_line": "✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉✉",
             "disposition": "attachment"
         },
-        "sent_tags": "sent,new",
+        "sent_tags": "sent,*",
         "send_delay": "2"
     },
     "poll": {
@@ -100,8 +99,7 @@
     },
     "startup": {
         "queries": {
-            "   📥   ": "tag:inbox and not tag:update",
-            "   Updates   ": "tag:update and tag:inbox"
+            "   📥   ": "tag:inbox"
         }
     }
 }
