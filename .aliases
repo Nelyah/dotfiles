@@ -55,6 +55,11 @@ alias scls="systemctl list-unit-files"
 alias scu="systemctl --user"
 alias sculs="systemctl --user list-unit-files"
 
+alias awk1="awk '{print $1}'"
+alias awk2="awk '{print $2}'"
+alias awk3="awk '{print $3}'"
+alias awk4="awk '{print $4}'"
+
 # Clear zombie processes
 clear-zombie() {
     ps -eal | awk '{ if ($2 == "Z") {print $4}}' | kill -9
