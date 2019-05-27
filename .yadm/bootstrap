@@ -25,21 +25,6 @@ else
 fi
 
 
-###########
-#  Pipsi  #
-###########
-
-[[ -n $ALL_YES ]] || read -p "Setup pipsi? [yN] " -n 1 -r
-echo ""
-if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
-then
-    # installing python packages through pipsi (with each its own virtualenv)
-    curl \
-        https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python 
-    ln -sf ~/.local/venvs/pipsi/bin/virtualenv ~/.local/bin/virtualenv
-fi
-
-
 #############
 #  XModmap  #
 #############
@@ -81,3 +66,11 @@ fi
 
 wget https://github.com/sindresorhus/pure/blob/master/pure.zsh
 wget https://github.com/sindresorhus/pure/blob/master/async.zsh
+
+
+###################
+#  diff-so-fancy  #
+###################
+
+wget -O $HOME/bin/diff-so-fancy https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy && \
+    chmod 744 $HOME/bin/diff-so-fancy

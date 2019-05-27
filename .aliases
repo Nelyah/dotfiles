@@ -60,6 +60,10 @@ alias awk2="awk '{print $2}'"
 alias awk3="awk '{print $3}'"
 alias awk4="awk '{print $4}'"
 
+if type fdfind &> /dev/null; then
+    alias fd="fdfind"
+fi
+
 # Clear zombie processes
 clear-zombie() {
     ps -eal | awk '{ if ($2 == "Z") {print $4}}' | kill -9
