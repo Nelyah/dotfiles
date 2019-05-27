@@ -16,11 +16,10 @@ eval `dircolors ~/.dircolors`
 export UPDATE_ZSH_DAYS=1
 
 plugins=(
-  zsh-autosuggestions,
-  colorize,
-  cp,
-  dotenv,
-  gpg-agent,
+  colorize
+  cp
+  dotenv
+  gpg-agent
   pip
 )
 
