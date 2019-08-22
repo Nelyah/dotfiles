@@ -9,7 +9,7 @@
 IMAPAccount perso
     Host pro1.mail.ovh.net
     User chloe@dequeker.me
-    PassCmd "bw --session $BW_SESSION get password d01d26bf-2452-4ee2-bb6d-a7ff00a33302"
+    PassCmd "bw --session $(get-bw-session) get password d01d26bf-2452-4ee2-bb6d-a7ff00a33302"
     SSLType IMAPS
     SSLVersions TLSv1.2
     CertificateFile /etc/ssl/certs/ca-certificates.crt
