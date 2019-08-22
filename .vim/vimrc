@@ -12,7 +12,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'mileszs/ack.vim'                     " Fuzzy search
 
-    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+    Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 
     Plug 'Shougo/neco-vim'
     Plug 'jeaye/color_coded', {
@@ -28,7 +28,6 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'vim-airline/vim-airline'               " line with useful infos
     Plug 'vim-airline/vim-airline-themes'
-    Plug 'jreybert/vimagit'
     Plug 'airblade/vim-gitgutter'                " git info on the left
     Plug 'ap/vim-css-color'                      " Color highlighter
     Plug 'joshdick/onedark.vim'                  " Colour scheme
