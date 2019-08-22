@@ -16,6 +16,7 @@ function llth (){
     fi
 }
 
+alias get-bw-session="keyctl pipe "$(keyctl request user bw_session)""
 
 export LESS_TERMCAP_md="${yellow}";
 alias ls="ls --color=always" 

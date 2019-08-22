@@ -1,0 +1,18 @@
+#!  /bin/bash
+
+ask_password() {
+  mpw=$(rofi -dmenu -p "Master Password" -password -lines 0) || exit $?
+  echo "$mpw" | bw unlock 2>/dev/null | grep 'export' | sed -E 's/.*export BW_SESSION="(.*==)"$/\1/' || exit_error $? "Could not unlock vault"
+}
+
+get_session_key() {
+  if ! key_id=$(keyctl request user bw_session 2>/dev/null); then
+    session=$(ask_password)
+    [[ -z "$session" ]] && exit_error 1 "Could not unlock vault"
+    key_id=$(echo "$session" | keyctl padd user bw_session @u)
+  fi
+  
+  BW_HASH=$(keyctl pipe "$key_id")
+}
+
+get_session_key
