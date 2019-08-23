@@ -1,0 +1,10 @@
+[Unit]
+Description=AutoSSH service for University proxy
+After=network.target
+
+[Service]
+Environment="AUTOSSH_GATETIME=0"
+ExecStart=%h/bin/autossh_proxy
+
+[Install]
+WantedBy=default.target

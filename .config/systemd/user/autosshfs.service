@@ -1,0 +1,10 @@
+[Unit]
+Description=sshfs through autossh
+After=network.target
+
+[Service]
+Environment="AUTOSSH_GATETIME=0"
+ExecStart=%h/bin/autosshfs
+
+[Install]
+WantedBy=default.target

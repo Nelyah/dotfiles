@@ -1,0 +1,12 @@
+[Unit]
+Description=AutoSSH service
+After=network.target
+
+[Service]
+Environment="AUTOSSH_GATETIME=0"
+ExecStart=%h/bin/autossh_labo
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

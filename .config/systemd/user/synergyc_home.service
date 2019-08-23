@@ -1,0 +1,11 @@
+[Unit]
+Description=Synergy Client Daemon (Home)
+After=network-online.target graphical.target
+
+[Service]
+ExecStart=/usr/bin/synergyc --no-daemon --debug ERROR chloe-desktop_home
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
