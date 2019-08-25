@@ -1,0 +1,117 @@
+theme = nelyah
+
+initial_command = search tag:inbox
+
+[accounts]
+    [[perso]]
+        realname = Chloé Dequeker
+        address = chloe@dequeker.me
+        alias_regexp = chloe\+.+@dequeker.me
+        sendmail_command = msmtp --account=ovh -t
+
+        # ~ expansion also works
+        draft_box = maildir://~/.mail/perso/Drafts
+        sent_box = maildir://~/.mail/perso/Sent
+        gpg_key = chloe@dequeker.me
+        sign_by_default = true
+
+[bindings]
+    up = move up
+    down = move down
+    page up = move page up
+    page down = move page down
+    mouse press 4 = move up
+    mouse press 5 = move down
+    j = move down
+    k = move up
+    J = move down; move down; move down; move down; move down; 
+    K = move up; move up; move up; move up; move up; 
+    'g g' = move first
+    G = move last
+    ' ' = move page down
+    'ctrl d' = move halfpage down
+    'ctrl b' = move halfpage up
+    'ctrl u' = move halfpage up
+    @ = refresh
+    ? = help bindings
+    '#' = taglist
+    shift tab = bprevious
+    tab = bnext
+    \ = prompt 'search '
+    d = bclose
+    $ = flush
+    m = compose
+    o = prompt 'search '
+    ',' = bufferlist
+    ':' = prompt
+    ';' = prompt
+    . = repeat
+    q = bclose
+
+    'g i' = search tag:inbox
+    'g s' = search tag:sent
+    'g u' = search tag:unread
+
+    [[bufferlist]]
+        x = close
+        enter = open
+
+    [[search]]
+        a = toggletags inbox
+        & = toggletags killed
+        ! = toggletags flagged
+        s = toggletags unread
+        l = retagprompt
+        O = refineprompt
+        | = refineprompt
+        enter = select; fold *; unfold tag:unread; move last; unfold
+        't a' = prompt 'tag --all '
+        't u a' = prompt 'untag --all '
+
+    [[envelope]]
+        a = prompt 'attach ~/'
+        y = send
+        P = save
+        s = 'refine Subject'
+        f = prompt 'set From '
+        t = 'refine To'
+        b = 'refine Bcc'
+        c = 'refine Cc'
+        S = togglesign
+        enter = edit
+        'g f' = togglesource
+
+    [[taglist]]
+        enter = select
+
+
+    [[thread]]
+        enter = select
+        C = fold *
+        E = unfold *
+        c = fold
+        e = unfold
+        < = fold
+        > = unfold
+        [ = indent -
+        ] = indent +
+        'g f' = togglesource
+        H = toggleheaders
+        P = print --all --separately --add_tags
+        S = save --all
+        g = reply --all
+        f = forward
+        p = print --add_tags
+        n = editnew
+        b= bounce
+        s = save
+        r = reply
+        | = prompt 'pipeto '
+
+        'g j' = move next sibling
+        'g k' = move previous sibling
+        'g h' = move parent
+        'g l' = move first reply
+        ' ' = move next
+        v = pipeto urlscan 2>/dev/null
+
