@@ -1,0 +1,14 @@
+[Unit]
+Description=Sync contacts and calendars
+Wants=network-online.target
+After=network-online.target
+
+[Timer]
+Persistent=true
+OnBootSec=5min
+OnUnitActiveSec=30min
+Unit=vdirsyncer.service
+
+[Install]
+WantedBy=timers.target
+

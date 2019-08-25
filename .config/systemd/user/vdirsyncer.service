@@ -1,0 +1,11 @@
+[Unit]
+Description=Sync contacts and calendars
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=vdirsyncer sync
+
+[Install]
+WantedBy=default.target
+
