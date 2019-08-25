@@ -1,0 +1,10 @@
+[Unit]
+Description=check mail
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=timeout 50s %h/bin/my-getmail
+
+[Install]
+WantedBy=default.target

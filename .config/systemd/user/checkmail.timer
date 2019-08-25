@@ -1,0 +1,13 @@
+[Unit]
+Description=Check Mail every minute
+Wants=network-online.target
+After=network-online.target
+
+[Timer]
+Persistent=false
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=checkmail.service
+
+[Install]
+WantedBy=timers.target
