@@ -1,5 +1,6 @@
 [Unit]
 Description=AutoSSH service for University proxy
+Wants=network-online.target
 After=network.target
 
 [Service]
