@@ -1,12 +1,13 @@
 # vim: filetype=config
 
 [general]
-status_path = "~/.vdirsyncer/status/"
+status_path = "~/.config/vdirsyncer/status/"
 
 [pair my_contacts]
 a = "my_contacts_local"
 b = "my_contacts_remote"
 collections = ["from a", "from b"]
+conflict_resolution = "b wins"
 
 [storage my_contacts_local]
 type = "filesystem"
@@ -17,15 +18,16 @@ fileext = ".vcf"
 type = "carddav"
 
 # We can simplify this URL here as well. In theory it shouldn't matter.
-url = "https://home.nelyah.eu:2443/remote.php/dav/principals/users/Nelyah/"
-username.fetch = ["command", "bw", "--session", "QJxWZcCK74DqQ2/5Eutu8hkFTohTqIkVsA5dfb1lb90ESqI3kBRyCUFc48+hXh/Y4zZ1zp3FBUBy6JBxzAUWBg==", "get", "username", "NCP - Nelyah"]
-password.fetch = ["command", "bw", "--session", "QJxWZcCK74DqQ2/5Eutu8hkFTohTqIkVsA5dfb1lb90ESqI3kBRyCUFc48+hXh/Y4zZ1zp3FBUBy6JBxzAUWBg==", "get", "password", "NCP - Nelyah"]
+url = "https://cloud.nelyah.eu/remote.php/dav/principals/users/Nelyah/"
+username.fetch = ["command", "~/.config/vdirsyncer/passwd-vdirsyncer", "username"]
+password.fetch = ["command", "~/.config/vdirsyncer/passwd-vdirsyncer", "password"]
 
 [pair my_calendars]
 a = "my_calendars_local"
 b = "my_calendars_remote"
 collections = ["from a", "from b"]
 metadata = ["color"]
+conflict_resolution = "b wins"
 
 [storage my_calendars_local]
 type = "filesystem"
@@ -35,7 +37,6 @@ fileext = ".ics"
 [storage my_calendars_remote]
 type = "caldav"
 
-url = "https://home.nelyah.eu:2443/remote.php/dav/"
-username.fetch = ["command", "bw", "--session", "QJxWZcCK74DqQ2/5Eutu8hkFTohTqIkVsA5dfb1lb90ESqI3kBRyCUFc48+hXh/Y4zZ1zp3FBUBy6JBxzAUWBg==", "get", "username", "NCP - Nelyah"]
-password.fetch = ["command", "bw", "--session", "QJxWZcCK74DqQ2/5Eutu8hkFTohTqIkVsA5dfb1lb90ESqI3kBRyCUFc48+hXh/Y4zZ1zp3FBUBy6JBxzAUWBg==", "get", "password", "NCP - Nelyah"]
-
+url = "https://cloud.nelyah.eu/remote.php/dav/"
+username.fetch = ["command", "~/.config/vdirsyncer/passwd-vdirsyncer", "username"]
+password.fetch = ["command", "~/.config/vdirsyncer/passwd-vdirsyncer", "password"]

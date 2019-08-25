@@ -1,0 +1,4 @@
+#! /bin/bash
+
+bw --session $(get-bw-session) get $1 "NCP - Nelyah"
+   
