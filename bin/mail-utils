@@ -51,4 +51,6 @@ if __name__ == "__main__":
         file_source = sys.argv[2]
         dir_dest = sys.argv[3]
         copy(file_source, dir_dest)
+    else:
+        raise Exception("Wrong argument.")
 
