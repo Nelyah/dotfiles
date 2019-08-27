@@ -1,0 +1,10 @@
+#! /bin/bash
+
+function remove-uid() {
+    for uid in $(ls -lR "$1"|grep -o 'U=.*:'|sort | uniq -d ); do
+        echo "Removing duplicate UID $uid"
+        rm "$1"/$(ls "$1" |grep "$uid"|head -1)
+    done
+}
+
+remove-uid "$1"

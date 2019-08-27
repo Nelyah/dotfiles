@@ -1,0 +1,8 @@
+#! /bin/bash
+
+# Found at https://aaronweb.net/blog/2014/11/migrating-mail-between-imap-servers-using-mbsync/
+
+find . -type f -name '.??*' -delete
+
+find . -type f -name '*U=*' | { while read f; do mv "$f" "`echo $f | sed -e 's/,U=[0-9]*//'`"; done }
+
