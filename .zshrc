@@ -15,15 +15,6 @@ eval `dircolors ~/.dircolors`
 # Uncomment the following line to change how often to auto-update (in days).
 export UPDATE_ZSH_DAYS=1
 
-plugins=(
-  colorize
-  cp
-  dotenv
-  gpg-agent
-  pip
-  git
-)
-
 source $ZSH/oh-my-zsh.sh
 
 # Environnement variables
@@ -88,7 +79,6 @@ fi
 # autoload -Uz vcs_info
 # autoload -U colors && colors
 
-# export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 
 autoload -U colors
@@ -138,7 +128,6 @@ function +vi-git-untracked() {
   fi
 }
 
-
 RPROMPT_BASE="\${vcs_info_msg_0_}"
 setopt PROMPT_SUBST
 
@@ -163,12 +152,14 @@ function () {
   else
     # Don't bother with ZLE_RPROMPT_INDENT here, because it ends up eating the
     # space after PS1.
-    export PS1="%F{blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}%~%f %(?..!)%b%f${pink}%B${SUFFIX}%b%f "
+    export PS1="%F{blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}%~%f %F{red}%(?..!)%b%f${pink}%B${SUFFIX}%b%f "
   fi
 }
 
 export RPROMPT=$RPROMPT_BASE
 export SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
+
+# {{{Record command time
 
 typeset -F SECONDS
 function record-start-time() {
@@ -208,17 +199,30 @@ function report-start-time() {
     ELAPSED="${ELAPSED}${SECS}"
     local ITALIC_ON=$'\e[3m'
     local ITALIC_OFF=$'\e[23m'
-    export RPROMPT="%F{cyan}%{$ITALIC_ON%}${ELAPSED}%{$ITALIC_OFF%}%f $RPROMPT_BASE"
+    RPROMPT="%F{cyan}%{$ITALIC_ON%}${ELAPSED}%{$ITALIC_OFF%}%f $RPROMPT_BASE"
     unset ZSH_START_TIME
   else
-    export RPROMPT="$RPROMPT_BASE"
+    RPROMPT="$RPROMPT_BASE"
   fi
 }
 
 add-zsh-hook precmd report-start-time
 
-function virtualenv_info {
-    [ $VIRTUAL_ENV ] && echo '('%F{blue}`basename $VIRTUAL_ENV`%f') '
+# }}}
+
+#{{{ Virtual environment
+function virtual_env_info() {
+    if [ $VIRTUAL_ENV ]; then
+        export RPROMPT="$RPROMPT%F{1}$(basename $VIRTUAL_ENV)%f"
+    else
+        export RPROMPT="$RPROMPT"
+    fi
 }
+
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+add-zsh-hook precmd virtual_env_info
+export RPROMPT="$RPROMPT $(virtual_env_info)"
+
+# }}}
 
 add-zsh-hook precmd vcs_info
