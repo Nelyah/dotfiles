@@ -56,13 +56,18 @@ attachment_prefix = '~/Downloads/'
     'g u' = search tag:unread
     'g a' = search not tag:inbox
 
+    't m' = prompt 'tag '
+    't p' = tag promo
+    't l' = tag lists
+
+
     [[bufferlist]]
         x = close
         d = close
         enter = open
 
     [[search]]
-        a = toggletags inbox
+        a = untag unread; toggletags inbox;
         & = toggletags killed
         ! = toggletags flagged
         s = toggletags unread
@@ -74,7 +79,7 @@ attachment_prefix = '~/Downloads/'
         't u a' = prompt 'untag --all '
 
     [[envelope]]
-        a = prompt 'attach ~/'
+        a = prompt 'attach '
         y = send
         P = save
         u = 'refine Subject'
@@ -118,9 +123,9 @@ attachment_prefix = '~/Downloads/'
         'g h' = move parent
         'g l' = move first reply
         ' ' = move next
-        v = pipeto urlscan 2>/dev/null
+        v = pipeto '/home/chloe/testDir/urlscan/bin/urlscan -i 2>/dev/null'
 
-        a = toggletags inbox
+        a = untag unread; toggletags inbox; bclose;
         & = toggletags killed
         ! = toggletags flagged
         u = toggletags unread
