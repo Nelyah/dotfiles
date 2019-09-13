@@ -55,6 +55,7 @@ attachment_prefix = '~/Downloads/'
     'g s' = search tag:sent
     'g u' = search tag:unread
     'g a' = search not tag:inbox
+    'g l' = search tag:lists
 
     't m' = prompt 'tag '
     't p' = tag promo
