@@ -61,6 +61,8 @@ alias awk2="awk '{print $2}'"
 alias awk3="awk '{print $3}'"
 alias awk4="awk '{print $4}'"
 
+alias vim="nvim"
+
 if type fdfind &> /dev/null; then
     alias fd="fdfind"
 fi

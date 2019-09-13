@@ -75,7 +75,7 @@ fi
 
 
 # setopt prompt_subst
-# autoload -U add-zsh-hook
+autoload -U add-zsh-hook
 # autoload -Uz vcs_info
 # autoload -U colors && colors
 
