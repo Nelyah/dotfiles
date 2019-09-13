@@ -603,6 +603,13 @@ function! s:show_documentation()
   endif
 endfunction
 
+let g:coc_global_extensions = [
+    \ 'coc-python', 'coc-snippets',
+    \ 'coc-vimlsp', 'coc-notmuch', 'coc-css',
+    \ 'coc-json', 'coc-yaml', 'coc-html',
+    \ 'coc-git', 'coc-vimtex'
+\]
+
 
 " }}}
 
