@@ -3,7 +3,7 @@ Description=Synergy Client Daemon (Home)
 After=network-online.target graphical.target
 
 [Service]
-ExecStart=/usr/bin/synergyc --no-daemon --debug ERROR chloe-desktop_home
+ExecStart=/usr/bin/synergyc --no-daemon --debug ERROR chloe-desktop-home
 Restart=always
 RestartSec=5
 
