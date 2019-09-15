@@ -2,3 +2,4 @@
 .profile
 .mutt/account/*
 .msmtprc
+bin/my-getmail
