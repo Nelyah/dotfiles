@@ -1,0 +1,12 @@
+[Unit]
+Description=Clean up the journalctl log daily
+
+[Timer]
+Persistent=true
+OnBootSec=5min
+OnCalendar=daily
+Unit=journalctl-clean.service
+
+[Install]
+WantedBy=timers.target
+

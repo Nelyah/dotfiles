@@ -1,0 +1,9 @@
+[Unit]
+Description=Clean the journalctl log for more than 1 Month
+
+[Service]
+Type=oneshot
+ExecStart=journalctl --vacuum-time=1M
+
+[Install]
+WantedBy=default.target
