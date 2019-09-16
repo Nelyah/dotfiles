@@ -543,26 +543,12 @@ let g:gutentags_cache_dir = '~/.vim/gutentags'
 " {{{ CoC nvim
 
 
-" Use `[c` and `]c` to navigate diagnostics
-nmap <silent> [c <Plug>(coc-diagnostic-prev)
-nmap <silent> ]c <Plug>(coc-diagnostic-next)
-
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-
-
-" Use K to show documentation in preview window
-" nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 " Use `:Format` to format current buffer
 command! -nargs=0 Format :call CocAction('format')
 
 " Use `:Fold` to fold current buffer
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+command! -nargs=? Fold :call CocAction('fold', <f-args>)
 
 " Using CocList
 " Show all diagnostics
@@ -586,14 +572,6 @@ autocmd FileType mail call coc#config('suggest', {
     \ 'autoTrigger': 'trigger',
     \})
 
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Use K to show documentation in preview window
-nnoremap <silent> D :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
@@ -602,6 +580,22 @@ function! s:show_documentation()
     call CocAction('doHover')
   endif
 endfunction
+
+
+" Remap keys for gotos
+" Use `[c` and `]c` to navigate diagnostics
+nnoremap <silent> [c <Plug>(coc-diagnostic-prev)
+nnoremap <silent> ]c <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nnoremap <silent> gd <Plug>(coc-definition)
+nnoremap <silent> gy <Plug>(coc-type-definition)
+nnoremap <silent> gi <Plug>(coc-implementation)
+nnoremap <silent> gr <Plug>(coc-references)
+
+
+" Use K to show documentation in preview window
+nnoremap <silent> gD :call <SID>show_documentation()<CR>
 
 let g:coc_global_extensions = [
     \ 'coc-python', 'coc-snippets',
