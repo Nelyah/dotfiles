@@ -599,7 +599,7 @@ nnoremap <silent> gD :call <SID>show_documentation()<CR>
 
 let g:coc_global_extensions = [
     \ 'coc-python', 'coc-snippets',
-    \ 'coc-vimlsp', 'coc-notmuch', 'coc-css',
+    \ 'coc-vimlsp', 'https://github.com/Nelyah/coc-notmuch', 'coc-css',
     \ 'coc-json', 'coc-yaml', 'coc-html',
     \ 'coc-git', 'coc-vimtex'
 \]
