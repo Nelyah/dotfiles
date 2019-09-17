@@ -69,19 +69,8 @@ if type fdfind &> /dev/null; then
     alias fd="fdfind"
 fi
 
-# Clear zombie processes
-clear-zombie() {
-    ps -eal | awk '{ if ($2 == "Z") {print $4}}' | kill -9
-}
 
-# determine local IP address
-getip() {
-    if (( ${+commands[ip]} )); then
-        ip addr | grep "inet " | grep -v '127.0.0.1' | awk '{print $2}'
-    else
-        ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'
-    fi
-}
+alias pk="kp"
 
 if type fasd > /dev/null 2>&1; then
     eval "$(fasd --init auto)"

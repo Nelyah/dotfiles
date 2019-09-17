@@ -1,88 +1,14 @@
-
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-# Path to your oh-my-zsh installation.
-export ZSH=$HOME/.oh-my-zsh
-
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-# ZSH_THEME="steeef"
-
 eval `dircolors ~/.dircolors`
-
-# Uncomment the following line to change how often to auto-update (in days).
-export UPDATE_ZSH_DAYS=1
-
-source $ZSH/oh-my-zsh.sh
 
 # Environnement variables
 source ~/.profile
 source ~/.aliases
-source ~/.shell-functions
+# source ~/.shell-functions
 
-[ -f ~/.config/fzf/key-bindings.zsh ] && source ~/.config/fzf/key-bindings.zsh
-[ -f ~/.config/fzf/completion.zsh ] && source ~/.config/fzf/completion.zsh
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-
-# PS1 colours
-pink="%F{212}" 
-yellow="%F{214}" 
-orange="%F{202}" 
-t="%F{0}" 
-
-# Those are the PC names and user names I use 
-# most of the time
-LIST_PC=(lcqb0001 chloe-pc chloe-laptop desktop_lcqb)
-LIST_USER=(chloe Chloe dequeker Dequeker nelyah Nelyah)
-
-# Check if the current session is a SSH session or not
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-    export SESSION_TYPE=remote 
-else
-    export SESSION_TYPE=
-fi
-
-# Testing if this user is a common one
-KNOWN_USER=1 
-for e in ${LIST_USER[@]}; 
-do 
-    [[ $e == $(whoami) ]] && KNOWN_USER=0 && break
-done
-
-if [[ $KNOWN_USER == 0 ]]
-then
-    PS1_USER=""
-else
-    PS1_USER="%n"
-fi
-
-# Testing if this hostname is a known one
-KNOWN_HOST=1 
-for e in ${LIST_PC[@]}; 
-do 
-    [[ $e == $(hostname --short) ]] && KNOWN_HOST=0 && break
-done
-
-if [[ $KNOWN_HOST == 0 ]] && [[ $SESSION_TYPE != remote ]]
-then
-    PS1_HOST=""
-else
-    PS1_HOST="@${orange}$(hostname --short)${pink}"
-fi
-
-
-# setopt prompt_subst
 autoload -U add-zsh-hook
-# autoload -Uz vcs_info
-# autoload -U colors && colors
 
 
-
-autoload -U colors
-colors
+#{{{ VCS
 
 # http://zsh.sourceforge.net/Doc/Release/User-Contributions.html
 autoload -Uz vcs_info
@@ -128,8 +54,21 @@ function +vi-git-untracked() {
   fi
 }
 
+add-zsh-hook precmd vcs_info
+
+#}}}
+
+#{{{ PS1
+
+
+# PS1 colours
+pink="%F{212}" 
+yellow="%F{214}" 
+orange="%F{202}" 
+t="%F{0}" 
+
 RPROMPT_BASE="\${vcs_info_msg_0_}"
-setopt PROMPT_SUBST
+setopt prompt_subst
 
 # Anonymous function to avoid leaking NBSP variable.
 function () {
@@ -158,6 +97,7 @@ function () {
 
 export RPROMPT=$RPROMPT_BASE
 export SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
+#}}}
 
 # {{{Record command time
 
@@ -225,9 +165,13 @@ export RPROMPT="$RPROMPT $(virtual_env_info)"
 
 # }}}
 
-add-zsh-hook precmd vcs_info
-
 #{{{ fzf
+
+[ -f ~/.config/fzf/key-bindings.zsh ] && source ~/.config/fzf/key-bindings.zsh
+[ -f ~/.config/fzf/completion.zsh ] && source ~/.config/fzf/completion.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+
 function fzf-fasd-goto-dir() {
     local dir
     local query
@@ -255,4 +199,54 @@ zle     -N    fzf-cd-widget
 bindkey '^E' fzf-cd-widget
 zle     -N   fzf-history-widget
 bindkey '^R' fzf-history-widget
+#}}}
+
+#{{{ Functions
+
+function calc() {
+  echo "$*" | bc -l;
+}
+
+function meteo() {
+	local LOCALE=`echo ${LANG:-en} | cut -c1-2`
+	if [ $# -eq 0 ]; then
+		local LOCATION=`curl -s ipinfo.io/loc`
+	else
+		local LOCATION=$1
+	fi
+	curl -s "$LOCALE.wttr.in/$LOCATION"
+}
+
+# From https://github.com/SidOfc/dotfiles/blob/d07fa3862ed065c2a5a7f1160ae98416bfe2e1ee/zsh/kp
+### PROCESS
+# mnemonic: [K]ill [P]rocess
+# show output of "ps -ef", use [tab] to select one or multiple entries
+# press [enter] to kill selected processes and go back to the process list.
+# or press [escape] to go back to the process list. Press [escape] twice to exit completely.
+
+function kp (){
+    local pid=$(ps -ef | sed 1d | eval "fzf ${FZF_DEFAULT_OPTS} -m --header='[kill:process]'" | awk '{print $2}')
+
+    if [ "x$pid" != "x" ]
+    then
+      echo $pid | xargs kill -${1:-9}
+      kp
+    fi
+}
+
+# Clear zombie processes
+function clear-zombie() {
+    ps -eal | awk '{ if ($2 == "Z") {print $4}}' | kill -9
+}
+
+
+# determine local IP address
+function getip() {
+    if (( ${+commands[ip]} )); then
+        ip addr | grep "inet " | grep -v '127.0.0.1' | awk '{print $2}'
+    else
+        ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'
+    fi
+}
+
 #}}}
