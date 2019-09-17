@@ -581,6 +581,7 @@ function! s:show_documentation()
   endif
 endfunction
 
+" nnoremap <Plug>(coc-definition) :<C-u>call CocActionAsync('jumpDefinition')
 
 " Remap keys for gotos
 " Use `[c` and `]c` to navigate diagnostics
@@ -588,14 +589,14 @@ nnoremap <silent> [c <Plug>(coc-diagnostic-prev)
 nnoremap <silent> ]c <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
-nnoremap <silent> gd <Plug>(coc-definition)
+nnoremap <silent> gd :<C-u>call CocActionAsync('jumpDefinition')<CR>
 nnoremap <silent> gy <Plug>(coc-type-definition)
 nnoremap <silent> gi <Plug>(coc-implementation)
 nnoremap <silent> gr <Plug>(coc-references)
 
 
 " Use K to show documentation in preview window
-nnoremap <silent> gD :call <SID>show_documentation()<CR>
+nnoremap <silent> gD :call <SID>show_documentation()<CR><CR>
 
 let g:coc_global_extensions = [
     \ 'coc-python', 'coc-snippets',
