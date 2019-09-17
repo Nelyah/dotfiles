@@ -86,6 +86,7 @@ getip() {
 if type fasd > /dev/null 2>&1; then
     eval "$(fasd --init auto)"
 
+    alias z='fzf-fasd-goto-dir'
     alias a='fasd -a'        # any
     alias s='fasd -si'       # show / search / select
     alias d='fasd_cd -d'     # directory

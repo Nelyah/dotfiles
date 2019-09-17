@@ -227,20 +227,32 @@ export RPROMPT="$RPROMPT $(virtual_env_info)"
 
 add-zsh-hook precmd vcs_info
 
-
-
-function fzf-goto-dir() {
+#{{{ fzf
+function fzf-fasd-goto-dir() {
     local dir
+    local query
+    [ -n "$@" ] && query="--query='$@'" || query=""
     setopt localoptions noglobsubst noposixbuiltins pipefail 2> /dev/null
     dir=$(fasd -Rdl |\
         sed "s:$HOME:~:" |\
-        FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS --tiebreak=index --query=${(qqq)LBUFFER} --no-sort +m" $(__fzfcmd) |\
-        sed "s:~:$HOME:") &&
+        FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index $query --reverse --no-sort +m" $(__fzfcmd) |\
+        sed "s:~:$HOME:")
     pushd "$dir"
     ret=$?
-    zle reset-prompt
+    # zle reset-prompt
     return $ret
 }
 
-zle     -N    fzf-goto-dir
-bindkey '^F'  fzf-goto-dir
+export FZF_DEFAULT_OPTS="--reverse"
+
+
+export FZF_CTRL_T_COMMAND="rg --files --hidden 2> /dev/null"
+export FZF_ALT_C_COMMAND="fd --hidden -t d -t l 2> /dev/null"
+
+zle     -N   fzf-file-widget
+bindkey '^F' fzf-file-widget
+zle     -N    fzf-cd-widget
+bindkey '^E' fzf-cd-widget
+zle     -N   fzf-history-widget
+bindkey '^R' fzf-history-widget
+#}}}
