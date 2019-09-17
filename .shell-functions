@@ -14,16 +14,6 @@ meteo() {
 	curl -s "$LOCALE.wttr.in/$LOCATION"
 }
 
-e() {
-    local dir
-    dir=$(fasd -Rdl |\
-        sed "s:$HOME:~:" |\
-        fzf --no-sort +m -q "$*" |\
-        sed "s:~:$HOME:")\
-    && pushd "$dir"
-}
-
-
 # From https://github.com/SidOfc/dotfiles/blob/d07fa3862ed065c2a5a7f1160ae98416bfe2e1ee/zsh/kp
 ### PROCESS
 # mnemonic: [K]ill [P]rocess

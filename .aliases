@@ -1,3 +1,5 @@
+# vim: set ft=sh:
+#
 # ls with color
 alias grep="grep --color=always"
 alias egrep="egrep --color=always"

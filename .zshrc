@@ -226,3 +226,21 @@ export RPROMPT="$RPROMPT $(virtual_env_info)"
 # }}}
 
 add-zsh-hook precmd vcs_info
+
+
+
+function fzf-goto-dir() {
+    local dir
+    setopt localoptions noglobsubst noposixbuiltins pipefail 2> /dev/null
+    dir=$(fasd -Rdl |\
+        sed "s:$HOME:~:" |\
+        FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS --tiebreak=index --query=${(qqq)LBUFFER} --no-sort +m" $(__fzfcmd) |\
+        sed "s:~:$HOME:") &&
+    pushd "$dir"
+    ret=$?
+    zle reset-prompt
+    return $ret
+}
+
+zle     -N    fzf-goto-dir
+bindkey '^F'  fzf-goto-dir
