@@ -1,9 +1,11 @@
 eval `dircolors ~/.dircolors`
 
+zmodload zsh/zle
+export ZSH=$HOME/.oh-my-zsh
 # Environnement variables
 source ~/.profile
 source ~/.aliases
-# source ~/.shell-functions
+source ~/.oh-my-zsh/oh-my-zsh.sh
 
 autoload -U add-zsh-hook
 
@@ -196,7 +198,7 @@ export FZF_ALT_C_COMMAND="fd --hidden -t d -t l 2> /dev/null"
 zle     -N   fzf-file-widget
 bindkey '^F' fzf-file-widget
 zle     -N    fzf-cd-widget
-bindkey '^E' fzf-cd-widget
+bindkey '^T' fzf-cd-widget
 zle     -N   fzf-history-widget
 bindkey '^R' fzf-history-widget
 #}}}
