@@ -11,13 +11,12 @@ REPLY=0
 echo ""
 if [[ -n $ALL_YES ]] || [[ $REPLY == 0 ]]
 then
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-    if command -v vim &> /dev/null; then
+    if command -v nvim &> /dev/null; then
         echo "Bootstraping Vim"
-        ln -sf ~/.vim/vimrc ~/.vimrc
-        vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
+        nvim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
     fi
 else
     echo "setting up minimal vim"
@@ -64,8 +63,8 @@ then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
 
-wget https://github.com/sindresorhus/pure/blob/master/pure.zsh
-wget https://github.com/sindresorhus/pure/blob/master/async.zsh
+# wget https://github.com/sindresorhus/pure/blob/master/pure.zsh
+# wget https://github.com/sindresorhus/pure/blob/master/async.zsh
 
 
 ###################
