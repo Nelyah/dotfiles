@@ -2,8 +2,10 @@
 thread_index.run(hooks::toggle deleted %1, hooks::toggle deleted %1)=d
 thread_index.scroll_home=g # Scroll to first line, default: 1, Key(GDK_KEY_Home)
 thread_index.scroll_end=G # Scroll to last line, default: 0, Key (GDK_KEY_End)
-thread_view.home=g # Scroll home, default: 1, Key (GDK_KEY_Home)
+thread_view.home='gg' # Scroll home, default: 1, Key (GDK_KEY_Home)
 thread_view.end=G # Scroll to end, default: 0, Key (GDK_KEY_End)
+main_window.close_page=q # Close mode (or window if other windows are open), default: C-w
+thread_view.search.search='ga' (not tag:inbox) # Search for text, no defaults.
 
 
 
