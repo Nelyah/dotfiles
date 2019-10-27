@@ -1,9 +1,13 @@
 theme = nelyah
 
-initial_command = search tag:inbox
+initial_command = search tag:inbox or tag:todo
 editor_cmd = 'nvim +/^$ +nohlsearch +Goyo'
 quit_on_last_bclose = true
 attachment_prefix = '~/Downloads/'
+interpret_ansi_background = False
+quote_symbol = '( {4}|>)'
+parse_quotes = True
+
 
 [accounts]
     [[perso]]
@@ -11,12 +15,14 @@ attachment_prefix = '~/Downloads/'
         address = chloe@dequeker.me
         alias_regexp = chloe\+.+@dequeker.me
         sendmail_command = msmtp --account=ovh -t
+        ask_subject = False
 
         # ~ expansion also works
         draft_box = maildir://~/.mail/perso/Drafts
         sent_box = maildir://~/.mail/perso/Sent
         gpg_key = chloe@dequeker.me
         sign_by_default = true
+
 
 [bindings]
     up = move up
@@ -51,7 +57,7 @@ attachment_prefix = '~/Downloads/'
 
     q = bclose
 
-    'g i' = search tag:inbox
+    'g i' = search tag:inbox or tag:todo
     'g s' = search tag:sent
     'g u' = search tag:unread
     'g a' = search not tag:inbox
@@ -75,6 +81,7 @@ attachment_prefix = '~/Downloads/'
         l = retagprompt
         O = refineprompt
         | = refineprompt
+        d = tag delete; untag inbox
         enter = select; fold *; unfold tag:unread; move last; unfold
         't a' = prompt 'tag --all '
         't u a' = prompt 'untag --all '
@@ -130,3 +137,42 @@ attachment_prefix = '~/Downloads/'
         & = toggletags killed
         ! = toggletags flagged
         u = toggletags unread
+[tags]
+  [[flagged]]
+    translated = ⚑
+    normal = '','','light red','','light red',''
+    focus = '','','light red','','light red',''
+  [[unread]]
+    translated = '' 
+  [[replied]]
+    normal = '','', 'white','light red', 'white','default'
+    focus = '','', 'white','light red', 'white','h239'
+    translated = ⏎
+  [[signed]]
+    normal = '','', 'white','light red', 'h23','default'
+    focus = '','', 'white','light red', 'h23','h239'
+  [[encrypted]]
+    normal = '','', 'white','light red', 'h23','default'
+    focus = '','', 'white','light red', 'h23','h239'
+    translated = ⚷
+  [[todo]]
+    normal = '','', 'white','light red', '#d66','default'
+    focus = '','', 'white','light red', '#d66','h239'
+    translated = TODO
+  [[inbox]]
+    normal = '','', 'white','light red', 'h39','default'
+    focus = '','', 'white','light red', 'h39','h239'
+  [[attachment]]
+    normal = '','', 'white','light red', 'h3','default'
+    focus = '','', 'white','light red', 'h3','h239'
+    translated = 
+  [[phd|work]]
+    normal = '','', 'white','light red', 'h94','default'
+    focus = '','', 'white','light red', 'h94','h239'
+  [[sent]]
+    normal = '','', 'white','light red', 'h8','default'
+    focus = '','', 'white','light red', 'h8','h239'
+  [[update]]
+    normal = '','', 'white','light red', 'h105','default'
+    focus = '','', 'white','light red', 'h105','h239'
+

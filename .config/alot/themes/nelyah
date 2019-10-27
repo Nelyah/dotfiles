@@ -55,7 +55,14 @@ green = 'dark green'
     line_focus = 'standout','default','%(base1)s','%(base01)s','h254','h241'
     line_odd = 'default','default','default','%(base03)s','default','h237'
 [thread]
-    attachment = 'default','default','default','%(base03)s','default','default'
+    quote_level_1 = 'underline','default','%(base02)s','%(yellow)s','h66','default'
+    quote_level_2 = 'underline','default','%(base02)s','%(yellow)s','h67','default'
+    quote_level_3 = 'underline','default','%(base02)s','%(yellow)s','h68','default'
+    quote_level_4 = 'underline','default','%(base02)s','%(yellow)s','h69','default'
+    quote_level_5 = 'underline','default','%(base02)s','%(yellow)s','h70','default'
+    # quote_level_7 = 'underline','default','%(base02)s','%(yellow)s','%(yellow)s','default'
+    quote_level_8 = 'underline','default','%(base02)s','%(yellow)s','%(red)s','default'
+    attachment = 'underline','default','%(base02)s','%(yellow)s','%(yellow)s','default'
     attachment_focus = 'underline','default','%(base02)s','%(yellow)s','%(base02)s','%(yellow)s'
     arrow_bars = 'default','default','%(yellow)s','%(base03)s','%(yellow)s','default'
     arrow_heads = 'default','default','%(yellow)s','%(base03)s','%(yellow)s','default'
@@ -101,8 +108,15 @@ green = 'dark green'
         [[[content]]]
             normal = 'default','default','%(base01)s','%(base03)s','%(base01)s','default'
             focus = 'standout','default','%(base02)s','%(base01)s','%(base02)s','h239'
+    [[threadline-todo]]
+        tagged_with = todo
+        [[[subject]]]
+            normal = 'default','default','default','%(base03)s','#d66','default'
+            focus = 'standout','default','%(base02)s,bold','%(base01)s','#d66,bold','h239'
+            width = 'weight',1
     [[threadline-unread]]
         normal = 'default','default','%(base1)s,bold','%(base03)s','%(base1)s,bold','h237'
+        focus = 'default','default','%(base1)s,bold','%(base03)s','%(base1)s,bold','h239'
         tagged_with = 'unread'
         [[[date]]]
             normal = 'default','default','%(yellow)s,bold','%(base03)s','%(yellow)s,bold','h237'
