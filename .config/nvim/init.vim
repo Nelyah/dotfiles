@@ -2,6 +2,24 @@ set nocompatible               " Be iMproved
 filetype off                  " required
 
 "{{{ Plugins
+
+" check whether vim-plug is installed and install it if necessary
+let plugpath = expand('<sfile>:p:h'). '/autoload/plug.vim'
+if !filereadable(plugpath)
+    if executable('curl')
+        let plugurl = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+        call system('curl -fLo ' . shellescape(plugpath) . ' --create-dirs ' . plugurl)
+        if v:shell_error
+            echom "Error downloading vim-plug. Please install it manually.\n"
+            exit
+        endif
+    else
+        echom "vim-plug not installed. Please install it manually or install curl.\n"
+        exit
+    endif
+endif
+
+
 " Required:
 call plug#begin('~/.config/nvim/plugged')
 
@@ -9,16 +27,14 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'christoomey/vim-tmux-navigator'
     Plug 'junegunn/fzf.vim'
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-    Plug 'mileszs/ack.vim'                     " Fuzzy search
+    Plug 'mileszs/ack.vim'                                            " Fuzzy search
+    Plug 'mhinz/vim-startify'
 
     Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+    Plug 'arakashic/chromatica.nvim'
 
     Plug 'Shougo/neco-vim'
-    Plug 'jeaye/color_coded', {
-                \ 'do': 'rm -f CMakeCache.txt && cmake . -DDOWNLOAD_CLANG=0 && make && make install',
-                \ 'for': ['c', 'cpp', 'objc', 'objcpp'],
-                \ 'build_commands' : ['cmake', 'make']
-                \}
+    Plug 'rbong/vim-flog'
 
     Plug 'easymotion/vim-easymotion'
     Plug 'rhysd/vim-grammarous'
@@ -26,23 +42,24 @@ call plug#begin('~/.config/nvim/plugged')
 
     Plug 'ludovicchabant/vim-gutentags'
 
-    Plug 'vim-airline/vim-airline'               " line with useful infos
+    Plug 'vim-airline/vim-airline'                                    " line with useful infos
     Plug 'vim-airline/vim-airline-themes'
-    Plug 'airblade/vim-gitgutter'                " git info on the left
-    Plug 'ap/vim-css-color'                      " Color highlighter
-    Plug 'joshdick/onedark.vim'                  " Colour scheme
+
+    Plug 'airblade/vim-gitgutter'                                     " git info on the left
+    Plug 'ap/vim-css-color'                                           " Color highlighter
+    Plug 'joshdick/onedark.vim'                                       " Colour scheme
     Plug 'vimwiki/vimwiki'
-"     Plugin 'Yggdroot/indentLine'                   " Display indentation
-    " Plug 'thaerkh/vim-indentguides'
+  " Plug 'Yggdroot/indentLine'
+  " Plug 'thaerkh/vim-indentguides'
 
-    Plug 'Raimondi/delimitMate'                  " For parenthesis
+    Plug 'Raimondi/delimitMate'                                       " For parenthesis
 
-    " NERDtree loaded on toggle
+                                                                      " NERDtree loaded on toggle
     Plug 'scrooloose/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
 
     Plug 'tmhedberg/SimpylFold'
-    Plug 'godlygeek/tabular'                        " Tabuliarise and align based on pattern
+    Plug 'godlygeek/tabular'                                          " Tabuliarise and align based on pattern
     Plug 'plasticboy/vim-markdown'
     Plug 'vim-pandoc/vim-pandoc'
     Plug 'vim-pandoc/vim-pandoc-syntax'
@@ -52,9 +69,9 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'sheerun/vim-polyglot'
     Plug 'vim-python/python-syntax'
 
-    Plug 'Vigemus/iron.nvim' " Interactive REPL over Neovim; might need lua config TODO
+    Plug 'Vigemus/iron.nvim'                                          " Interactive REPL over Neovim; might need lua config TODO
 
-    Plug 'tpope/vim-commentary'                  " comments based on the file type
+    Plug 'tpope/vim-commentary'                                       " comments based on the file type
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-sensible'
     Plug 'tpope/vim-fugitive'
@@ -217,6 +234,7 @@ noremap H 5h
 noremap J 5j
 noremap K 5k
 noremap L 5l
+nnoremap <c-j> J
 
 " Saving
 nnoremap <Leader>w :w<CR>
@@ -251,7 +269,7 @@ let g:tex_flavor='latex'
 " }}}
 
 " {{{ Buffer
-nnoremap <Leader>l :bn<CR><return>
+nnoremap <Leader>l :bn<CR>
 nnoremap <Leader>h :bp<CR>
 nnoremap gl :ls<CR>
 nnoremap gb :ls<CR>:b
@@ -389,7 +407,6 @@ endfunction
 
 " }}}
 
-"
 " Markdown config {{{
 " Syntax highlight within fenced code blocks
 let g:markdown_fenced_languages = ['bash=sh', 'css', 'html', 'js=javascript',
@@ -400,17 +417,10 @@ let g:markdown_fenced_languages = ['bash=sh', 'css', 'html', 'js=javascript',
 "        PLUGINS          "
 """""""""""""""""""""""""""
 
-" {{{ Clang-complete
-let g:clang_library_path='/usr/lib64/libclang.so'
-" }}}
 
-" {{{ ALE
-" Prevents from continuously checking for errors
-" and eating up battery
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_sign_column_always = 1
-let g:ale_linters = {'python': ['flake8']}
-let g:ale_fixers = {'python': ['remove_trailing_lines', 'trim_whitespace', 'yapf'], 'javascript': ['eslint']}
+" {{{ Chromatica
+" let g:clang_library_path='/usr/lib64/libclang.so'
+let g:chromatica#enable_at_startup=1
 " }}}
 
 " {{{ NERDtree
@@ -420,20 +430,96 @@ let NERDTreeDirArrows = 1
 " }}}
 
 " {{{ Airline
-let g:airline_theme = 'onedark'
+try
+
+let nvim_conf_dir = expand('<sfile>:p:h')
+let target_theme_file = nvim_conf_dir . '/plugged/vim-airline-themes/autoload/airline/themes/space.vim'
+if !filereadable(target_theme_file)
+    call system('cp ' . nvim_conf_dir . '/space.vim ' . target_theme_file)
+    if v:shell_error
+        echom v:shell_error
+    endif
+endif
+
+
+" Enable CSV integration
+let g:airline#extensions#csv#enabled = 1
+let g:airline#extensions#csv#column_display = 'Name'
+
+" Enable extensions
+let g:airline_extensions = ['branch', 'hunks', 'coc', 'tabline']
+
+" Update section z to just have line number
+let g:airline_section_z = airline#section#create(['%l/%L ', '%v'])
+
+" Do not draw separators for empty sections (only for the active window) >
+let g:airline_skip_empty_sections = 1
+
+" Smartly uniquify buffers names with similar filename, suppressing common parts of paths.
+let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline#extensions#tabline#enabled = 1
-set laststatus=2
 
-" if you want to disable auto detect, comment out those two lines
-"let g:airline#extensions#disable_rtp_load = 1
-"let g:airline_extensions = ['branch', 'hunks', 'coc']
+" Custom setup that removes filetype/whitespace from default vim airline bar
+let g:airline#extensions#default#layout = [['a', 'b', 'c'], ['x', 'warning', 'error', 'z']]
 
+let airline#extensions#coc#stl_format_err = '%E{[%e(#%fe)]}'
+
+let airline#extensions#coc#stl_format_warn = '%W{[%w(#%fw)]}'
+
+" Configure error/warning section to use coc.nvim
 let g:airline_section_error = '%{airline#util#wrap(airline#extensions#coc#get_error(),0)}'
 let g:airline_section_warning = '%{airline#util#wrap(airline#extensions#coc#get_warning(),0)}'
-let airline#extensions#coc#error_symbol = 'E:'
-let airline#extensions#coc#warning_symbol = 'W:'
-let airline#extensions#coc#stl_format_err = '%E{[%e(#%fe)]}'
-let airline#extensions#coc#stl_format_warn = '%W{[%w(#%fw)]}'
+
+" Hide the Nerdtree status line to avoid clutter
+let g:NERDTreeStatusline = ''
+
+" Disable vim-airline in preview mode
+let g:airline_exclude_preview = 1
+
+" Enable powerline fonts
+let g:airline_powerline_fonts = 1
+
+" Enable caching of syntax highlighting groups
+let g:airline_highlighting_cache = 1
+
+" Define custom airline symbols
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+
+" Don't show git changes to current file in airline
+let g:airline#extensions#hunks#enabled=0
+
+" unicode symbols
+let g:airline_left_sep = '»'
+let g:airline_left_sep = '▶'
+let g:airline_right_sep = '«'
+let g:airline_right_sep = '◀'
+let g:airline_symbols.linenr = '␊'
+let g:airline_symbols.linenr = '␤'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.branch = '⎇'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.paste = 'Þ'
+let g:airline_symbols.paste = '∥'
+let g:airline_symbols.whitespace = 'Ξ'
+
+" airline symbols
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+
+" Vim airline theme
+let g:airline_theme='space'
+
+catch
+  echo 'Airline not installed. It should work after running :PlugInstall'
+endtry
+
 " }}}
 
 " {{{ VimTex
@@ -539,6 +625,7 @@ let g:python_highlight_all = 1
 " }}}
 
 " {{{ git-gutter
+let g:gitgutter_map_keys = 0
 nnoremap <Leader>gp <Plug>GitGutterPreviewHunk
 nnoremap <Leader>gs <Plug>GitGutterStageHunk
 nnoremap <Leader>gu <Plug>GitGutterUndoHunk
@@ -578,11 +665,11 @@ autocmd! User GoyoLeave call <SID>goyo_leave()
 " {{{ vim-tmux-navigator
 let g:tmux_navigator_no_mappings = 1
 
-map <silent> <m-h> :TmuxNavigateLeft<cr>
-map <silent> <m-j> :TmuxNavigateDown<cr>
-map <silent> <m-k> :TmuxNavigateUp<cr>
-map <silent> <m-l> :TmuxNavigateRight<cr>
-map <silent> <m-\> :TmuxNavigatePrevious<cr>
+nnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <m-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <m-\> :TmuxNavigatePrevious<cr>
 " }}}
 
 " {{{ Gutentags
