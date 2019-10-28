@@ -411,12 +411,42 @@ endfunction
 " Syntax highlight within fenced code blocks
 let g:markdown_fenced_languages = ['bash=sh', 'css', 'html', 'js=javascript',
       \ 'typescript=javascript', 'python']
-" }}}<Paste>
+
+" }}}
+
+" {{{ Git
+
+autocmd FileType gitrebase nnoremap <Leader>p ciwpick<esc>0
+autocmd FileType gitrebase nnoremap <Leader>r ciwreword<esc>0
+autocmd FileType gitrebase nnoremap <Leader>e ciwedit<esc>0
+autocmd FileType gitrebase nnoremap <Leader>s ciwsquash<esc>0
+autocmd FileType gitrebase nnoremap <Leader>f ciwfixup<esc>0
+autocmd FileType gitrebase nnoremap <Leader>x ciwexec<esc>0
+autocmd FileType gitrebase nnoremap <Leader>b ciwbreak<esc>0
+autocmd FileType gitrebase nnoremap <Leader>d ciwdrop<esc>0
+autocmd FileType gitrebase nnoremap <Leader>l ciwlabel<esc>0
+autocmd FileType gitrebase nnoremap <Leader>t ciwreset<esc>0
+autocmd FileType gitrebase nnoremap <Leader>m ciwmerge<esc>0
+
+"}}}
+
 
 """""""""""""""""""""""""""
 "        PLUGINS          "
 """""""""""""""""""""""""""
 
+" {{{ vim-flog
+function! Flogdiff()
+  let first_commit = flog#get_commit_data(line("'<")).short_commit_hash
+  let last_commit = flog#get_commit_data(line("'>")).short_commit_hash
+  call flog#git('vertical belowright', '!', 'diff ' . first_commit . ' ' . last_commit)
+endfunction
+
+augroup flog
+  autocmd FileType floggraph vno gd :<C-U>call Flogdiff()<CR>
+augroup END
+
+"}}}
 
 " {{{ Chromatica
 " let g:clang_library_path='/usr/lib64/libclang.so'
@@ -553,6 +583,7 @@ nnoremap , :Buffers<CR>
 nnoremap <Leader>o :FZF<CR>
 nnoremap <Leader>t :Tags<CR>
 nnoremap <Leader>T :BTags<CR>
+nnoremap <Leader>fp :GFiles<CR>
 
 nnoremap <c-x>h :Helptags<CR>
 inoremap <c-x>h :Helptags<CR>
@@ -751,5 +782,3 @@ let g:vimwiki_map_prefix = '<Leader>e'
 let g:vimwiki_list = [{'path': '~/cloud/utils/vimwiki/', 'syntax': 'markdown', 'ext': '.vw'}]
 let g:vimwiki_folding = 'custom'
 autocmd FileType vimwiki setlocal fdm=marker
-" }}}
-
