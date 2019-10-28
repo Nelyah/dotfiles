@@ -1,6 +1,3 @@
-set nocompatible               " Be iMproved
-filetype off                  " required
-
 "{{{ Plugins
 
 " check whether vim-plug is installed and install it if necessary
@@ -13,6 +10,8 @@ if !filereadable(plugpath)
             echom "Error downloading vim-plug. Please install it manually.\n"
             exit
         endif
+        echom "Installing plugins"
+        autocmd VimEnter * PlugInstall --sync
     else
         echom "vim-plug not installed. Please install it manually or install curl.\n"
         exit
@@ -23,12 +22,16 @@ endif
 " Required:
 call plug#begin('~/.config/nvim/plugged')
 
+Plug 'liuchengxu/vim-which-key'
     Plug 'Shougo/vimproc.vim', {'build': 'make'}
     Plug 'christoomey/vim-tmux-navigator'
     Plug 'junegunn/fzf.vim'
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'mileszs/ack.vim'                                            " Fuzzy search
     Plug 'mhinz/vim-startify'
+
+    Plug 'francoiscabrol/ranger.vim'
+    Plug 'rbgrouleff/bclose.vim'
 
     Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
     Plug 'arakashic/chromatica.nvim'
@@ -96,23 +99,13 @@ call plug#end()
 
 " {{{ Basic VIM modifications
 
-
-set guioptions=M
-set mouse=a " Use the mouse to slide panes size or scrolling, and copying
-
-set hidden " Allow background buffers without saving
-set splitright
-
 " set t_Co=256
 set number              " line numbers
-hi CursorLineNr guifg=#dddddd
-set cursorline                        " highlight current line
 set encoding=utf-8
 
 set autoindent
 set autoread            " reload automatically a file if not changed
 
-set formatoptions+=n                  " smart auto-indenting inside numbered lists
 
 " Keep undo history across sessions by storing it in a file
 if has('persistent_undo')
@@ -125,20 +118,8 @@ if has('persistent_undo')
   endif
 endif
 
-
-" Text wrapping
-" set nowrap
-" set textwidth=79
-" set colorcolumn=80
-
 " Adding my own snippets
 set runtimepath+=~/.config/nvim/my-snippets/
-
-" Search
-set incsearch           " search as characters are entered
-set hlsearch            " highlight matches
-set magic               " For regex
-set ignorecase
 
 " vim tmp files
 set directory=$HOME/.config/nvim/swap,/tmp
@@ -161,12 +142,6 @@ let mapleader = "\<Space>"
 
 nnoremap z- z=1<enter><enter>
 
-" Tab spec
-set tabstop=4
-set shiftwidth=4
-set expandtab
-set backspace=indent,eol,start
-
 """ NetRW - VIM file explorer
 let g:netrw_liststyle = 1 " Detail View
 let g:netrw_sizestyle = 'H' " Human-readable file sizes
@@ -175,7 +150,7 @@ let g:netrw_sizestyle = 'H' " Human-readable file sizes
 let g:netrw_banner = 0 " Turn off banner
 
 """ Explore in vertical split
-nnoremap <Leader>e :Explore! <enter>
+" nnoremap <Leader>e :Explore! <enter>
 
 nnoremap <Leader>fi :e ~/.config/nvim/init.vim<CR>
 nnoremap <Leader>fd :lcd %:h<CR>
@@ -186,6 +161,7 @@ nnoremap <Leader>mp :setfiletype python<CR>
 nnoremap <Leader>mcc :setfiletype c<CR>
 nnoremap <Leader>mcpp :setfiletype cpp<CR>
 
+nnoremap <Leader>k :q<CR>
 nnoremap <Leader>1 :only<CR>
 nnoremap <Leader>2 :split<CR>
 nnoremap <Leader>3 :vsplit<CR>
@@ -193,10 +169,8 @@ nnoremap <Leader>3 :vsplit<CR>
 syntax on
 filetype plugin indent on
 
-
+" Auto-source the nvim config when written
 autocmd! BufWritePost $MYVIMRC :source $MYVIMRC
-
-
 
 nnoremap gV `[V`]
 nnoremap ; :
@@ -206,7 +180,7 @@ nnoremap <leader>d /
 inoremap kj <esc>
 vnoremap kj <esc>
 tnoremap <Esc> <C-\><C-n>
-tnoremap kjjk <C-\><C-n>
+" tnoremap kjjk <C-\><C-n>
 
 " Switching panes using the ctrl key
 nnoremap <M-h> <C-w>h
@@ -235,6 +209,7 @@ noremap J 5j
 noremap K 5k
 noremap L 5l
 nnoremap <c-j> J
+nnoremap Y y$
 
 " Saving
 nnoremap <Leader>w :w<CR>
@@ -243,9 +218,9 @@ nnoremap <Leader>w :w<CR>
 noremap <Leader>x "+
 " Copy to clipboard
 vnoremap <leader>y "+y 
-vnoremap <leader>p "+p
+nnoremap <leader>p "+gp
 
-" Stupid window...
+
 map q: :q
 
 " Align blocks of texte and keep them selected
@@ -266,14 +241,34 @@ autocmd FileType mail nnoremap <Leader>gs :call MailJumpToField('Subject:')<CR>
 
 let g:tex_flavor='latex'
 
-" }}}
 
-" {{{ Buffer
+set guioptions=M
+set mouse=a " Use the mouse to slide panes size or scrolling, and copying
+
+set hidden " Allow background buffers without saving
+set splitright
+
+hi CursorLineNr guifg=#dddddd
+set cursorline                        " highlight current line
+set formatoptions+=n                  " smart auto-indenting inside numbered lists
+" Search
+set incsearch           " search as characters are entered
+set hlsearch            " highlight matches
+set magic               " For regex
+set ignorecase
+
+" Tab spec
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set backspace=indent,eol,start
+
 nnoremap <Leader>l :bn<CR>
 nnoremap <Leader>h :bp<CR>
 nnoremap gl :ls<CR>
 nnoremap gb :ls<CR>:b
-" }}}
+
+nnoremap <silent> <leader>      :<c-u>WhichKey '<Space>'<CR>
 
 nnoremap <Leader>c ggVG:!column -t<CR>
 
@@ -295,6 +290,8 @@ augroup vimrc_help
   autocmd BufEnter *.txt if &buftype == 'help' | wincmd L | endif
 augroup END
 
+" }}}
+" Interface {{{
 
 " Display as much as possible as last line, instead of just showing @
 set display=lastline
@@ -314,20 +311,15 @@ set lazyredraw
 " Better display for messages
 set cmdheight=2
 
-" Colors & Syntax Highlighting {{{
-
 " Only highlight first 500 chars for better performance
-set synmaxcol=500
+set synmaxcol=1000
 " Color scheme
 set background=dark
+
 "Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
 "If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
 "(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
 if (empty($TMUX))
-  if (has("nvim"))
-    "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
-    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-  endif
   "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
   "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
   " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
@@ -337,13 +329,8 @@ if (empty($TMUX))
 endif
 colorscheme onedark
 
-if (has('nvim'))
-    colorscheme onedark
-    set termguicolors
-else
-    colorscheme ir_black
-endif
-" }}}
+colorscheme onedark
+set termguicolors
 
 nnoremap <silent> <c-up> <c-w>3+
 nnoremap <silent> <c-down> <c-w>3-
@@ -357,8 +344,8 @@ set foldmethod=marker
 " Hide default mode text (i.e. INSERT below status line)
 set noshowmode
 
-
 " Show cursor position in bottom right
+" Only useful if airline is not used
 set ruler
 
 " Reasonable tab completion
@@ -374,11 +361,10 @@ set wildignore+=build,lib,node_modules,public,_site,third_party
 set wildignore+=*.gif,*.jpg,*.jpeg,*.otf,*.png,*.svg,*.ttf,*.svg,
 " Ignore case when completing
 set wildignorecase
-" }}}
 
 
 set complete+=kspell
-
+" }}}
 " {{{ Useful functions and commands
 command! -nargs=1 Ssh :r scp://<args>/
 
@@ -404,18 +390,16 @@ function! MailJumpToField(field)
     endif
 endfunction
 
-
 " }}}
-
 " Markdown config {{{
 " Syntax highlight within fenced code blocks
 let g:markdown_fenced_languages = ['bash=sh', 'css', 'html', 'js=javascript',
       \ 'typescript=javascript', 'python']
 
 " }}}
-
 " {{{ Git
 
+" Git rebase bindings
 autocmd FileType gitrebase nnoremap <Leader>p ciwpick<esc>0
 autocmd FileType gitrebase nnoremap <Leader>r ciwreword<esc>0
 autocmd FileType gitrebase nnoremap <Leader>e ciwedit<esc>0
@@ -435,30 +419,54 @@ autocmd FileType gitrebase nnoremap <Leader>m ciwmerge<esc>0
 "        PLUGINS          "
 """""""""""""""""""""""""""
 
+" {{{ Fugitive
+nnoremap <Leader>gs :vertical botright Gstatus<CR>
+" }}}
+" {{{ Magit
+
+nnoremap <Leader>gm :Magit<CR>
+
+" }}}
 " {{{ vim-flog
+nnoremap <Leader>gf :Flog<CR>
+
+
+function! Flogfixuprebase()
+  let commit = flog#get_commit_data(line('.')).short_commit_hash
+  execute 'Gcommit --fixup=' . commit . ' 133_SquashArgument()<CR>'
+endfunction
+
+
 function! Flogdiff()
   let first_commit = flog#get_commit_data(line("'<")).short_commit_hash
   let last_commit = flog#get_commit_data(line("'>")).short_commit_hash
   call flog#git('vertical belowright', '!', 'diff ' . first_commit . ' ' . last_commit)
 endfunction
 
+
+function! Flogrebase()
+  let first_commit = flog#get_commit_data(line("'<")).short_commit_hash
+  let last_commit = flog#get_commit_data(line("'>")).short_commit_hash
+  execute 'Grebase -i ' . last_commit . ' ' . first_commit
+  " call flog#git('vertical belowright', '!', 'rebase -i ' . last_commit . ' ' . first_commit)
+endfunction
+
+
 augroup flog
-  autocmd FileType floggraph vno gd :<C-U>call Flogdiff()<CR>
+  autocmd FileType floggraph vnoremap gd :<C-U>call Flogdiff()<CR>
+  autocmd FileType floggraph vnoremap gr :<C-U>call Flogrebase()<CR>
 augroup END
 
 "}}}
-
 " {{{ Chromatica
 " let g:clang_library_path='/usr/lib64/libclang.so'
 let g:chromatica#enable_at_startup=1
 " }}}
-
 " {{{ NERDtree
 map <Leader>n :NERDTreeToggle<return><CR>
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 " }}}
-
 " {{{ Airline
 try
 
@@ -551,13 +559,11 @@ catch
 endtry
 
 " }}}
-
 " {{{ VimTex
 let g:vimtex_compiler_method = 'latexmk'
 autocmd FileType tex nnoremap <Leader>c :VimtexTocToggle<CR>
 autocmd FileType tex nnoremap <F5> :VimtexCompile<CR>
 " }}}
-
 " {{{ fzf plugin
 autocmd CompleteDone * pclose
 let g:fzf_history_dir = '~/.local/share/fzf-history'
@@ -584,6 +590,7 @@ nnoremap <Leader>o :FZF<CR>
 nnoremap <Leader>t :Tags<CR>
 nnoremap <Leader>T :BTags<CR>
 nnoremap <Leader>fp :GFiles<CR>
+nnoremap <Leader>s :BLines<CR>
 
 nnoremap <c-x>h :Helptags<CR>
 inoremap <c-x>h :Helptags<CR>
@@ -596,27 +603,22 @@ autocmd! FileType fzf
 autocmd  FileType fzf set laststatus=0 noshowmode noruler
   \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
 " }}}
-
 " {{{ Tagbar
 nnoremap <F8> :TagbarToggle<CR>
 
 " }}}
-
 " {{{ Expand regions
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
 " }}}
-
 " {{{ Python folding
 " Be able to read doc
 let g:SimpylFold_docstring_preview = 1
 
 " }}}
-
 " {{{ Git plugin
-set diffopt+=vertical
+" set diffopt+=vertical
 " }}}
-
 " {{{ Tabular
 nnoremap <Leader>a= :Tabularize /=<CR>
 vnoremap <Leader>a= :Tabularize /=<CR>
@@ -639,37 +641,31 @@ augroup END
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 " }}}
-
 " {{{ Ultisnips
 let g:UltiSnipsExpandTrigger="<c-c>"
 let g:UltiSnipsJumpForwardTrigger="<c-c>"
 let g:UltiSnipsJumpBackwardTrigger="<c-b>"
 " }}}
-
 " {{{ VIM polyglot
 let g:polyglot_disabled = ['python']
 let g:polyglot_disabled = ['latex']
 " }}}
-
 " {{{ python-syntax
 let g:python_highlight_all = 1
 " }}}
-
 " {{{ git-gutter
 let g:gitgutter_map_keys = 0
-nnoremap <Leader>gp <Plug>GitGutterPreviewHunk
-nnoremap <Leader>gs <Plug>GitGutterStageHunk
-nnoremap <Leader>gu <Plug>GitGutterUndoHunk
+" nnoremap <Leader>gp <Plug>GitGutterPreviewHunk
+" nnoremap <Leader>gs <Plug>GitGutterStageHunk
+" nnoremap <Leader>gu <Plug>GitGutterUndoHunk
 " }}}
-
 " {{{ easymotion
-nnoremap  <Leader>s <Plug>(easymotion-bd-w)
+" nnoremap  <Leader>s <Plug>(easymotion-bd-w)
 " nnoremap <Leader>s <Plug>(easymotion-overwin-w)
 " Gif config
 map  / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-tn)
 " }}}
-
 " {{{ Goyo
 function! s:goyo_enter()
   let b:quitting = 0
@@ -692,7 +688,6 @@ endfunction
 autocmd! User GoyoEnter call <SID>goyo_enter()
 autocmd! User GoyoLeave call <SID>goyo_leave()
 " }}}
-
 " {{{ vim-tmux-navigator
 let g:tmux_navigator_no_mappings = 1
 
@@ -702,11 +697,9 @@ nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <m-\> :TmuxNavigatePrevious<cr>
 " }}}
-
 " {{{ Gutentags
 let g:gutentags_cache_dir = '~/.config/nvim/gutentags'
 " }}}
-
 " {{{ CoC nvim
 
 " Use `:Format` to format current buffer
@@ -772,13 +765,15 @@ autocmd FileType mail call coc#config('suggest', {
 
 
 " }}}
-
 " {{{ Tmux-Complete
 let g:tmuxcomplete#trigger = ''
 " }}}
-
 " {{{ Vimwiki
 let g:vimwiki_map_prefix = '<Leader>e'
 let g:vimwiki_list = [{'path': '~/cloud/utils/vimwiki/', 'syntax': 'markdown', 'ext': '.vw'}]
 let g:vimwiki_folding = 'custom'
 autocmd FileType vimwiki setlocal fdm=marker
+" {{{ Ranger.vim
+let g:ranger_map_keys = 0
+nnoremap <leader>e :Ranger<CR>
+" }}}
