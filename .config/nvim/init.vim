@@ -34,14 +34,14 @@ Plug 'liuchengxu/vim-which-key'
     Plug 'rbgrouleff/bclose.vim'
 
     Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
-    Plug 'arakashic/chromatica.nvim'
+    Plug 'arakashic/chromatica.nvim', {'for': ['c', 'cpp']}
 
     Plug 'Shougo/neco-vim'
     Plug 'rbong/vim-flog'
 
     Plug 'easymotion/vim-easymotion'
     Plug 'rhysd/vim-grammarous'
-    Plug 'jreybert/vimagit'
+    Plug 'jreybert/vimagit', {'on': 'Magit'}
 
     Plug 'ludovicchabant/vim-gutentags'
 
@@ -58,19 +58,19 @@ Plug 'liuchengxu/vim-which-key'
     Plug 'Raimondi/delimitMate'                                       " For parenthesis
 
                                                                       " NERDtree loaded on toggle
-    Plug 'scrooloose/nerdtree'
+    Plug 'scrooloose/nerdtree', {'on':  'NERDTreeToggle'}
     Plug 'Xuyuanp/nerdtree-git-plugin'
 
     Plug 'tmhedberg/SimpylFold'
     Plug 'godlygeek/tabular'                                          " Tabuliarise and align based on pattern
-    Plug 'plasticboy/vim-markdown'
+    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
     Plug 'vim-pandoc/vim-pandoc'
-    Plug 'vim-pandoc/vim-pandoc-syntax'
+    Plug 'vim-pandoc/vim-pandoc-syntax', {'for': ['markdown', 'pandoc']}
 
-    Plug 'junegunn/goyo.vim'
+    Plug 'junegunn/goyo.vim', {'on': 'Goyo'}
 
     Plug 'sheerun/vim-polyglot'
-    Plug 'vim-python/python-syntax'
+    Plug 'vim-python/python-syntax', {'for': 'python'}
 
     Plug 'Vigemus/iron.nvim'                                          " Interactive REPL over Neovim; might need lua config TODO
 
@@ -91,7 +91,7 @@ Plug 'liuchengxu/vim-which-key'
 
     Plug 'SirVer/ultisnips'
     Plug 'honza/vim-snippets'
-    Plug 'lervag/vimtex'
+    Plug 'lervag/vimtex', {'for': ['tex', 'latex']}
     Plug 'ymatz/vim-latex-completion'
 
 call plug#end()
@@ -218,7 +218,7 @@ nnoremap <Leader>w :w<CR>
 noremap <Leader>x "+
 " Copy to clipboard
 vnoremap <leader>y "+y 
-nnoremap <leader>p "+gp
+nnoremap <leader>p o<esc>"+gp
 
 
 map q: :q
@@ -428,7 +428,7 @@ nnoremap <Leader>gm :Magit<CR>
 
 " }}}
 " {{{ vim-flog
-nnoremap <Leader>gf :Flog<CR>
+nnoremap <Leader>gf :Flog -all<CR>
 
 
 function! Flogfixuprebase()
@@ -436,6 +436,11 @@ function! Flogfixuprebase()
   execute 'Gcommit --fixup=' . commit . ' 133_SquashArgument()<CR>'
 endfunction
 
+
+function! Flogcheckout()
+  let commit = flog#get_commit_data(line('.')).short_commit_hash
+  execute 'Floggit checkout ' . commit
+endfunction
 
 function! Flogdiff()
   let first_commit = flog#get_commit_data(line("'<")).short_commit_hash
@@ -454,6 +459,7 @@ endfunction
 
 augroup flog
   autocmd FileType floggraph vnoremap gd :<C-U>call Flogdiff()<CR>
+  autocmd FileType floggraph nnoremap gco :<C-U>call Flogcheckout()<CR>
   autocmd FileType floggraph vnoremap gr :<C-U>call Flogrebase()<CR>
 augroup END
 
@@ -770,9 +776,14 @@ let g:tmuxcomplete#trigger = ''
 " }}}
 " {{{ Vimwiki
 let g:vimwiki_map_prefix = '<Leader>e'
-let g:vimwiki_list = [{'path': '~/cloud/utils/vimwiki/', 'syntax': 'markdown', 'ext': '.vw'}]
+let g:vimwiki_list = [{'path': '$HOME/cloud/utils/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
 let g:vimwiki_folding = 'custom'
+let g:vimwiki_global_ext = 0
 autocmd FileType vimwiki setlocal fdm=marker
+
+" Retain Markdown colour scheme
+autocmd FileType vimwiki set ft=markdown
+" }}}
 " {{{ Ranger.vim
 let g:ranger_map_keys = 0
 nnoremap <leader>e :Ranger<CR>
