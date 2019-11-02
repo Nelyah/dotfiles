@@ -22,83 +22,81 @@ endif
 " Required:
 call plug#begin('~/.config/nvim/plugged')
 
-Plug 'liuchengxu/vim-which-key'
-    Plug 'Shougo/vimproc.vim', {'build': 'make'}
-    Plug 'christoomey/vim-tmux-navigator'
-    Plug 'junegunn/fzf.vim'
-    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-    Plug 'mileszs/ack.vim'                                            " Fuzzy search
-    Plug 'mhinz/vim-startify'
+    Plug 'junegunn/fzf.vim'                                              " Fuzzy search everything
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }    " Install FZF
+    Plug 'easymotion/vim-easymotion'                                     " Easily search and move around the buffer
+    Plug 'christoomey/vim-tmux-navigator'                                " Sane binding to navigate between vim and tmux
+    Plug 'SirVer/ultisnips'                                           " Interface for Snippets
+    Plug 'honza/vim-snippets'                                            " Provide with many Snippets
+    Plug 'terryma/vim-expand-region'                                     " Extend visual selection by increasing text objects
+    Plug 'terryma/vim-multiple-cursors'                                  " Adding multiple cursors with <c-n>
+    Plug 'Raimondi/delimitMate'                                          " For parenthesis completion
 
-    Plug 'francoiscabrol/ranger.vim'
-    Plug 'rbgrouleff/bclose.vim'
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}          " Best completion engine out there (LSP support)
+    Plug 'ludovicchabant/vim-gutentags'                                  " (Re)generate tags automatically
+    Plug 'godlygeek/tabular'                                             " Tabuliarise and align based on pattern
+    " Plug 'Yggdroot/indentLine'
+    " Plug 'thaerkh/vim-indentguides'
 
-    Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
-    Plug 'arakashic/chromatica.nvim', {'for': ['c', 'cpp']}
+    Plug 'tpope/vim-commentary'                                          " comments based on the file type
+    Plug 'tpope/vim-surround'                                            " Add/change/remove quotes and stuff around objects
+    Plug 'tpope/vim-sensible'                                            " Sensible defaults for [n]vim
+    Plug 'tpope/vim-repeat'                                              " Allows for more complicated repeat using '.'
+    Plug 'tpope/vim-eunuch'                                              " Provide with basic commands (chmod, rename, etc...)
+    Plug 'tpope/vim-fugitive'                                            " Git Interface
+    Plug 'jreybert/vimagit', {'on': 'Magit'}                             " A great git interface for making commits
+    Plug 'rbong/vim-flog'                                                " Git graph viewer
+    Plug 'airblade/vim-gitgutter'                                        " git info on the left
 
-    Plug 'Shougo/neco-vim'
-    Plug 'rbong/vim-flog'
 
-    Plug 'easymotion/vim-easymotion'
-    Plug 'rhysd/vim-grammarous'
-    Plug 'jreybert/vimagit', {'on': 'Magit'}
+    """""""""""""""
+    "  Interface  "
+    """""""""""""""
+    Plug 'vim-airline/vim-airline'                                       " line with useful infos
+    Plug 'vim-airline/vim-airline-themes'                                " A collection of themes
+    Plug 'ap/vim-css-color'                                              " Color highlighter
+    Plug 'joshdick/onedark.vim'                                          " Colour scheme
 
-    Plug 'ludovicchabant/vim-gutentags'
+    """""""""""""""""""""""
+    "  Language specific  "
+    """""""""""""""""""""""
+    Plug 'sheerun/vim-polyglot'                                          " Provide many language syntax highlighting
+    Plug 'vim-python/python-syntax', {'for': 'python'}                   " Better Python syntax highlighting
+    Plug 'tmhedberg/SimpylFold', {'for': 'python'}                       " Better folding in python for docstrings and such
+    Plug 'Vigemus/iron.nvim', {'for': 'python'}                          " Interactive REPL over Neovim
 
-    Plug 'vim-airline/vim-airline'                                    " line with useful infos
-    Plug 'vim-airline/vim-airline-themes'
+    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}                  " Many conceal and folding features for Markdown
+    Plug 'vim-pandoc/vim-pandoc', {'for': ['markdown', 'pandoc']}        " Provide a Pandoc interface conversion
+    Plug 'vim-pandoc/vim-pandoc-syntax', {'for': ['markdown', 'pandoc']} " Provide pandoc specific syntax
 
-    Plug 'airblade/vim-gitgutter'                                     " git info on the left
-    Plug 'ap/vim-css-color'                                           " Color highlighter
-    Plug 'joshdick/onedark.vim'                                       " Colour scheme
-    Plug 'vimwiki/vimwiki'
-  " Plug 'Yggdroot/indentLine'
-  " Plug 'thaerkh/vim-indentguides'
+    Plug 'arakashic/chromatica.nvim', {'for': ['c', 'cpp']}              " Better syntax highlighting for c and cpp languages
 
-    Plug 'Raimondi/delimitMate'                                       " For parenthesis
+    Plug 'lervag/vimtex', {'for': ['tex', 'latex']}                      " Many LateX features
+    Plug 'ymatz/vim-latex-completion', {'for': ['tex', 'latex']}         " Better LateX completion
 
-                                                                      " NERDtree loaded on toggle
-    Plug 'scrooloose/nerdtree', {'on':  'NERDTreeToggle'}
-    Plug 'Xuyuanp/nerdtree-git-plugin'
+    """""""""""""""""""""
+    "  Integrated apps  "
+    """""""""""""""""""""
+    Plug 'vimwiki/vimwiki'                                               " Wiki for vim
+    Plug 'scrooloose/nerdtree', {'on':  'NERDTreeToggle'}                " NERDtree loaded on toggle
+    Plug 'Xuyuanp/nerdtree-git-plugin'                                   " Add git markers for the Nerdtree plugin
+    Plug 'majutsushi/tagbar', {'on': 'TagbarToggle'}                     " Opens a tagbar on the right side
+    Plug 'francoiscabrol/ranger.vim', {'on': 'Ranger'}                   " Integrates ranger file browser in vim
+    Plug 'junegunn/goyo.vim', {'on': 'Goyo'}                             " Clean interface for writing prose
 
-    Plug 'tmhedberg/SimpylFold'
-    Plug 'godlygeek/tabular'                                          " Tabuliarise and align based on pattern
-    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
-    Plug 'vim-pandoc/vim-pandoc'
-    Plug 'vim-pandoc/vim-pandoc-syntax', {'for': ['markdown', 'pandoc']}
+    Plug 'liuchengxu/vim-which-key'                                      " Nice window to show available bindings
+    Plug 'rhysd/vim-grammarous', {'on': 'GrammarousCheck'}               " Grammar check :)
+    Plug 'mhinz/vim-startify'                                            " Nice startup screen with recent files selections
 
-    Plug 'junegunn/goyo.vim', {'on': 'Goyo'}
-
-    Plug 'sheerun/vim-polyglot'
-    Plug 'vim-python/python-syntax', {'for': 'python'}
-
-    Plug 'Vigemus/iron.nvim'                                          " Interactive REPL over Neovim; might need lua config TODO
-
-    Plug 'tpope/vim-commentary'                                       " comments based on the file type
-    Plug 'tpope/vim-surround'
-    Plug 'tpope/vim-sensible'
-    Plug 'tpope/vim-fugitive'
-    Plug 'tpope/vim-repeat'
-    Plug 'tpope/vim-eunuch'
-
-    Plug 'def-lkb/vimbufsync'
-    Plug 'terryma/vim-expand-region'
-    Plug 'xolox/vim-misc'
-    Plug 'terryma/vim-multiple-cursors'
-    Plug 'marcweber/vim-addon-mw-utils'
-    Plug 'tomtom/tlib_vim'
-    Plug 'majutsushi/tagbar'
-
-    Plug 'SirVer/ultisnips'
-    Plug 'honza/vim-snippets'
-    Plug 'lervag/vimtex', {'for': ['tex', 'latex']}
-    Plug 'ymatz/vim-latex-completion'
+    Plug 'tomtom/tlib_vim'                                               " Some script library that may be required by other plugins
+    Plug 'Shougo/vimproc.vim', {'build': 'make'}                         " Provide with some async function (and a library of functions)
 
 call plug#end()
 " }}}
 
 " {{{ Basic VIM modifications
-
+au TermOpen * setlocal nonumber norelativenumber
+au TermOpen * normal i
 " set t_Co=256
 set number              " line numbers
 set encoding=utf-8
@@ -136,7 +134,6 @@ else
 endif
 set noswapfile                      " don't create root-owned files
 
-
 " mapping the 'super' button on space
 let mapleader = "\<Space>"
 
@@ -172,7 +169,9 @@ filetype plugin indent on
 " Auto-source the nvim config when written
 autocmd! BufWritePost $MYVIMRC :source $MYVIMRC
 
+" Select whole buffer
 nnoremap gV `[V`]
+
 nnoremap ; :
 
 " Performs a regular search
@@ -180,6 +179,7 @@ nnoremap <leader>d /
 inoremap kj <esc>
 vnoremap kj <esc>
 tnoremap <Esc> <C-\><C-n>
+
 " tnoremap kjjk <C-\><C-n>
 
 " Switching panes using the ctrl key
@@ -300,7 +300,7 @@ set display=lastline
 " t Wrap text using textwidth
 " c Wrap comments using textwidth, inserting comment leader automatically.
 " q Allow formatting of comments with "gq"
-set formatoptions=tcq
+set formatoptions=cq
 
 " Automatically reload modified files
 set autoread
@@ -589,9 +589,9 @@ let g:fzf_colors =
   \ 'pointer': ['fg', 'Exception'],
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
-nnoremap <Leader>i :Rg<CR>
 
 nnoremap , :Buffers<CR>
+nnoremap <Leader>i :Rg<CR>
 nnoremap <Leader>o :FZF<CR>
 nnoremap <Leader>t :Tags<CR>
 nnoremap <Leader>T :BTags<CR>
@@ -702,6 +702,12 @@ nnoremap <silent> <m-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <m-\> :TmuxNavigatePrevious<cr>
+
+tnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
+tnoremap <silent> <m-j> :TmuxNavigateDown<cr>
+tnoremap <silent> <m-k> :TmuxNavigateUp<cr>
+tnoremap <silent> <m-l> :TmuxNavigateRight<cr>
+tnoremap <silent> <m-\> :TmuxNavigatePrevious<cr>
 " }}}
 " {{{ Gutentags
 let g:gutentags_cache_dir = '~/.config/nvim/gutentags'
@@ -787,4 +793,7 @@ autocmd FileType vimwiki set ft=markdown
 " {{{ Ranger.vim
 let g:ranger_map_keys = 0
 nnoremap <leader>e :Ranger<CR>
+" }}}
+" {{{ Load Lua plugins conf file
+"luafile $HOME/.config/nvim/plugins.lua
 " }}}
