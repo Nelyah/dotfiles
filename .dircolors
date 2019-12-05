@@ -220,6 +220,9 @@ EXEC    38;5;70     #This is for files with execute permission:
 .bib    00;38;5;220
 .r      00;38;5;220
 .R      00;38;5;220
+.se     00;38;5;220
+.ter    00;38;5;220
+.ti     00;38;5;220
 
 
 # description files
