@@ -26,15 +26,17 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }    " Install FZF
     Plug 'easymotion/vim-easymotion'                                     " Easily search and move around the buffer
     Plug 'christoomey/vim-tmux-navigator'                                " Sane binding to navigate between vim and tmux
-    Plug 'SirVer/ultisnips'                                           " Interface for Snippets
+    Plug 'SirVer/ultisnips'                                              " Interface for Snippets
     Plug 'honza/vim-snippets'                                            " Provide with many Snippets
     Plug 'terryma/vim-expand-region'                                     " Extend visual selection by increasing text objects
     Plug 'terryma/vim-multiple-cursors'                                  " Adding multiple cursors with <c-n>
     Plug 'Raimondi/delimitMate'                                          " For parenthesis completion
+    Plug 'skywind3000/asyncrun.vim'
 
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}          " Best completion engine out there (LSP support)
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}                      " Best completion engine out there (LSP support)
     Plug 'ludovicchabant/vim-gutentags'                                  " (Re)generate tags automatically
     Plug 'godlygeek/tabular'                                             " Tabuliarise and align based on pattern
+    Plug 'dhruvasagar/vim-table-mode'
     " Plug 'Yggdroot/indentLine'
     " Plug 'thaerkh/vim-indentguides'
 
@@ -45,8 +47,9 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'tpope/vim-eunuch'                                              " Provide with basic commands (chmod, rename, etc...)
     Plug 'tpope/vim-fugitive'                                            " Git Interface
     Plug 'jreybert/vimagit', {'on': 'Magit'}                             " A great git interface for making commits
-    Plug 'rbong/vim-flog'                                                " Git graph viewer
+    Plug 'rbong/vim-flog', {'on': 'Flog'}                                " Git graph viewer
     Plug 'airblade/vim-gitgutter'                                        " git info on the left
+    Plug 'ryvnf/readline.vim'                                            " Brings readline mappings to ex command
 
 
     """""""""""""""
@@ -56,20 +59,25 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'vim-airline/vim-airline-themes'                                " A collection of themes
     Plug 'ap/vim-css-color'                                              " Color highlighter
     Plug 'joshdick/onedark.vim'                                          " Colour scheme
+    " Plug 'powerman/vim-plugin-AnsiEsc'                                   " Adds Ansi escape code support
 
     """""""""""""""""""""""
     "  Language specific  "
     """""""""""""""""""""""
     Plug 'sheerun/vim-polyglot'                                          " Provide many language syntax highlighting
+    Plug 'git@web-git-a-1.melodis.com:terrier/salmon-vim.git'
+
     Plug 'vim-python/python-syntax', {'for': 'python'}                   " Better Python syntax highlighting
     Plug 'tmhedberg/SimpylFold', {'for': 'python'}                       " Better folding in python for docstrings and such
     Plug 'Vigemus/iron.nvim', {'for': 'python'}                          " Interactive REPL over Neovim
 
-    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}                  " Many conceal and folding features for Markdown
-    Plug 'vim-pandoc/vim-pandoc', {'for': ['markdown', 'pandoc']}        " Provide a Pandoc interface conversion
-    Plug 'vim-pandoc/vim-pandoc-syntax', {'for': ['markdown', 'pandoc']} " Provide pandoc specific syntax
+    Plug 'Konfekt/FastFold', {'for': ['markdown', 'pandoc']}
+    Plug 'plasticboy/vim-markdown', {'for': ['markdown', 'pandoc']}      " Many conceal and folding features for Markdown
+    Plug 'shime/vim-livedown', {'for': ['markdown', 'pandoc']}
+    Plug 'vim-pandoc/vim-pandoc', {'for': ['pandoc']}                    " Provide a Pandoc interface conversion
+    Plug 'Nelyah/vim-pandoc-syntax', {'for': ['pandoc']}                 " Provide pandoc specific syntax
 
-    Plug 'arakashic/chromatica.nvim', {'for': ['c', 'cpp']}              " Better syntax highlighting for c and cpp languages
+    " Plug 'arakashic/chromatica.nvim', {'for': ['c', 'cpp']}              " Better syntax highlighting for c and cpp languages
 
     Plug 'lervag/vimtex', {'for': ['tex', 'latex']}                      " Many LateX features
     Plug 'ymatz/vim-latex-completion', {'for': ['tex', 'latex']}         " Better LateX completion
@@ -78,8 +86,10 @@ call plug#begin('~/.config/nvim/plugged')
     "  Integrated apps  "
     """""""""""""""""""""
     Plug 'vimwiki/vimwiki'                                               " Wiki for vim
+    Plug 'tbabej/taskwiki'                                               " Requires vimwiki; integrates with taskwarrior
+" Plug 'lervag/wiki.vim'
     Plug 'scrooloose/nerdtree', {'on':  'NERDTreeToggle'}                " NERDtree loaded on toggle
-    Plug 'Xuyuanp/nerdtree-git-plugin'                                   " Add git markers for the Nerdtree plugin
+    Plug 'Xuyuanp/nerdtree-git-plugin', {'on':  'NERDTreeToggle'}        " Add git markers for the Nerdtree plugin
     Plug 'majutsushi/tagbar', {'on': 'TagbarToggle'}                     " Opens a tagbar on the right side
     Plug 'francoiscabrol/ranger.vim', {'on': 'Ranger'}                   " Integrates ranger file browser in vim
     Plug 'junegunn/goyo.vim', {'on': 'Goyo'}                             " Clean interface for writing prose
@@ -157,6 +167,7 @@ nnoremap <Leader>mv :setfiletype vim<CR>
 nnoremap <Leader>mp :setfiletype python<CR>
 nnoremap <Leader>mcc :setfiletype c<CR>
 nnoremap <Leader>mcpp :setfiletype cpp<CR>
+nnoremap <Leader>mmd :setfiletype markdown<CR>
 
 nnoremap <Leader>k :q<CR>
 nnoremap <Leader>1 :only<CR>
@@ -177,8 +188,10 @@ nnoremap ; :
 " Performs a regular search
 nnoremap <leader>d /
 inoremap kj <esc>
-vnoremap kj <esc>
+" vnoremap kj <esc>
 tnoremap <Esc> <C-\><C-n>
+autocmd! BufEnter,BufWinEnter,WinEnter term://* startinsert
+
 
 " tnoremap kjjk <C-\><C-n>
 
@@ -215,9 +228,10 @@ nnoremap Y y$
 nnoremap <Leader>w :w<CR>
 
 " Save the copy buffer
-noremap <Leader>x "+
+noremap <Leader>X "+
 " Copy to clipboard
 vnoremap <leader>y "+y 
+nnoremap <leader>y "+y 
 nnoremap <leader>p o<esc>"+gp
 
 
@@ -394,7 +408,7 @@ endfunction
 " Markdown config {{{
 " Syntax highlight within fenced code blocks
 let g:markdown_fenced_languages = ['bash=sh', 'css', 'html', 'js=javascript',
-      \ 'typescript=javascript', 'python']
+      \ 'typescript=javascript', 'python', 'lua']
 
 " }}}
 " {{{ Git
@@ -419,6 +433,31 @@ autocmd FileType gitrebase nnoremap <Leader>m ciwmerge<esc>0
 "        PLUGINS          "
 """""""""""""""""""""""""""
 
+" {{{ Salmon-vim
+" Treat .ter/.ti/.cdt files as cpp files
+autocmd! BufNewFile,BufRead,BufEnter *.ter set filetype=cpp
+autocmd! BufNewFile,BufRead,BufEnter *.ti set filetype=cpp
+autocmd! BufNewFile,BufRead,BufEnter *.cdt set filetype=cpp
+
+"" Auto insert the headers for a file
+function InsertHeader()
+    let s:curr_filename=expand('%:t')
+    let s:curr_fileending=expand('%:e')
+    let s:start_lines = ["/* file \"" . s:curr_filename . "\" */", "", "\/* Copyright " . strftime("%Y") . " SoundHound, Incorporated.  All rights reserved. */", ""]
+    let s:end_lines = []
+    if s:curr_fileending == "h" || s:curr_fileending == "ti"
+        let s:curr_filename=toupper(s:curr_filename)
+        let s:curr_filename=substitute(s:curr_filename, "\\.", "_", "")
+        call add(s:start_lines, "#ifndef " . s:curr_filename)
+        call add(s:start_lines, "#define " . s:curr_filename)
+        call add(s:start_lines, "")
+        call add(s:end_lines, "#endif /* " . s:curr_filename . " */")
+    endif
+    call append(0, s:start_lines)
+    call append(line('$'), s:end_lines)
+endfunction
+command! InsertHeader call InsertHeader()
+"}}}
 " {{{ Fugitive
 nnoremap <Leader>gs :vertical botright Gstatus<CR>
 " }}}
@@ -549,16 +588,16 @@ let g:airline_symbols.paste = '∥'
 let g:airline_symbols.whitespace = 'Ξ'
 
 " airline symbols
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
+let g:airline_left_sep = ' '
+let g:airline_left_alt_sep = ' '
+let g:airline_right_sep = ' '
+let g:airline_right_alt_sep = ' '
+let g:airline_symbols.branch = ' '
+let g:airline_symbols.readonly = ' '
+let g:airline_symbols.linenr = ' '
 
 " Vim airline theme
-let g:airline_theme='space'
+let g:airline_theme='onedark'
 
 catch
   echo 'Airline not installed. It should work after running :PlugInstall'
@@ -600,14 +639,37 @@ nnoremap <Leader>s :BLines<CR>
 
 nnoremap <c-x>h :Helptags<CR>
 inoremap <c-x>h :Helptags<CR>
-nnoremap <M-x> :Commands<CR>
+nnoremap <Leader>x :Commands<CR>
 inoremap <M-x> :Commands<CR>
 " Fuzzy search help <leader>?
 
+function! CreateCenteredFloatingWindow()
+    let width = min([&columns - 4, max([80, float2nr(&columns/2)])])
+    let height = min([&lines - 4, max([20, float2nr((&lines * 2)/3)])])
+    let top = ((&lines - height) / 2) - 1
+    let left = (&columns - width) / 2
+    let opts = {'relative': 'editor', 'row': top, 'col': left, 'width': width, 'height': height, 'style': 'minimal'}
+
+    let top = "╭" . repeat("─", width - 2) . "╮"
+    let mid = "│" . repeat(" ", width - 2) . "│"
+    let bot = "╰" . repeat("─", width - 2) . "╯"
+    let lines = [top] + repeat([mid], height - 2) + [bot]
+    let s:buf = nvim_create_buf(v:false, v:true)
+    call nvim_buf_set_lines(s:buf, 0, -1, v:true, lines)
+    call nvim_open_win(s:buf, v:true, opts)
+    set winhl=Normal:Floating
+    let opts.row += 1
+    let opts.height -= 2
+    let opts.col += 2
+    let opts.width -= 4
+    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
+    au BufWipeout <buffer> exe 'bw '.s:buf
+endfunction
+
+
+let g:fzf_layout = { 'window': 'call CreateCenteredFloatingWindow()' }
 
 autocmd! FileType fzf
-autocmd  FileType fzf set laststatus=0 noshowmode noruler
-  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
 " }}}
 " {{{ Tagbar
 nnoremap <F8> :TagbarToggle<CR>
@@ -626,8 +688,8 @@ let g:SimpylFold_docstring_preview = 1
 " set diffopt+=vertical
 " }}}
 " {{{ Tabular
-nnoremap <Leader>a= :Tabularize /=<CR>
-vnoremap <Leader>a= :Tabularize /=<CR>
+nnoremap <Leader>T= :Tabularize /=<CR>
+vnoremap <Leader>T= :Tabularize /=<CR>
 
 " For it to be working with vimtex
 let g:vimtex_compiler_progname = 'nvr'
@@ -653,8 +715,7 @@ let g:UltiSnipsJumpForwardTrigger="<c-c>"
 let g:UltiSnipsJumpBackwardTrigger="<c-b>"
 " }}}
 " {{{ VIM polyglot
-let g:polyglot_disabled = ['python']
-let g:polyglot_disabled = ['latex']
+let g:polyglot_disabled = ['python', 'latex', 'markdown']
 " }}}
 " {{{ python-syntax
 let g:python_highlight_all = 1
@@ -665,7 +726,7 @@ let g:gitgutter_map_keys = 0
 " nnoremap <Leader>gs <Plug>GitGutterStageHunk
 " nnoremap <Leader>gu <Plug>GitGutterUndoHunk
 " }}}
-" {{{ easymotion
+" {{{ Easymotion
 " nnoremap  <Leader>s <Plug>(easymotion-bd-w)
 " nnoremap <Leader>s <Plug>(easymotion-overwin-w)
 " Gif config
@@ -703,11 +764,11 @@ nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <m-\> :TmuxNavigatePrevious<cr>
 
-tnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
-tnoremap <silent> <m-j> :TmuxNavigateDown<cr>
-tnoremap <silent> <m-k> :TmuxNavigateUp<cr>
-tnoremap <silent> <m-l> :TmuxNavigateRight<cr>
-tnoremap <silent> <m-\> :TmuxNavigatePrevious<cr>
+tnoremap <silent> <m-h> <C-\><C-n>:TmuxNavigateLeft<cr>
+tnoremap <silent> <m-j> <C-\><C-n>:TmuxNavigateDown<cr>
+tnoremap <silent> <m-k> <C-\><C-n>:TmuxNavigateUp<cr>
+tnoremap <silent> <m-l> <C-\><C-n>:TmuxNavigateRight<cr>
+tnoremap <silent> <m-\> <C-\><C-n>:TmuxNavigatePrevious<cr>
 " }}}
 " {{{ Gutentags
 let g:gutentags_cache_dir = '~/.config/nvim/gutentags'
@@ -785,15 +846,88 @@ let g:vimwiki_map_prefix = '<Leader>e'
 let g:vimwiki_list = [{'path': '$HOME/cloud/utils/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
 let g:vimwiki_folding = 'custom'
 let g:vimwiki_global_ext = 0
-autocmd FileType vimwiki setlocal fdm=marker
+" autocmd FileType vimwiki setlocal fdm=marker
 
-" Retain Markdown colour scheme
-autocmd FileType vimwiki set ft=markdown
+ret g:pandoc#folding#fastfolds=1
+
+let g:pandoc#filetypes#handled = ["pandoc", "markdown"]
+let g:pandoc#filetypes#pandoc_markdown = 0
+let g:pandoc#folding#mode = ["syntax"]
+let g:pandoc#modules#enabled = ["formatting", "folding"]
+let g:pandoc#formatting#mode = "h"
+
+let g:vimwiki_folding='expr'
+" au FileType vimwiki set filetype=vimwiki.pandoc
+
+function! RecapDiaryWeek()
+    " Set variables and dates
+    let s:date_today = system("date \+\%Y\%m\%d")
+    let s:last_week_date = system("date -d '8 days ago' \+\%Y\%m\%d")
+    let s:list_files = systemlist("ls " . g:vimwiki_list[0].path . '/diary/ -I diary.md -I "week-recap*"')
+    let s:list_files_date = map(copy(s:list_files), {_, val -> substitute(val, '\v(-|\.md)', '', 'g')})
+
+    " Filter old files
+    let s:list_index = 0
+    let s:len_list_files = len(s:list_files)
+    let s:relevant_files = []
+    while s:list_index < s:len_list_files
+        if s:list_files_date[s:list_index] > s:last_week_date
+            call add(s:relevant_files, s:list_files[s:list_index])
+        endif
+        let s:list_index += 1
+    endwhile
+    let s:relevant_files = map(s:relevant_files, 'g:vimwiki_list[0].path . "diary/". v:val')
+    let s:output_file = expand(g:vimwiki_list[0].path) . 'diary/week-recap-' . s:list_files_date[0] . '-' . s:list_files_date[-1] . '.md'
+
+    " Write file
+    call writefile(["# Week recap: "], s:output_file)
+    call writefile(["# Chloé Dequeker"], s:output_file, 'a')
+    call writefile([""], s:output_file, 'a')
+
+    for s:diary_file in s:relevant_files
+        let tmp_file = readfile(expand(s:diary_file))
+        call writefile(tmp_file, s:output_file, 'a')
+    endfor
+    execute 'edit' . s:output_file
+endfunction
+
+command! RecapDiaryWeek call RecapDiaryWeek()
+
+" }}}
+" {{{ vim-pandoc-syntex
+let g:pandoc#syntax#conceal#urls=1
+let g:pandoc#syntax#codeblocks#embeds#langs = ['bash=sh', 'css', 'html', 'js=javascript',
+      \ 'typescript=javascript', 'python', 'lua']
 " }}}
 " {{{ Ranger.vim
 let g:ranger_map_keys = 0
-nnoremap <leader>e :Ranger<CR>
+nnoremap <leader>fe :Ranger<CR>
 " }}}
 " {{{ Load Lua plugins conf file
 "luafile $HOME/.config/nvim/plugins.lua
 " }}}
+" {{{ livedown
+" should markdown preview get shown automatically upon opening markdown buffer
+let g:livedown_autorun = 0
+
+" should the browser window pop-up upon previewing
+let g:livedown_open = 1
+
+" the port on which Livedown server will run
+let g:livedown_port = 1337
+
+" the browser to use, can also be firefox, chrome or other, depending on your executable
+let g:livedown_browser = "firefox"
+"}}}
+" {{{ wiki.vim 
+let g:wiki_root = '~/cloud/utils/wiki'
+autocmd! BufEnter *.wiki set filetype=pandoc
+"}}}
+" {{{ Taskwiki
+let g:taskwiki_markup_syntax = "markdown"
+" }}}
+
+
+nnoremap  <Leader>rtdr :AsyncRun dev-sync -regenerate-test-lists --rdt -d Trademarks QueryGlue/QueryGlue.comspec.se Trademarks/Trademarks.comspec.se
+nnoremap  <Leader>rtd :AsyncRun dev-sync --rdt -d Trademarks QueryGlue/QueryGlue.comspec.se Trademarks/Trademarks.comspec.se
+
