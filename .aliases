@@ -18,10 +18,13 @@ function llth (){
     fi
 }
 
-alias get-bw-session="keyctl pipe "$(keyctl request user bw_session)""
+if [ -x keyctl ]; then
+    alias get-bw-session="keyctl pipe "$(keyctl request user bw_session)""
+fi
+
 
 export LESS_TERMCAP_md="${yellow}";
-alias ls="ls --color=always" 
+alias ls="ls" 
 alias ll="ls -lh $LS_OPTIONS $LS_DIRFIRST"
 alias lla="ls -lha $LS_OPTIONS $LS_DIRFIRST"
 alias llt="ls -lht $LS_OPTIONS"
@@ -64,6 +67,7 @@ alias awk3="awk '{print $3}'"
 alias awk4="awk '{print $4}'"
 
 alias vim="nvim"
+alias nvi="nvim -u NORC"
 
 if type fdfind &> /dev/null; then
     alias fd="fdfind"

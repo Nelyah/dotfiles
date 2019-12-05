@@ -1,4 +1,10 @@
-eval `dircolors ~/.dircolors`
+
+# LS_colors for macos
+if [[ $(uname) == "Darwin" ]]; then
+    export CLICOLOR=1
+else
+    eval `dircolors ~/.dircolors`
+fi
 
 zmodload zsh/zle
 export ZSH=$HOME/.oh-my-zsh
@@ -8,7 +14,6 @@ source ~/.aliases
 source ~/.oh-my-zsh/oh-my-zsh.sh
 
 autoload -U add-zsh-hook
-
 
 #{{{ VCS
 
