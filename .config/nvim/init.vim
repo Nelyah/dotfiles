@@ -162,6 +162,9 @@ let g:netrw_banner = 0 " Turn off banner
 nnoremap <Leader>fi :e ~/.config/nvim/init.vim<CR>
 nnoremap <Leader>fd :lcd %:h<CR>
 
+nnoremap <down> :cnext<CR>
+nnoremap <up> :cprevious<CR>
+
 " Filetype
 nnoremap <Leader>mv :setfiletype vim<CR>
 nnoremap <Leader>mp :setfiletype python<CR>
@@ -223,6 +226,12 @@ noremap K 5k
 noremap L 5l
 nnoremap <c-j> J
 nnoremap Y y$
+nnoremap <c-h> H
+nnoremap <c-l> L
+nnoremap <c-m> M
+
+nnoremap <c-e> 7<c-e>
+nnoremap <c-y> 7<c-y>
 
 " Saving
 nnoremap <Leader>w :w<CR>
@@ -234,8 +243,6 @@ vnoremap <leader>y "+y
 nnoremap <leader>y "+y 
 nnoremap <leader>p o<esc>"+gp
 
-
-map q: :q
 
 " Align blocks of texte and keep them selected
 vnoremap < <gv
@@ -343,9 +350,9 @@ if (empty($TMUX))
 endif
 colorscheme onedark
 
-colorscheme onedark
 set termguicolors
 
+" Resize window
 nnoremap <silent> <c-up> <c-w>3+
 nnoremap <silent> <c-down> <c-w>3-
 nnoremap <silent> <c-left> <c-w>3<
@@ -433,31 +440,6 @@ autocmd FileType gitrebase nnoremap <Leader>m ciwmerge<esc>0
 "        PLUGINS          "
 """""""""""""""""""""""""""
 
-" {{{ Salmon-vim
-" Treat .ter/.ti/.cdt files as cpp files
-autocmd! BufNewFile,BufRead,BufEnter *.ter set filetype=cpp
-autocmd! BufNewFile,BufRead,BufEnter *.ti set filetype=cpp
-autocmd! BufNewFile,BufRead,BufEnter *.cdt set filetype=cpp
-
-"" Auto insert the headers for a file
-function InsertHeader()
-    let s:curr_filename=expand('%:t')
-    let s:curr_fileending=expand('%:e')
-    let s:start_lines = ["/* file \"" . s:curr_filename . "\" */", "", "\/* Copyright " . strftime("%Y") . " SoundHound, Incorporated.  All rights reserved. */", ""]
-    let s:end_lines = []
-    if s:curr_fileending == "h" || s:curr_fileending == "ti"
-        let s:curr_filename=toupper(s:curr_filename)
-        let s:curr_filename=substitute(s:curr_filename, "\\.", "_", "")
-        call add(s:start_lines, "#ifndef " . s:curr_filename)
-        call add(s:start_lines, "#define " . s:curr_filename)
-        call add(s:start_lines, "")
-        call add(s:end_lines, "#endif /* " . s:curr_filename . " */")
-    endif
-    call append(0, s:start_lines)
-    call append(line('$'), s:end_lines)
-endfunction
-command! InsertHeader call InsertHeader()
-"}}}
 " {{{ Fugitive
 nnoremap <Leader>gs :vertical botright Gstatus<CR>
 " }}}
@@ -823,7 +805,7 @@ nnoremap <silent> gr <Plug>(coc-references)
 
 
 " Use K to show documentation in preview window
-nnoremap <silent> gD :call <SID>show_documentation()<CR><CR>
+nnoremap <silent> gD :call <SID>show_documentation()<CR>
 
 let g:coc_global_extensions = [
     \ 'coc-python', 'coc-snippets',
@@ -843,7 +825,9 @@ let g:tmuxcomplete#trigger = ''
 " }}}
 " {{{ Vimwiki
 let g:vimwiki_map_prefix = '<Leader>e'
-let g:vimwiki_list = [{'path': '$HOME/cloud/utils/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_main = {'path': '$HOME/cloud/utils/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}
+let g:vimwiki_book = {'path': '$HOME/cloud/utils/book/', 'syntax': 'markdown', 'ext': '.md'}
+let g:vimwiki_list = [vimwiki_main, vimwiki_book]
 let g:vimwiki_folding = 'custom'
 let g:vimwiki_global_ext = 0
 " autocmd FileType vimwiki setlocal fdm=marker
@@ -862,7 +846,7 @@ let g:vimwiki_folding='expr'
 function! RecapDiaryWeek()
     " Set variables and dates
     let s:date_today = system("date \+\%Y\%m\%d")
-    let s:last_week_date = system("date -d '8 days ago' \+\%Y\%m\%d")
+    let s:last_week_date = system("date -d 'last Monday' \+\%Y\%m\%d")
     let s:list_files = systemlist("ls " . g:vimwiki_list[0].path . '/diary/ -I diary.md -I "week-recap*"')
     let s:list_files_date = map(copy(s:list_files), {_, val -> substitute(val, '\v(-|\.md)', '', 'g')})
 
@@ -871,28 +855,48 @@ function! RecapDiaryWeek()
     let s:len_list_files = len(s:list_files)
     let s:relevant_files = []
     while s:list_index < s:len_list_files
-        if s:list_files_date[s:list_index] > s:last_week_date
+        if s:list_files_date[s:list_index] >= s:last_week_date-1
             call add(s:relevant_files, s:list_files[s:list_index])
         endif
         let s:list_index += 1
     endwhile
     let s:relevant_files = map(s:relevant_files, 'g:vimwiki_list[0].path . "diary/". v:val')
-    let s:output_file = expand(g:vimwiki_list[0].path) . 'diary/week-recap-' . s:list_files_date[0] . '-' . s:list_files_date[-1] . '.md'
+    let s:output_file = expand(g:vimwiki_main.path) . 'diary/week-recap-' . s:last_week_date[0] . '-' . s:list_files_date[-1] . '.md'
 
     " Write file
-    call writefile(["# Week recap: "], s:output_file)
-    call writefile(["# Chloé Dequeker"], s:output_file, 'a')
+    call writefile(["# My week recap:"], s:output_file)
     call writefile([""], s:output_file, 'a')
+    call writefile(["- Chloé Dequeker"], s:output_file, 'a')
 
-    for s:diary_file in s:relevant_files
-        let tmp_file = readfile(expand(s:diary_file))
+    " Write every diary file
+    for diary_file in s:relevant_files
+        call writefile(split("", "\n", 1), s:output_file, 'a')
+        let tmp_file = readfile(expand(diary_file))
+        let s:diary_file_date = fnamemodify(diary_file, ":t:r")
+        let s:diary_file_date = system('date -d"' . s:diary_file_date . '" "+%A %b. %d %Y"')
+        call writefile(split("## " . s:diary_file_date, "\n", 1), s:output_file, 'a')
         call writefile(tmp_file, s:output_file, 'a')
     endfor
+
+    call writefile([""], s:output_file, 'a')
+    call writefile([""], s:output_file, 'a')
+    call writefile(["# Week recap:"], s:output_file, 'a')
+    call writefile([""], s:output_file, 'a')
+    call writefile(["# Next week:"], s:output_file, 'a')
+    call writefile([""], s:output_file, 'a')
+    call writefile([""], s:output_file, 'a')
     execute 'edit' . s:output_file
 endfunction
 
-command! RecapDiaryWeek call RecapDiaryWeek()
 
+command! ShowDiaryLastWeekRecap execute 'edit' . system('ls -t ' . g:vimwiki_main.path . '/diary/week-recap* | head -1')
+command! RecapDiaryWeek call RecapDiaryWeek()
+command! FZFwiki execute 'FZF ' . g:vimwiki_main.path
+nnoremap <leader>eo :FZFwiki<CR>
+
+" }}}
+" {{{ vim-markdown
+let vim_markdown_folding_disabled = 1
 " }}}
 " {{{ vim-pandoc-syntex
 let g:pandoc#syntax#conceal#urls=1
@@ -926,8 +930,40 @@ autocmd! BufEnter *.wiki set filetype=pandoc
 " {{{ Taskwiki
 let g:taskwiki_markup_syntax = "markdown"
 " }}}
+" {{{ SoundHound
+" {{{ Salmon-vim
+" Treat .ter/.ti/.cdt files as cpp files
+autocmd! BufNewFile,BufRead,BufEnter *.ter set filetype=cpp
+autocmd! BufNewFile,BufRead,BufEnter *.ti set filetype=cpp
+autocmd! BufNewFile,BufRead,BufEnter *.cdt set filetype=cpp
 
+"" Auto insert the headers for a file
+function InsertHeader()
+    let s:curr_filename=expand('%:t')
+    let s:curr_fileending=expand('%:e')
+    let s:start_lines = ["/* file \"" . s:curr_filename . "\" */", "", "\/* Copyright " . strftime("%Y") . " SoundHound, Incorporated.  All rights reserved. */", ""]
+    let s:end_lines = []
+    if s:curr_fileending == "h" || s:curr_fileending == "ti"
+        let s:curr_filename=toupper(s:curr_filename)
+        let s:curr_filename=substitute(s:curr_filename, "\\.", "_", "")
+        call add(s:start_lines, "#ifndef " . s:curr_filename)
+        call add(s:start_lines, "#define " . s:curr_filename)
+        call add(s:start_lines, "")
+        call add(s:end_lines, "#endif /* " . s:curr_filename . " */")
+    endif
+    call append(0, s:start_lines)
+    call append(line('$'), s:end_lines)
+endfunction
+command! InsertHeader call InsertHeader()
+"}}}
 
-nnoremap  <Leader>rtdr :AsyncRun dev-sync -regenerate-test-lists --rdt -d Trademarks QueryGlue/QueryGlue.comspec.se Trademarks/Trademarks.comspec.se
-nnoremap  <Leader>rtd :AsyncRun dev-sync --rdt -d Trademarks QueryGlue/QueryGlue.comspec.se Trademarks/Trademarks.comspec.se
+" project related bindings 
+nnoremap  <Leader>rtdr :AsyncRun dev-sync -regenerate-test-lists --rdt -d Trademarks ./Trademarks/Trademarks.comspec.se
+nnoremap  <Leader>rtd :AsyncRun dev-sync --rdt -d Trademarks ./Trademarks/Trademarks.comspec.se
+nnoremap  <Leader>rtf :AsyncRun dev-sync --rft '%:p:h:t'/'%:t'
+nnoremap  <Leader>rts :AsyncStop<CR>
+nnoremap <Leader>vp :!dev-sync push
+nnoremap <Leader>vP :!dev-sync pull
+"}}}
 
+au FileType vimwiki set syntax=markdown
