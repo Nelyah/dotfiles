@@ -1,0 +1,8 @@
+shell /Users/cdequeker/.config/cmus/cmus-osx/rc_entry.sh &
+bind -f common K win-up 5
+bind -f common J win-down 5
+bind -f common p player-pause
+bind -f common i player-prev
+bind -f common o player-next
+set aaa_mode=album
+set display_artist_sort_name=false
