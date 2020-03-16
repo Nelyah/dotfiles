@@ -1,7 +1,8 @@
 "{{{ Plugins
 
 " check whether vim-plug is installed and install it if necessary
-let plugpath = expand('<sfile>:p:h'). '/autoload/plug.vim'
+let g:vimdir = expand('<sfile>:p:h')
+let plugpath = g:vimdir . '/autoload/plug.vim'
 if !filereadable(plugpath)
     if executable('curl')
         let plugurl = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
@@ -166,11 +167,11 @@ nnoremap <down> :cnext<CR>
 nnoremap <up> :cprevious<CR>
 
 " Filetype
-nnoremap <Leader>mv :setfiletype vim<CR>
-nnoremap <Leader>mp :setfiletype python<CR>
-nnoremap <Leader>mcc :setfiletype c<CR>
-nnoremap <Leader>mcpp :setfiletype cpp<CR>
-nnoremap <Leader>mmd :setfiletype markdown<CR>
+nnoremap <silent> <Leader>mv :setfiletype vim<CR>
+nnoremap <silent> <Leader>mp :setfiletype python<CR>
+nnoremap <silent> <Leader>mcc :setfiletype c<CR>
+nnoremap <silent> <Leader>mcpp :setfiletype cpp<CR>
+nnoremap <silent> <Leader>mmd :setfiletype markdown<CR>
 
 nnoremap <Leader>k :q<CR>
 nnoremap <Leader>1 :only<CR>
@@ -501,9 +502,9 @@ let nvim_conf_dir = expand('<sfile>:p:h')
 let target_theme_file = nvim_conf_dir . '/plugged/vim-airline-themes/autoload/airline/themes/space.vim'
 if !filereadable(target_theme_file)
     call system('cp ' . nvim_conf_dir . '/space.vim ' . target_theme_file)
-    if v:shell_error
-        echom v:shell_error
-    endif
+    " if v:shell_error
+    "     echom v:shell_error
+    " endif
 endif
 
 
@@ -847,6 +848,7 @@ function! RecapDiaryWeek()
     " Set variables and dates
     let s:date_today = system("date \+\%Y\%m\%d")
     let s:last_week_date = system("date -d 'last Monday' \+\%Y\%m\%d")
+    let s:last_week_date = substitute(s:last_week_date, '\n\+$', '', '')
     let s:list_files = systemlist("ls " . g:vimwiki_list[0].path . '/diary/ -I diary.md -I "week-recap*"')
     let s:list_files_date = map(copy(s:list_files), {_, val -> substitute(val, '\v(-|\.md)', '', 'g')})
 
@@ -861,7 +863,7 @@ function! RecapDiaryWeek()
         let s:list_index += 1
     endwhile
     let s:relevant_files = map(s:relevant_files, 'g:vimwiki_list[0].path . "diary/". v:val')
-    let s:output_file = expand(g:vimwiki_main.path) . 'diary/week-recap-' . s:last_week_date[0] . '-' . s:list_files_date[-1] . '.md'
+    let s:output_file = expand(g:vimwiki_main.path) . 'diary/week-recap-' . s:last_week_date . '-' . s:list_files_date[-1] . '.md'
 
     " Write file
     call writefile(["# My week recap:"], s:output_file)
@@ -956,6 +958,15 @@ function InsertHeader()
 endfunction
 command! InsertHeader call InsertHeader()
 "}}}
+" {{{ Iron lua
+au FileType vimwiki set syntax=markdown
+function! IronLoadLuaFile()
+    let luaconfigfile = g:vimdir . '/plugins.lua'
+        execute "luafile " . luaconfigfile
+endfunction
+
+autocmd! FileType python call IronLoadLuaFile()
+"}}}
 
 " project related bindings 
 nnoremap  <Leader>rtdr :AsyncRun dev-sync -regenerate-test-lists --rdt -d Trademarks ./Trademarks/Trademarks.comspec.se
@@ -964,6 +975,5 @@ nnoremap  <Leader>rtf :AsyncRun dev-sync --rft '%:p:h:t'/'%:t'
 nnoremap  <Leader>rts :AsyncStop<CR>
 nnoremap <Leader>vp :!dev-sync push
 nnoremap <Leader>vP :!dev-sync pull
+nnoremap <Leader>rrlpq :!rsync -av /Volumes/Gitty/LPQEULanguages/ dev:/disk1/cdequeker/LPQEULanguages/
 "}}}
-
-au FileType vimwiki set syntax=markdown
