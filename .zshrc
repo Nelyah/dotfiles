@@ -199,6 +199,7 @@ export FZF_DEFAULT_OPTS="--reverse"
 
 export FZF_CTRL_T_COMMAND="rg --files --hidden 2> /dev/null"
 export FZF_ALT_C_COMMAND="fd --hidden -t d -t l 2> /dev/null"
+export FZF_DEFAULT_COMMAND="rg --files --hidden"
 
 zle     -N   fzf-file-widget
 bindkey '^F' fzf-file-widget
