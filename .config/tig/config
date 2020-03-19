@@ -89,6 +89,7 @@ bind generic    G    move-last-line
 bind generic    p    none # disable single p for pager(default)
 bind generic    pl   !git pull
 bind generic    pl   !git pull %(remote)
+bind generic    PU   !<git push -f
 bind generic    pu   !<git push
 bind generic    pU   !<git push -u %(remote) %(repo:head)
 bind generic    v    :source ~/.tigrc
