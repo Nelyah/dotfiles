@@ -269,6 +269,7 @@ set mouse=a " Use the mouse to slide panes size or scrolling, and copying
 
 set hidden " Allow background buffers without saving
 set splitright
+set splitbelow
 
 hi CursorLineNr guifg=#dddddd
 set cursorline                        " highlight current line
