@@ -1,15 +1,19 @@
 #!/bin/bash
 
 # Script for installing tmux and dependencies.
-# tmux will be installed in /usr/local/lib by default.
+# tmux will be installed in ${HOME}/.local by default.
+# Originally taken from https://gist.github.com/shime/5706655
 
 # Prerequisites: - gcc
 #                - wget
 
-# define versions
+# Fail on error
+set -e
 
+# define versions
 tmux_version="3.0"
 tmux_patch_version="a" # leave empty for stable releases
+tmux_version="${tmux_version}${tmux_patch_version}"
 
 libevent_version="2.1.11"
 ncurses_version="6.2"
@@ -19,17 +23,19 @@ libevent_name="libevent-${libevent_version}-stable"
 ncurses_name="ncurses-${ncurses_version}"
 
 # set the installation directory
-target_dir="${1-/home/${USER}/.local/}"
+target_dir="${1-${HOME}/.local/}"
+if [ ! -d "${target_dir}" ]; then
+    echo "Target directory ${target_dir} not found: creating..."
+    mkdir -p "${target_dir}"
+fi
 
 build_dir=$(mktemp -d)
-[ ! -d "${build_dir}" ] && {
+if [ ! -d "${build_dir}" ]; then
     echo "Could not create temporary directory, exiting."
     exit 1
-}
+fi
 
 
-# Fail on error
-set -e
 
 # Clean temporary files
 cleanup(){ local RET=$?; echo "Success!"  ; rm -rf "/tmp/{${libevent_name},${ncurses_name},${tmux_name}*},{,tar.gz}"; exit "${RET}"; }
@@ -65,8 +71,8 @@ popd
 # tmux installation
 tar xvzf "${tmux_name}.tar.gz"
 pushd "${tmux_name}"
-./configure CFLAGS="-I$target_dir/include -I$target_dir/include/ncurses" LDFLAGS="-L$target_dir/lib -L$target_dir/include/ncurses -L$target_dir/include"
-CPPFLAGS="-I$target_dir/include -I$target_dir/include/ncurses" LDFLAGS="-static -L$target_dir/include -L$target_dir/include/ncurses -L$target_dir/lib" make
+./configure CFLAGS="-I${target_dir}/include -I${target_dir}/include/ncurses" LDFLAGS="-L${target_dir}/lib -L${target_dir}/include/ncurses -L${target_dir}/include"
+CPPFLAGS="-I${target_dir}/include -I${target_dir}/include/ncurses" LDFLAGS="-static -L${target_dir}/include -L${target_dir}/include/ncurses -L${target_dir}/lib" make
 cp tmux "${target_dir}/bin"
 popd
 
