@@ -71,5 +71,18 @@ fi
 #  diff-so-fancy  #
 ###################
 
+echo ""
+echo "========================"
+echo "Installing diff-so-fancy"
 wget -O $HOME/bin/diff-so-fancy https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy && \
     chmod 744 $HOME/bin/diff-so-fancy
+
+# Change to zsh default shell
+echo ""
+echo "=============="
+echo "Installing zsh"
+if [ -e /usr/bin/zsh ]; then
+   chsh -s /usr/bin/zsh
+    # Install oh-my-zsh
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi

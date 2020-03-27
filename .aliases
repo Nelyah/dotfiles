@@ -24,7 +24,7 @@ fi
 
 
 export LESS_TERMCAP_md="${yellow}";
-alias ls="ls" 
+alias ls="ls --color=always" 
 alias ll="ls -lh $LS_OPTIONS $LS_DIRFIRST"
 alias lla="ls -lha $LS_OPTIONS $LS_DIRFIRST"
 alias llt="ls -lht $LS_OPTIONS"
