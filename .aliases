@@ -48,6 +48,8 @@ alias treed="tree -d"
 alias tree1="tree -d -L 1"
 alias tree2="tree -d -L 2"
 
+alias list-open-ports="netstat -tulpn"
+
 alias cpwd="pwd|tr -d "\n"|xclip" # copy pwd in clipboard
 alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 
