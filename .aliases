@@ -58,10 +58,7 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-alias sc="systemctl"
-alias scls="systemctl list-unit-files"
-alias scu="systemctl --user"
-alias sculs="systemctl --user list-unit-files"
+alias apt="sudo apt"
 
 alias awk1="awk '{print $1}'"
 alias awk2="awk '{print $2}'"
@@ -75,8 +72,6 @@ if type fdfind &> /dev/null; then
     alias fd="fdfind"
 fi
 
-
-alias pk="kp"
 
 if type fasd > /dev/null 2>&1; then
     eval "$(fasd --init auto)"
