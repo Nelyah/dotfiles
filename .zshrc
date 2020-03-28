@@ -241,6 +241,7 @@ function kp (){
       kp
     fi
 }
+alias pk="kp"
 
 # Clear zombie processes
 function clear-zombie() {
@@ -255,6 +256,53 @@ function getip() {
     else
         ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'
     fi
+}
+
+function apt-list-ppa () {
+    {
+        echo "Type URIs Suites Components";
+        echo "";
+        grep -r --include '*.list' '^deb ' /etc/apt/ | \
+            sed -re 's/^\/etc\/apt\/sources\.list((\.d\/)?|(:)?)//' \
+            -e 's/(.*\.list):/\[\1\] /' \
+            -e 's/deb http:\/\/ppa.launchpad.net\/(.*?)\/ubuntu .*/ppa:\1/'
+    } | \
+        column -t
+}
+
+function sc () {
+    if [ "${1}" = "--user" ]; then
+        local is_user="--user"
+        shift
+    fi
+
+    case "${1}" in
+        st|status)
+            shift
+            systemctl ${is_user} status "${@}"
+            ;;
+        r|rst|restart)
+            shift
+            systemctl ${is_user} restart "${@}"
+            ;;
+        s|start)
+            shift
+            systemctl ${is_user} start "${@}"
+            ;;
+        sp|stop)
+            shift
+            systemctl ${is_user} stop "${@}"
+            ;;
+        ls|list-unit-files)
+            shift
+            echo $@
+            systemctl ${is_user} list-unit-files "${@}"
+            ;;
+    esac
+}
+
+function scu () {
+    sc --user "${@}"
 }
 
 #}}}
