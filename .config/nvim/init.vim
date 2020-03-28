@@ -941,7 +941,7 @@ autocmd! BufNewFile,BufRead,BufEnter *.ti set filetype=cpp
 autocmd! BufNewFile,BufRead,BufEnter *.cdt set filetype=cpp
 
 "" Auto insert the headers for a file
-function InsertHeader()
+function! InsertHeader()
     let s:curr_filename=expand('%:t')
     let s:curr_fileending=expand('%:e')
     let s:start_lines = ["/* file \"" . s:curr_filename . "\" */", "", "\/* Copyright " . strftime("%Y") . " SoundHound, Incorporated.  All rights reserved. */", ""]
