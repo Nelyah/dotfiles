@@ -8,10 +8,16 @@ fi
 
 zmodload zsh/zle
 export ZSH=$HOME/.oh-my-zsh
+#
 # Environnement variables
 source ~/.profile
 source ~/.aliases
 source ~/.oh-my-zsh/oh-my-zsh.sh
+
+# Server aliases
+if [ -f /media/data/bin/aliases ]; then
+    source /media/data/bin/aliases
+fi
 
 autoload -U add-zsh-hook
 
