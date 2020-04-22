@@ -1,0 +1,24 @@
+# Basic Settings
+
+set previewer ~/scripts/lf/preview
+set relativenumber true
+set previewer pistol
+# set hidden true
+set color256 true
+set drawbox true
+set ignorecase true
+
+map . set hidden!
+map C clear
+map D delete
+map J push 5j
+map K push 5k
+map r rename
+
+map gh cd ~/
+map gc cd ~/cloud/
+map gd cd ~/cloud/Documents
+
+map gdd cd /media/data
+map gdn cd /media/data/nextcloud
+map gdb cd /media/data/wordpress
