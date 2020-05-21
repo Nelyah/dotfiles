@@ -145,3 +145,50 @@
     margin:     0px 0.3em 0em 0em ;
     text-color: @normal-foreground;
 }
+
+/* Adding my own customisation */
+
+* {
+  background-color: #393d44;
+  border-color: #2e343f;
+  text-color: #8ca0aa;
+  spacing: 0;
+  width: 400px;
+}
+
+inputbar {
+  border: 0 0 1px 0;
+  children: [prompt,entry];
+}
+
+prompt {
+  padding: 16px;
+  border: 0 1px 0 0;
+}
+
+
+textbox {
+  background-color: #2e343f;
+  border: 0 0 0px 0;
+  border-color: #282C33;
+  padding: 8px 40px;
+}
+
+entry {
+  padding: 16px;
+}
+
+listview {
+  cycle: false;
+  margin: 0 0 -1px 0;
+  scrollbar: false;
+}
+
+element {
+  border: 0 0 0px 0;
+  padding: 4px;
+}
+
+element selected {
+  background-color: #2e343f;
+}
