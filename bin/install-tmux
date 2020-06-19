@@ -38,7 +38,7 @@ fi
 
 
 # Clean temporary files
-cleanup(){ local RET=$?; echo "Success!"  ; rm -rf "/tmp/{${libevent_name},${ncurses_name},${tmux_name}*},{,tar.gz}"; exit "${RET}"; }
+cleanup(){ local RET=$?; rm -rf "/tmp/{${libevent_name},${ncurses_name},${tmux_name}*},{,tar.gz}"; exit "${RET}"; }
 fail()   { local RET=$?; echo "Abort..."  ; rm -rf "/tmp/{${libevent_name},${ncurses_name},${tmux_name}*},{,tar.gz}"; exit "${RET}"; }
 trap cleanup EXIT
 trap fail INT TERM HUP ERR
@@ -78,9 +78,4 @@ popd
 
 popd
 
-version=`tmux -V | cut -d ' ' -f 2`
-if [ -z "$version" ]; then
-      echo 
-        echo "[error] failed to install tmux - check for errors in the above output"
-          exit 1
-fi
+echo "Success!"
