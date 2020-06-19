@@ -38,6 +38,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'ludovicchabant/vim-gutentags'                                  " (Re)generate tags automatically
     Plug 'godlygeek/tabular'                                             " Tabuliarise and align based on pattern
     Plug 'dhruvasagar/vim-table-mode'
+    Plug 'unblevable/quick-scope'                                        " Highlight matches when pressing 'f' or 'F'
     " Plug 'Yggdroot/indentLine'
     " Plug 'thaerkh/vim-indentguides'
 
@@ -60,6 +61,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'vim-airline/vim-airline-themes'                                " A collection of themes
     Plug 'ap/vim-css-color'                                              " Color highlighter
     Plug 'joshdick/onedark.vim'                                          " Colour scheme
+    Plug 'drewtempelmeyer/palenight.vim'
     " Plug 'powerman/vim-plugin-AnsiEsc'                                   " Adds Ansi escape code support
 
     """""""""""""""""""""""
@@ -72,11 +74,11 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'tmhedberg/SimpylFold', {'for': 'python'}                       " Better folding in python for docstrings and such
     Plug 'Vigemus/iron.nvim', {'for': 'python'}                          " Interactive REPL over Neovim
 
-    Plug 'Konfekt/FastFold', {'for': ['markdown', 'pandoc']}
-    Plug 'plasticboy/vim-markdown', {'for': ['markdown', 'pandoc']}      " Many conceal and folding features for Markdown
-    Plug 'shime/vim-livedown', {'for': ['markdown', 'pandoc']}
-    Plug 'vim-pandoc/vim-pandoc', {'for': ['pandoc']}                    " Provide a Pandoc interface conversion
-    Plug 'Nelyah/vim-pandoc-syntax', {'for': ['pandoc']}                 " Provide pandoc specific syntax
+    " Plug 'Konfekt/FastFold', {'for': ['markdown', 'pandoc']}
+    Plug 'plasticboy/vim-markdown', {'for': ['markdown', 'pandoc', 'vimwiki.markdown']}      " Many conceal and folding features for Markdown
+    " Plug 'shime/vim-livedown', {'for': ['markdown', 'pandoc']}
+    " Plug 'vim-pandoc/vim-pandoc', {'for': ['pandoc']}                    " Provide a Pandoc interface conversion
+    " Plug 'Nelyah/vim-pandoc-syntax', {'for': ['pandoc']}                 " Provide pandoc specific syntax
 
     " Plug 'arakashic/chromatica.nvim', {'for': ['c', 'cpp']}              " Better syntax highlighting for c and cpp languages
 
@@ -350,7 +352,6 @@ if (empty($TMUX))
     set termguicolors
   endif
 endif
-colorscheme onedark
 
 set termguicolors
 
@@ -581,12 +582,15 @@ let g:airline_symbols.readonly = ' '
 let g:airline_symbols.linenr = ' '
 
 " Vim airline theme
-let g:airline_theme='onedark'
+let g:airline_theme='palenight'
 
 catch
   echo 'Airline not installed. It should work after running :PlugInstall'
 endtry
 
+" }}}
+" {{{ Palenight
+let g:palenight_terminal_italics=1
 " }}}
 " {{{ VimTex
 let g:vimtex_compiler_method = 'latexmk'
@@ -758,6 +762,7 @@ tnoremap <silent> <m-\> <C-\><C-n>:TmuxNavigatePrevious<cr>
 let g:gutentags_cache_dir = '~/.config/nvim/gutentags'
 " }}}
 " {{{ CoC nvim
+let g:coc_disable_startup_warning = 1
 
 " Use `:Format` to format current buffer
 command! -nargs=0 Format :call CocAction('format')
@@ -829,28 +834,31 @@ let g:tmuxcomplete#trigger = ''
 let g:vimwiki_map_prefix = '<Leader>e'
 let g:vimwiki_main = {'path': '$HOME/cloud/utils/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}
 let g:vimwiki_book = {'path': '$HOME/cloud/utils/book/', 'syntax': 'markdown', 'ext': '.md'}
-let g:vimwiki_list = [vimwiki_main, vimwiki_book]
+let g:vimwiki_soundhound = {'path': '$HOME/cloud/utils/soundhound-wiki/', 'syntax': 'markdown', 'ext': '.md'}
+let g:vimwiki_list = [vimwiki_soundhound, vimwiki_main, vimwiki_book]
 let g:vimwiki_folding = 'custom'
 let g:vimwiki_global_ext = 0
-" autocmd FileType vimwiki setlocal fdm=marker
+let g:vimwiki_filetypes = ['markdown']
+autocmd FileType vimwiki setlocal fdm=marker
+
 
 ret g:pandoc#folding#fastfolds=1
 
-let g:pandoc#filetypes#handled = ["pandoc", "markdown"]
-let g:pandoc#filetypes#pandoc_markdown = 0
-let g:pandoc#folding#mode = ["syntax"]
-let g:pandoc#modules#enabled = ["formatting", "folding"]
-let g:pandoc#formatting#mode = "h"
+" let g:pandoc#filetypes#handled = ["pandoc", "markdown"]
+" let g:pandoc#filetypes#pandoc_markdown = 0
+" let g:pandoc#folding#mode = ["syntax"]
+" let g:pandoc#modules#enabled = ["formatting", "folding"]
+" let g:pandoc#formatting#mode = "h"
 
 let g:vimwiki_folding='expr'
-" au FileType vimwiki set filetype=vimwiki.pandoc
+" au FileType vimwiki set filetype=markdown
 
 function! RecapDiaryWeek()
     " Set variables and dates
     let s:date_today = system("date \+\%Y\%m\%d")
     let s:last_week_date = system("date -d 'last Monday' \+\%Y\%m\%d")
     let s:last_week_date = substitute(s:last_week_date, '\n\+$', '', '')
-    let s:list_files = systemlist("ls " . g:vimwiki_list[0].path . '/diary/ -I diary.md -I "week-recap*"')
+    let s:list_files = systemlist("ls " . g:vimwiki_soundhound.path . '/diary/ -I diary.md -I "week-recap*"')
     let s:list_files_date = map(copy(s:list_files), {_, val -> substitute(val, '\v(-|\.md)', '', 'g')})
 
     " Filter old files
@@ -863,8 +871,8 @@ function! RecapDiaryWeek()
         endif
         let s:list_index += 1
     endwhile
-    let s:relevant_files = map(s:relevant_files, 'g:vimwiki_list[0].path . "diary/". v:val')
-    let s:output_file = expand(g:vimwiki_main.path) . 'diary/week-recap-' . s:last_week_date . '-' . s:list_files_date[-1] . '.md'
+    let s:relevant_files = map(s:relevant_files, 'g:vimwiki_soundhound.path . "diary/". v:val')
+    let s:output_file = expand(g:vimwiki_soundhound.path) . 'diary/week-recap-' . s:last_week_date . '.md'
 
     " Write file
     call writefile(["# My week recap:"], s:output_file)
@@ -892,9 +900,9 @@ function! RecapDiaryWeek()
 endfunction
 
 
-command! ShowDiaryLastWeekRecap execute 'edit' . system('ls -t ' . g:vimwiki_main.path . '/diary/week-recap* | head -1')
+command! ShowDiaryLastWeekRecap execute 'edit' . system('ls -t ' . g:vimwiki_soundhound.path . '/diary/week-recap* | head -1')
 command! RecapDiaryWeek call RecapDiaryWeek()
-command! FZFwiki execute 'FZF ' . g:vimwiki_main.path
+command! FZFwiki execute 'FZF ' . g:vimwiki_soundhound.path
 nnoremap <leader>eo :FZFwiki<CR>
 
 " }}}
@@ -932,6 +940,27 @@ autocmd! BufEnter *.wiki set filetype=pandoc
 "}}}
 " {{{ Taskwiki
 let g:taskwiki_markup_syntax = "markdown"
+" }}}
+" {{{ Quick Scope
+
+" Trigger a highlight only when pressing f and F.
+let g:qs_highlight_on_keys = ['f', 'F']
+
+augroup qs_colors
+  autocmd!
+  autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline
+  autocmd ColorScheme * highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline
+augroup END
+
+" Disable plugin on long lines
+let g:qs_max_chars=500
+
+" }}}
+" {{{ Onedark
+
+" Put this here as it need to be after QuickScope
+colorscheme onedark
+
 " }}}
 " {{{ SoundHound
 " {{{ Salmon-vim
@@ -974,7 +1003,10 @@ nnoremap  <Leader>rtdr :AsyncRun dev-sync -regenerate-test-lists --rdt -d Tradem
 nnoremap  <Leader>rtd :AsyncRun dev-sync --rdt -d Trademarks ./Trademarks/Trademarks.comspec.se
 nnoremap  <Leader>rtf :AsyncRun dev-sync --rft '%:p:h:t'/'%:t'
 nnoremap  <Leader>rts :AsyncStop<CR>
-nnoremap <Leader>vp :!dev-sync push
-nnoremap <Leader>vP :!dev-sync pull
 nnoremap <Leader>rrlpq :!rsync -av /Volumes/Gitty/LPQEULanguages/ dev:/disk1/cdequeker/LPQEULanguages/
+command! -nargs=* Dev :!dev-sync <args>
+cnoreabbrev Dev dev
+nnoremap <Leader>vp :Dev push
+nnoremap <Leader>vP :Dev pull
+
 "}}}
