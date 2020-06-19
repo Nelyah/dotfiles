@@ -42,6 +42,7 @@ alias bc="bc -l"
 alias ecg="emacsclient --create-frame"
 alias ec="emacsclient -nw"
 
+alias test-true-colours="curl -s https://raw.githubusercontent.com/JohnMorales/dotfiles/master/colors/24-bit-color.sh | bash"
 alias speedtest="wget -O /dev/null http://speed.transip.nl/100mb.bin"
 alias tree="tree -A"
 alias treed="tree -d"
@@ -72,6 +73,9 @@ if type fdfind &> /dev/null; then
     alias fd="fdfind"
 fi
 
+if type task > /dev/null ; then
+    alias t="task"
+fi
 
 if type fasd > /dev/null 2>&1; then
     eval "$(fasd --init auto)"
