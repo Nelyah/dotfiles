@@ -1,0 +1,158 @@
+# [Created by task 2.5.1 11/14/2019 18:23:24]
+# Taskwarrior program configuration file.
+# For more documentation, see http://taskwarrior.org or try 'man task', 'man task-color',
+# 'man task-sync' or 'man taskrc'
+
+# Here is an example of entries that use the default, override and blank values
+#   variable=foo   -- By specifying a value, this overrides the default
+#   variable=      -- By specifying no value, this means no default
+#   #variable=foo  -- By commenting out the line, or deleting it, this uses the default
+
+# Use the command 'task show' to see all defaults and overrides
+
+# Files
+data.location=~/.config/task
+
+# Color theme (uncomment one to use)
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/light-16.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/light-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-16.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-red-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-green-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-blue-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-violets-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-yellow-green.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-gray-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-gray-blue-256.theme
+# include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/solarized-dark-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/solarized-light-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/no-color.theme
+
+# Taskwarrior program configuration file.
+weekstart=monday
+search.case.sensitive=no
+active.indicator= >
+
+report.recap.week.description = The completed tasks of the past seven days
+report.recap.week.columns     = project,description
+report.recap.week.labels      = Proj,Desc
+report.recap.week.sort        = project+/,entry+
+report.recap.week.filter      = status:completed end.after:today-1week
+
+report.recap.yesterday.description = Tasks completed yesterday
+report.recap.yesterday.columns     = project,description
+report.recap.yesterday.labels      = Project,Description
+report.recap.yesterday.sort        = project+/,entry+
+report.recap.yesterday.filter      = status:completed end:yesterday
+
+report.recap.today.description = Tasks completed today
+report.recap.today.columns     = project,description
+report.recap.today.labels      = Project,Description
+report.recap.today.sort        = project+/,entry+
+report.recap.today.filter      = status:completed end:today
+
+report.next.filter = status:pending limit:page 
+
+urgency.blocking.coefficient=5
+urgency.annotations.coefficient=0
+urgency.active.coefficient=8
+urgency.uda.priority.H.coefficient=8
+urgency.uda.priority.L.coefficient=-4
+
+confirmation = no
+bulk = 5
+
+color=on
+
+
+rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,scheduled,due.today,due,blocked,uda.priority,blocking,recurring,tagged,uda.
+
+# General decoration
+color.label=
+color.label.sort=
+color.alternate=on gray3
+color.header=rgb031
+color.footnote=color3
+color.warning=bold red
+color.error=white on red
+color.debug=color4
+
+# Task state
+color.completed=white on grey2
+color.deleted=
+color.active=bold white on rgb012
+color.recurring=rgb013
+color.scheduled=on rgb001
+color.until=
+color.blocked=white on color8
+color.blocking=black on color15
+
+# Project
+color.project.none=
+
+# Priority
+color.uda.priority.none=
+color.uda.priority.H=bold white on color160
+color.uda.priority.M=rgb040
+color.uda.priority.L=black on color250
+
+# Tags
+color.tag.next=rgb440
+color.tag.none=
+color.tagged=rgb031
+
+# Due
+color.due.today=rgb400
+color.due=color1
+color.overdue=color9
+
+# Report: burndown
+color.burndown.done=on gray5
+color.burndown.pending=on rgb010
+color.burndown.started=on rgb030
+
+# Report: history
+color.history.add=color0 on rgb500
+color.history.delete=color0 on rgb550
+color.history.done=color0 on rgb050
+
+# Report: summary
+color.summary.background=white on color8
+color.summary.bar=white on color40
+
+# Command: calendar
+color.calendar.due.today=color15 on color1
+color.calendar.due=color0 on color1
+color.calendar.holiday=color0 on color11
+color.calendar.overdue=color0 on color9
+color.calendar.today=color15 on rgb013
+color.calendar.weekend=on color235
+color.calendar.weeknumber=rgb013
+
+# Command: sync
+color.sync.added=rgb010
+color.sync.changed=color11
+color.sync.rejected=color9
+
+# Command: undo
+color.undo.before=color9
+color.undo.after=color34
+
+
+#
+#color.sync.added=gray4
+#color.sync.changed=rgb030
+#color.sync.rejected=red
+#
+
+
+# color.recurring=rgb151
+# color.overdue=color255
+# color.due.today=color252
+# color.due=color249
+# color.tagged=none
+# color.blocked=color249
+# color.blocking=rgb240
+# color.tag.none=
+color.tag.next=white on rgb001
