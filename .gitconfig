@@ -17,7 +17,8 @@
         lga             = "!sh -c 'git log --author=\"$1\" -p $2' -"
         lol             = log --graph --decorate --pretty=oneline --abbrev-commit
         lola            = log --graph --decorate --pretty=oneline --abbrev-commit --all
-        tl              = "!sh -c \"git log -${1:-10} --graph --abbrev-commit --decorate=no --date=format:'%Y-%m-%d %H:%I:%S' --format=format:'%C(03)%>|(26)%h%C(reset)  %C(04)%ad%C(reset)  %C(green)%<(16,trunc)%an%C(reset)  %C(auto)%d%C(reset) %>|(1)%s%C(reset)' --all\""
+        tla              = "!sh -c \"git log -${1:-10} --graph --abbrev-commit --decorate=no --date=format:'%Y-%m-%d %H:%I:%S' --format=format:'%C(03)%>|(26)%h%C(reset)  %C(04)%ad%C(reset)  %C(green)%<(20,trunc)%an%C(reset)  %C(auto)%d%C(reset) %>|(1)%s%C(reset)'\""
+        tl              = "!sh -c \"git log -${1:-10} --graph --abbrev-commit --decorate=no --date=format:'%Y-%m-%d %H:%I:%S' --format=format:'%C(03)%>|(5)%h%C(reset)  %C(04)%ad%C(reset)  %C(green)%<(20,trunc)%an%C(reset)  %C(auto)%d%C(reset) %>|(1)%s%C(reset)'\""
         tree            = log --graph --decorate --pretty=oneline --abbrev-commit --all
         lint            = "!sh -c 'git status | awk \"/modified/ {print \\$3}\" | xargs -L 1 php -l'"
         logfull         = log --pretty=fuller --graph --stat -p
@@ -36,7 +37,7 @@
 [core]
         excludesfile    = ~/.gitignore
         eol             = lf
-	pager = diff-so-fancy | less --tabs=4 -RFX
+        pager = diff-so-fancy | less --tabs=4 -RFX
 [mergetool]
         keepBackup = true
 [http]
