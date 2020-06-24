@@ -68,6 +68,7 @@ alias awk4="awk '{print $4}'"
 
 alias -g vim="nvim"
 alias nvi="nvim -u NORC"
+alias g="git"
 
 if type fdfind &> /dev/null; then
     alias fd="fdfind"
