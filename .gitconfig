@@ -22,6 +22,7 @@
         lint            = "!sh -c 'git status | awk \"/modified/ {print \\$3}\" | xargs -L 1 php -l'"
         logfull         = log --pretty=fuller --graph --stat -p
         cat             = cat-file -p
+        cop             = "!sh -c \"git checkout ${@} $(git branch --list -av | fzf | sed -e 's,remotes/,,' -e 's,origin/,,' -e 's,^ *[+*]* *,,' | awk '{print $1}')\""
         unstage         = reset HEAD
         uncommit        = update-ref HEAD HEAD^
         uncommithard    = reset --hard HEAD^
@@ -41,7 +42,7 @@
 [http]
 [user]
 	name  = Chloé Dequeker
-	email = noreply@nelyah.eu
+	email = contact@nelyah.eu
 [filter "media"]
 	clean    = git media clean %f
 	smudge   = git media smudge %f
