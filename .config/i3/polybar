@@ -21,62 +21,14 @@ alert = #bd2c40
 
 primary-alt = #2a7a73
 
-[bar/example]
-;monitor = ${env:MONITOR:HDMI-1}
-width = 100%
-height = 27
-;offset-x = 1%
-;offset-y = 1%
-radius = 6.0
-fixed-center = false
-
-background = ${colors.background}
-foreground = ${colors.foreground}
-
-line-size = 3
-line-color = #f00
-
-border-size = 4
-border-color = #00000000
-
-padding-left = 0
-padding-right = 2
-
-module-margin-left = 1
-module-margin-right = 2
-
-font-0 = fixed:pixelsize=10;1
-font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
-font-2 = siji:pixelsize=10;1
-
-modules-left = bspwm i3
-modules-center = 
-modules-right = filesystem xbacklight volume xkeyboard memory cpu wlan eth battery temperature date powermenu
-
-tray-position = right
-tray-padding = 2
-;tray-transparent = true
-;tray-background = #0063ff
-
-;wm-restack = bspwm
-;wm-restack = i3
-
-;override-redirect = true
-
-;scroll-up = bspwm-desknext
-;scroll-down = bspwm-deskprev
-
-;scroll-up = i3wm-wsnext
-;scroll-down = i3wm-wsprev
-;
 [bar/desktop-home]
 ;monitor = ${env:MONITOR:HDMI-1}
 width = 100%
-height = 20
+height = 23
 ;offset-x = 1%
 ;offset-y = 1%
 radius = 2.0
-fixed-center = false
+fixed-center = true
 
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -87,19 +39,29 @@ line-color = #f00
 border-size = 0
 border-color = #00000000
 
+padding-top = 3
 padding-left = 0
-padding-right = 2
+padding-right = 1
 
 module-margin-left = 1
-module-margin-right = 2
+module-margin-right = 1
 
-font-0 = fixed:pixelsize=10;1
-font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
-font-2 = siji:pixelsize=10;1
+; font-0 = fixed:pixelsize=10;1
+; font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
+; font-2 = siji:pixelsize=10;1
+; font-1 = FontAwesome5Free:style=Solid:size=10;4
+; font-2 = FontAwesome5Free:style=Regular:size=10;4
+; font-3 = FontAwesome5Brands:style=Regular:size=10;4
+
+font-0 = Noto Sans:pixelsize=11;0
+font-1 = FontAwesome:size=10;-2
+font-2 = siji:pixelsize=10;0
+font-3 = DejavuSansMono:size=10;4
 
 modules-left = i3
-modules-center = 
-modules-right = filesystem volume cpu eth date powermenu
+modules-center = date
+; modules-right = filesystem volume cpu eth date powermenu
+modules-right = filesystem  volume  memory cpu temperature wlan eth battery  powermenu
 
 tray-position = right
 tray-padding = 2
@@ -180,25 +142,38 @@ label-mode-foreground = #000
 label-mode-background = ${colors.primary}
 
 ; focused = Active workspace on focused monitor
-label-focused = %index%
+label-focused = %index%: %icon%
 label-focused-background = ${module/bspwm.label-focused-background}
 label-focused-underline = ${module/bspwm.label-focused-underline}
 label-focused-padding = ${module/bspwm.label-focused-padding}
 
 ; unfocused = Inactive workspace on any monitor
-label-unfocused = %index%
+label-unfocused = %index%: %icon%
 label-unfocused-padding = ${module/bspwm.label-occupied-padding}
 
 ; visible = Active workspace on unfocused monitor
-label-visible = %index%
+label-visible = %index%: %icon%
 label-visible-background = ${self.label-focused-background}
 label-visible-underline = ${self.label-focused-underline}
 label-visible-padding = ${self.label-focused-padding}
 
 ; urgent = Workspace with urgency hint set
-label-urgent = %index%
+label-urgent = %index%: %icon%
 label-urgent-background = ${module/bspwm.label-urgent-background}
 label-urgent-padding = ${module/bspwm.label-urgent-padding}
+
+ws-icon-0 = 1;
+ws-icon-1 = 2;
+ws-icon-2 = 3; remote
+ws-icon-3 = 4;
+ws-icon-4 = 5;
+ws-icon-5 = 6;
+ws-icon-6 = 7;
+ws-icon-7 = 8;
+ws-icon-8 = 9;
+ws-icon-9 = 10;
+
+; format = <label-state> <label-mode>
 
 [module/mpd]
 type = internal/mpd
@@ -226,7 +201,7 @@ bar-indicator-font = 2
 bar-fill = ─
 bar-fill-font = 2
 bar-fill-foreground = #9f78e1
-bar-empty = ─
+bar-empty =  
 bar-empty-font = 2
 bar-empty-foreground = ${colors.foreground-alt}
 
@@ -238,23 +213,22 @@ card = intel_backlight
 [module/cpu]
 type = internal/cpu
 interval = 3
-format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #f90000
-label = %percentage%%
+label = " %percentage%%"
 
 [module/memory]
 type = internal/memory
 interval = 2
-format-prefix = " "
+format-prefix = "Mem: "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = #4bffdc
 label = %percentage_used%%
 
 [module/wlan]
 type = internal/network
-interface = net1
-interval = 3.0
+interface = wlp58s0
+interval = 10
 
 format-connected = <ramp-signal> <label-connected>
 format-connected-underline = #9f78e1
@@ -309,7 +283,7 @@ label = %date% %time%
 type = internal/volume
 
 format-volume = <label-volume> <bar-volume>
-label-volume = ♪
+label-volume = "♪"
 label-volume-foreground = ${root.foreground}
 
 format-muted-prefix = " "
@@ -324,8 +298,8 @@ bar-volume-foreground-3 = #55aa55
 bar-volume-foreground-4 = #55aa55
 bar-volume-foreground-5 = #f5a70a
 bar-volume-foreground-6 = #ff5555
-bar-volume-gradient = false
-bar-volume-indicator = |
+bar-volume-gradient = true
+bar-volume-indicator = "|"
 bar-volume-indicator-font = 2
 bar-volume-fill = ─
 bar-volume-fill-font = 2
@@ -340,14 +314,14 @@ adapter = ADP1
 full-at = 98
 
 format-charging = <animation-charging> <label-charging>
-format-charging-underline = #ffb52a
+format-charging-underline = #99cc99
 
 format-discharging = <ramp-capacity> <label-discharging>
-format-discharging-underline = ${self.format-charging-underline}
+format-discharging-underline = #fa550a
 
-format-full-prefix = " "
+format-full-prefix = "  "
 format-full-prefix-foreground = ${colors.foreground-alt}
-format-full-underline = ${self.format-charging-underline}
+format-full-underline = #55aa55
 
 ramp-capacity-0 = 
 ramp-capacity-1 = 
@@ -384,7 +358,7 @@ type = custom/menu
 
 format-spacing = 1
 
-label-open = P⏻
+label-open = 
 label-open-foreground = ${colors.primary}
 label-close = cancel
 label-close-foreground = ${colors.secondary}
