@@ -1,0 +1,91 @@
+directory: /media/data/music/music_clean/
+library: /media/data/music/beets-library.db
+
+asciify_paths: yes
+threaded: yes
+per_disc_numbering: yes
+
+import:
+  # write metadata to music files
+  write: yes
+
+  # move imported files from source to the music directory
+  move: no
+  resume: ask
+  log: beetslog.log
+
+# Plugins --------------------------------------------------------------------
+
+plugins: [
+  info,
+  edit,
+  fetchart,
+  embedart,
+  discogs,
+  # ftintitle,
+  missing,
+  chroma,
+  # scrub,
+  zero,
+  # plexupdate,
+  duplicates,
+  fromfilename,
+  convert,
+  permissions
+]
+
+fetchart:
+  auto: yes
+  cover_names: cover front album art
+  minwidth: 500
+  enforce_ratio: yes
+  fanarttv_key: REDACTED
+  google_key: REDACTED
+  sources: coverart albumart amazon google fanarttv filesystem
+
+embedart:
+  auto: yes
+  compare_threshold: 50
+  ifempty: yes
+
+missing:
+  format: $albumartist - $album - $title
+  count: yes
+  total: no
+
+chroma:
+  auto: yes
+
+# scrub:
+#   auto: yes
+
+zero:
+  fields: comments
+
+duplicates:
+  count: yes
+
+# convert:
+#   auto: no
+#   tmpdir: /datastore/tmp/
+#   formats:
+#     mp3_320:
+#       command: ffmpeg -i $source -y -vn -b:a 320k $dest
+#       extension: mp3
+
+permissions:
+  file: 644
+  dir: 755
+
+
+ignore: .AppleDouble ._* *~ .DS_Store
+
+# Paths ----------------------------------------------------------------------
+
+# Paths and filenames for music files
+# relative to music directory
+paths:
+  default: $album%aunique{}/$disc-$track $title
+  singleton: Singletons/$artist - $title
+  comp: Various_Artist/$album%aunique{}/$disc-$track $title
+  albumtype:soundtrack: Soundtracks/$album/$disc-$track $title
