@@ -958,8 +958,13 @@ let g:qs_max_chars=500
 " }}}
 " {{{ Onedark
 
+try
 " Put this here as it need to be after QuickScope
 colorscheme onedark
+
+catch
+  echo 'onedark not installed. It should work after running :PlugInstall'
+endtry
 
 " }}}
 " {{{ SoundHound
