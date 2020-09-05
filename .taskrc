@@ -29,33 +29,39 @@ data.location=~/.config/task
 #include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/solarized-light-256.theme
 #include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/no-color.theme
 
+
 # Taskwarrior program configuration file.
 weekstart=monday
 search.case.sensitive=no
 active.indicator= >
 
 report.recap.week.description = The completed tasks of the past seven days
-report.recap.week.columns     = project,description
+report.recap.week.columns     = project,description.combined
 report.recap.week.labels      = Proj,Desc
 report.recap.week.sort        = project+/,entry+
 report.recap.week.filter      = status:completed end.after:today-1week
 
 report.recap.yesterday.description = Tasks completed yesterday
-report.recap.yesterday.columns     = project,description
+report.recap.yesterday.columns     = project,description.combined
 report.recap.yesterday.labels      = Project,Description
 report.recap.yesterday.sort        = project+/,entry+
 report.recap.yesterday.filter      = status:completed end:yesterday
 
 report.recap.today.description = Tasks completed today
-report.recap.today.columns     = project,description
+report.recap.today.columns     = project,description.combined
 report.recap.today.labels      = Project,Description
 report.recap.today.sort        = project+/,entry+
 report.recap.today.filter      = status:completed end:today
 
-report.next.filter = status:pending limit:page 
+report.next.filter = status:pending limit:page
+
+
+uda.priority.values=H,,L
 
 urgency.blocking.coefficient=5
+urgency.blocked.coefficient=-15
 urgency.annotations.coefficient=0
+urgency.tags.coefficient=0.0
 urgency.active.coefficient=8
 urgency.uda.priority.H.coefficient=8
 urgency.uda.priority.L.coefficient=-4
@@ -103,8 +109,8 @@ color.tag.none=
 color.tagged=rgb031
 
 # Due
-color.due.today=rgb400
-color.due=color1
+color.due.today=bold white on color9
+color.due=
 color.overdue=color9
 
 # Report: burndown
@@ -136,8 +142,8 @@ color.sync.changed=color11
 color.sync.rejected=color9
 
 # Command: undo
-color.undo.before=color9
-color.undo.after=color34
+color.undo.before=color34
+color.undo.after=color9
 
 
 #
