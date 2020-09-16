@@ -89,7 +89,7 @@ call plug#begin('~/.config/nvim/plugged')
     "  Integrated apps  "
     """""""""""""""""""""
     Plug 'vimwiki/vimwiki'                                               " Wiki for vim
-    Plug 'tbabej/taskwiki'                                               " Requires vimwiki; integrates with taskwarrior
+    " Plug 'tbabej/taskwiki'                                               " Requires vimwiki; integrates with taskwarrior
 " Plug 'lervag/wiki.vim'
     Plug 'scrooloose/nerdtree', {'on':  'NERDTreeToggle'}                " NERDtree loaded on toggle
     Plug 'Xuyuanp/nerdtree-git-plugin', {'on':  'NERDTreeToggle'}        " Add git markers for the Nerdtree plugin
@@ -150,6 +150,7 @@ set noswapfile                      " don't create root-owned files
 " mapping the 'super' button on space
 let mapleader = "\<Space>"
 
+" To fix spelling mistakes
 nnoremap z- z=1<enter><enter>
 
 """ NetRW - VIM file explorer
@@ -179,6 +180,9 @@ nnoremap <Leader>k :q<CR>
 nnoremap <Leader>1 :only<CR>
 nnoremap <Leader>2 :split<CR>
 nnoremap <Leader>3 :vsplit<CR>
+
+command! ThumbsDown :norm i👎<esc>
+command! ThumbsUp :norm i👍<esc>
 
 syntax on
 filetype plugin indent on
@@ -710,9 +714,9 @@ let g:python_highlight_all = 1
 " }}}
 " {{{ git-gutter
 let g:gitgutter_map_keys = 0
-" nnoremap <Leader>gp <Plug>GitGutterPreviewHunk
-" nnoremap <Leader>gs <Plug>GitGutterStageHunk
-" nnoremap <Leader>gu <Plug>GitGutterUndoHunk
+nnoremap <Leader>gp <Plug>GitGutterPreviewHunk
+nnoremap <Leader>gs <Plug>GitGutterStageHunk
+nnoremap <Leader>gu <Plug>GitGutterUndoHunk
 " }}}
 " {{{ Easymotion
 " nnoremap  <Leader>s <Plug>(easymotion-bd-w)
