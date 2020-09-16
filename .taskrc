@@ -53,7 +53,7 @@ report.recap.today.labels      = Project,Description
 report.recap.today.sort        = project+/,entry+
 report.recap.today.filter      = status:completed end:today
 
-report.next.filter = status:pending limit:page
+report.next.filter = status:pending limit:page -BACKLOG
 
 
 uda.priority.values=H,,L
