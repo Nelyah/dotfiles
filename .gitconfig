@@ -33,6 +33,7 @@
         ls              = ls-files -mds
         lsm             = ls-files -md
         push-br         = "!sh -c \"git push --set-upstream origin $(git branch --show-current)\""
+        fetch-rbm       = fetch origin master:master
 [branch "master"]
         remote = origin
         merge  = refs/heads/master
@@ -46,7 +47,7 @@
 [http]
 [user]
 	name  = Chloé Dequeker
-	email = contact@nelyah.eu
+	email = cdequeker@soundhound.com
 [filter "media"]
 	clean    = git media clean %f
 	smudge   = git media smudge %f
