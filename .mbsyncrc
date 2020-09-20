@@ -9,12 +9,11 @@
 IMAPAccount perso
     Host pro1.mail.ovh.net
     User chloe@dequeker.me
-    PassCmd "bw --session $(get-bw-session) get password d01d26bf-2452-4ee2-bb6d-a7ff00a33302"
+    PassCmd "bw --session $(get-bw-session) get password 0a7bb4da-59ac-4904-9e2c-abff00836ad6"
     SSLType IMAPS
     SSLVersions TLSv1.2
     CertificateFile /etc/ssl/certs/ca-certificates.crt
     AuthMech LOGIN
-
 
 IMAPStore perso-remote
     Account perso
@@ -30,6 +29,7 @@ Channel perso-folders
   Patterns "Inbox" "Drafts" "Archive" "Sent Items" "Trash" "Junk" "Update" "Mailing*"
   Create Both
   Expunge Both
+  Sync Pull
   SyncState *
 
 Channel perso-inbox
