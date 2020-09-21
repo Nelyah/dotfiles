@@ -53,7 +53,13 @@ report.recap.today.labels      = Project,Description
 report.recap.today.sort        = project+/,entry+
 report.recap.today.filter      = status:completed end:today
 
-report.next.filter = status:pending limit:page -BACKLOG
+report.backlog.description = List of the projects in the backlog
+report.backlog.columns = id,project,due,description
+report.backlog.labels = ID,Project,Due,Description
+report.backlog.sort = project+/,entry+
+report.backlog.filter = status:pending +main +backlog
+
+report.next.filter = status:pending limit:page -backlog
 
 
 uda.priority.values=H,,L
@@ -72,7 +78,7 @@ bulk = 5
 color=on
 
 
-rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,scheduled,due.today,due,blocked,uda.priority,blocking,recurring,tagged,uda.
+rule.precedence.color=deleted,completed,active,keyword.,due.today,tag.,project.,overdue,scheduled,due,blocked,uda.priority,blocking,recurring,tagged,uda.
 
 # General decoration
 color.label=
@@ -85,7 +91,7 @@ color.error=white on red
 color.debug=color4
 
 # Task state
-color.completed=white on grey2
+color.completed=grey13 on grey2
 color.deleted=
 color.active=bold white on rgb012
 color.recurring=rgb013
@@ -105,8 +111,9 @@ color.uda.priority.L=black on color250
 
 # Tags
 color.tag.next=rgb440
+color.tag.main=color3
 color.tag.none=
-color.tagged=rgb031
+color.tagged=
 
 # Due
 color.due.today=bold white on color9
