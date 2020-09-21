@@ -89,3 +89,5 @@ if type fasd > /dev/null 2>&1; then
     alias sd='fasd -sid'     # interactive directory selection
     alias sf='fasd -sif'     # interactive file selection
 fi
+
+source "${HOME}/.work"
