@@ -30,8 +30,7 @@
         undomerge       = reset --hard ORIG_HEAD
         oups            = commit -a --amend -C HEAD
         d               = difftool
-        ls              = ls-files -mds
-        lsm             = ls-files -md
+        lsm             = ls-files -m
         push-br         = "!sh -c \"git push --set-upstream origin $(git branch --show-current)\""
         fetch-rbm       = fetch origin master:master
 [branch "master"]

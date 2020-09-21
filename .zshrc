@@ -6,6 +6,8 @@ else
     eval `dircolors ~/.dircolors`
 fi
 
+plugins=( taskwarrior )
+
 zmodload zsh/zle
 export ZSH=$HOME/.oh-my-zsh
 #
@@ -310,5 +312,23 @@ function sc () {
 function scu () {
     sc --user "${@}"
 }
+
+# Return relative path from canonical absolute dir path $1 to canonical
+# absolute dir path $2 ($1 and/or $2 may end with one or no "/").
+# Does only need POSIX shell builtins (no external command)
+_relPath () {
+    local common path up
+    common=${1%/} path=${2%/}/
+    while test "${path#"$common"/}" = "$path"; do
+        common=${common%/*} up=../$up
+    done
+    path=$up${path#"$common"/}; path=${path%/}; printf %s "${path:-.}"
+}
+
+# Return relative path from dir $1 to dir $2 (Does not impose any
+# restrictions on $1 and $2 but requires GNU Core Utility "readlink"
+# HINT: busybox's "readlink" does not support option '-m', only '-f'
+#       which requires that all but the last path component must exist)
+relpath () { _relPath "$(readlink -m "$1")" "$(readlink -m "$2")"; }
 
 #}}}
