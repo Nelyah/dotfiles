@@ -57,7 +57,7 @@ report.backlog.description = List of the projects in the backlog
 report.backlog.columns = id,project,due,description
 report.backlog.labels = ID,Project,Due,Description
 report.backlog.sort = project+/,entry+
-report.backlog.filter = status:pending +main +backlog
+report.backlog.filter = status:pending and ( +main or project: ) and +backlog
 
 report.next.filter = status:pending limit:page -backlog
 
