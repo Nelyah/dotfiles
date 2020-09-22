@@ -169,3 +169,4 @@ color.undo.after=color9
 # color.blocking=rgb240
 # color.tag.none=
 color.tag.next=white on rgb001
+context.work=+work
