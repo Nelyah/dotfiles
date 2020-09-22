@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# 2017-06 (paulirish): updated for latest sources
+# and incorporated fixes from my comments here: https://gist.github.com/xiaom/8264691#gistcomment-1648455
+
+# 2015-ish (zmil): this script does absolutely ZERO error checking.   however, it worked
+# for me on a RHEL 6.3 machine on 2012-08-08.  clearly, the version numbers
+# and/or URLs should be made variables.  cheers,  zmil...@cs.wisc.edu
+
+set -e
+
+mkdir -p mosh/build
+pushd mosh
+
+ROOT=`pwd`
+target_dir=$HOME/.local/mosh
+mkdir -p "${target_dir}"
+
+echo "==================================="
+echo "about to set up everything in $ROOT"
+echo "==================================="
+
+
+pushd build
+curl -L -O https://github.com/google/protobuf/releases/download/v3.5.1/protobuf-cpp-3.5.1.tar.gz
+tar zxvf protobuf-cpp-3.5.1.tar.gz
+git clone https://github.com/mobile-shell/mosh
+
+echo "================="
+echo "building protobuf"
+echo "================="
+
+pushd protobuf-3.5.1
+export CXXFLAGS="$CXXFLAGS -fPIC"
+./configure --prefix=${target_dir} --disable-shared "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
+make -j 4
+make install
+popd
+
+
+echo "============="
+echo "building mosh"
+echo "============="
+
+pushd mosh
+export PROTOC=${target_dir}/bin/protoc
+export protobuf_CFLAGS=-I${target_dir}/include
+
+# if you run into errors, you can change this from .a to .so
+export protobuf_LIBS=${target_dir}/lib/libprotobuf.a  
+
+sh ./autogen.sh
+./configure --prefix=${target_dir}
+make -j 4
+make install
+popd
+popd
+
+echo "==="
+echo "if all was successful, binaries are now in $HOME/local/bin"
+echo "==="
+
+echo "to use this install, use the --server flag:"
+echo "    mosh --server=$HOME/local/bin/mosh-server loginuser@host"
+echo "==="
+
+
