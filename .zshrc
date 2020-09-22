@@ -10,6 +10,7 @@ plugins=( taskwarrior )
 
 zmodload zsh/zle
 export ZSH=$HOME/.oh-my-zsh
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
 #
 # Environnement variables
 source ~/.profile
@@ -17,8 +18,8 @@ source ~/.aliases
 source ~/.oh-my-zsh/oh-my-zsh.sh
 
 # Server aliases
-if [ -f /media/data/bin/aliases ]; then
-    source /media/data/bin/aliases
+if [ -f /data/homeserver/host_system/environment_config ]; then
+    source /data/homeserver/host_system/environment_config
 fi
 
 autoload -U add-zsh-hook
