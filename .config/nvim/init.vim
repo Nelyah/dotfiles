@@ -854,7 +854,7 @@ ret g:pandoc#folding#fastfolds=1
 " let g:pandoc#modules#enabled = ["formatting", "folding"]
 " let g:pandoc#formatting#mode = "h"
 
-let g:vimwiki_folding='expr'
+" let g:vimwiki_folding='expr'
 " au FileType vimwiki set filetype=markdown
 
 function! RecapDiaryWeek()
