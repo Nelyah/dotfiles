@@ -44,6 +44,7 @@ if test -z "$replace_value"; then
     exit 1
 fi
 
+[[ $(uname) == "Linux" ]] && sed_opt="-r" || sed_opt="-E"
 
 tmp_repl=$(mktemp)
 tmp_no_repl=$(mktemp)
@@ -52,16 +53,16 @@ trap cleanup EXIT INT TERM HUP ERR
 
 {
     rg --with-filename -n --no-heading --color=never "${list_args[@]}" | \
-        sed -r 's/^([^:]+):([[0-9]+):(.*)/\1\t\2\t\3/'  > "$tmp_no_repl" &
+        sed "$sed_opt" 's/^([^:]+):([[0-9]+):(.*)/\1\t\2\t\3/' | sort > "$tmp_no_repl" &
     rg --replace "$replace_value" --with-filename -n --no-heading --color=never "${list_args[@]}" | \
-        sed -r 's/^([^:]+):([[0-9]+):(.*)/\1\t\2\t\3/'  > "$tmp_repl" &
+        sed "$sed_opt" 's/^([^:]+):([[0-9]+):(.*)/\1\t\2\t\3/' | sort  > "$tmp_repl" &
     wait
 } 2> /dev/null
 
 if [ -z "$no_confirm" ]; then
     paste "$tmp_no_repl" "$tmp_repl" | \
         while IFS=$'\t' read -r file1 line_num1 no_replace file2 line_num2 replace; do
-            printf "${file1}:${line_num1}:\t${red}${no_replace}${reset}\n${file1}:${line_num1}:\t${green}${replace}${reset}\n\n"
+            printf "${file1}:${line_num1}:\t${light_red}${no_replace}${reset}\n${file2}:${line_num2}:\t${green}${replace}${reset}\n\n"
         done
 
     IFS=$'\n yY' read -p "Apply those changes? [yN] " -n 1 -r
@@ -72,6 +73,7 @@ fi
 if [[ -n "$no_confirm" ]] || [[ -n "$apply_changes" ]]; then
     paste "$tmp_no_repl" "$tmp_repl" | \
         while IFS=$'\t' read -r file1 line_num1 no_replace file2 line_num2 replace; do
-            [[ $(uname) == "Linux" ]] && sed -i "${line_num1}s/^.*$/${replace}/" $file1 || sed -i '' "${line_num1}s/^.*$/${replace}/" $file1
+            escaped_replace=$(sed 's/\//\\\//g' <<< "$replace")
+            [[ $(uname) == "Linux" ]] && sed -i "${line_num1}s/^.*$/${escaped_replace}/" $file1 || sed -i '' "${line_num1}s/^.*$/${escaped_replace}/" $file1
         done
 fi
