@@ -1,0 +1,182 @@
+#! /bin/bash
+
+__ScriptVersion="1.1"
+
+[[ $(uname) == "Linux" ]] && sed_opt="-r" || sed_opt="-E"
+
+function extract(){
+    local output
+    local output_dir
+    local verbose
+    local create_dir
+    local arg
+
+    # Check for arguments
+    for arg in $@; do
+        case $arg in
+            --create_dir )
+                create_dir="yes"
+                shift
+                ;;
+            --output_dir )
+                output="${2}/"
+                shift 2
+                ;;
+            --verbose )
+                shift
+                verbose="yes"
+                ;;
+        esac
+    done
+
+    # If we have to create a directory
+    # This is because the archive has more than 1 file 
+    # at the top level
+    if [[ -n "$create_dir" ]]; then
+        output="${output}$(basename $1 | sed "$sed_opt" 's/([^\.])\..*/\1/')"
+        output_dir="$output"
+
+        # in case a file/directory already exists at the target location
+        local i=1
+        while [[ -e "$output" ]]; do
+            output="${output_dir}_${i}"
+            i=$((i+1))
+        done
+        output_dir="$output"
+
+        mkdir -p "$output"
+    fi
+
+    # Extracting the archive itself
+    case "$1" in
+        *.tar.bz2|*.tar.gz|*.bz2|*.tar|*.tbz2|*.tgz)
+            [[ -n "$verbose" ]] && verbose="v"
+            [[ -n "$output" ]] && output="-C $output"
+
+            tar x${verbose}f "$1" "$output"
+        ;;
+        *.gz)
+            [[ -n "$verbose" ]] && verbose="--verbose"
+
+            gunzip "$verbose" "$1"
+        ;;
+        *.zip)
+            [[ -n "$verbose" ]] && verbose="-sv" || verbose="-q"
+            [[ -n "$output" ]] && output="-d $output"
+
+            unzip "$verbose" "$1" "$output"
+            ;;
+        *.7z)
+            [[ -n "$output" ]] && output="-o${output}"
+
+            7z e "$1" "$output"
+            ;;
+        *.rar)
+            unrar x "$1" "$output"
+            ;;
+        *)
+            echo "Cannot be extracted, unknown file type '$1'"
+            exit 1
+            ;;
+    esac
+}
+
+
+###############################################################
+#  Check the number of file at the root level of the archive  #
+###############################################################
+function check_nb_file(){
+    local nb_file=-1
+    case "$1" in
+        *.tar.bz2|*.tar.gz|*.bz2|*.tar|*.tbz2|*.tgz)
+            nb_file=$(tar tf $1 | cut -d'/' -f1 | sort -u | wc -l)
+            ;;
+        *.gz)
+            nb_file=1
+            ;;
+        *.zip)
+            nb_file=$(zipinfo -l1 $1 | cut -d'/' -f1 | sort -u | wc -l)
+            ;;
+        *.rar)
+            nb_file=$(rar lb $1 | cut -d'/' -f1 | sort -u | wc -l)
+            ;;
+        *.7z)
+            nb_file=$(7z l $1 |\
+                tail -n +21 | head -n -2 |\
+                awk '{print $(NF)}' |\
+                cut -d'/' -f1 | sort -u | wc -l)
+            ;;
+        *)
+            echo "'$1' cannot be extracted via extract"
+            exit 1
+            ;;
+    esac
+
+    echo "$nb_file"
+}
+
+
+function usage ()
+{
+    echo "Usage :  $0 [options] filename [filenames ...] [--]
+
+    Options:
+    -h|help       Display this message
+    -v|verbose    Verbose mode
+    -o|output     Output directory
+    -p|process    Number of parallel processes to use (default: 1)"
+}
+
+#-----------------------------------------------------------------------
+#  Handle command line arguments
+#-----------------------------------------------------------------------
+
+args=
+while [[ "$#" -gt 0 ]]; do
+    unset OPTIND
+    unset OPTARG
+
+    while getopts ":hvo:p:" opt
+    do
+      case "$opt" in
+
+        h|help     )    usage; exit 0   ;;
+
+        v|verbose  )    verbose="--verbose"
+                        ;;
+
+        o|output  )     output_dir="$OPTARG" 
+                        ;;
+
+        p|process  )    nb_proc="$OPTARG" 
+                        ;;
+
+        * )  echo -e "\n  Option does not exist : $OPTARG\n"
+              usage; exit 1   ;;
+      esac
+    done
+    shift $(($OPTIND-1))
+    args="$args $1"
+    shift
+done
+
+
+# Check if we need to output to an other directory
+[[ -n "$output_dir" ]] && output_dir="--output_dir $output_dir"
+
+[[ -z "$nb_proc" ]] && nb_proc=1
+
+# Launching the program itself
+for archive in "$args"; do
+    # Checking if there is a need to create a directory
+    [[ $(check_nb_file "$archive") > 1 ]] && {
+        create_dir="--create_dir"
+    } || create_dir=
+
+    extract "$create_dir" "$output_dir" "$verbose" "$archive" &
+
+    while [[ $(jobs -l | grep -Ev "(Done|Exit)" | wc -l) -ge "$nb_proc" ]]; do
+        sleep 0.2
+    done
+done
+wait
