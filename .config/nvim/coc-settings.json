@@ -8,7 +8,9 @@
             "initializationOptions": {
                 "cache": {
                     "directory": "/tmp/ccls"
-                }
+                },
+                "index": {"threads": 4},
+                "highlight": { "lsRanges" : true }
             }
         }
     }

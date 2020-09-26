@@ -35,6 +35,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'skywind3000/asyncrun.vim'
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}                      " Best completion engine out there (LSP support)
+    Plug 'jackguo380/vim-lsp-cxx-highlight', {'for': ['c', 'cpp']}
     Plug 'ludovicchabant/vim-gutentags'                                  " (Re)generate tags automatically
     Plug 'godlygeek/tabular'                                             " Tabuliarise and align based on pattern
     Plug 'dhruvasagar/vim-table-mode'
@@ -60,7 +61,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'vim-airline/vim-airline'                                       " line with useful infos
     Plug 'vim-airline/vim-airline-themes'                                " A collection of themes
     Plug 'ap/vim-css-color'                                              " Color highlighter
-    Plug 'joshdick/onedark.vim'                                          " Colour scheme
+    Plug 'Nelyah/onedark.vim'                                          " Colour scheme
     Plug 'drewtempelmeyer/palenight.vim'
     " Plug 'powerman/vim-plugin-AnsiEsc'                                   " Adds Ansi escape code support
 
@@ -1019,3 +1020,8 @@ nnoremap <Leader>vp :Dev push
 nnoremap <Leader>vP :Dev pull
 
 "}}}
+
+let g:cpp_simple_highlight = 1
+
+hi default LspCxxHlGroupNamespace ctermfg=Yellow guifg=#E5C07B cterm=none gui=none
+hi default LspCxxHlGroupMemberVariable ctermfg=White guifg=#F16E77
