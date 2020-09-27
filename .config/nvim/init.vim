@@ -810,10 +810,10 @@ nnoremap <silent> [c <Plug>(coc-diagnostic-prev)
 nnoremap <silent> ]c <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
-nnoremap <silent> gd :<C-u>call CocActionAsync('jumpDefinition')<CR>
-nnoremap <silent> gy <Plug>(coc-type-definition)
-nnoremap <silent> gi <Plug>(coc-implementation)
-nnoremap <silent> gr <Plug>(coc-references)
+nmap <silent> gd :<C-u>call CocActionAsync('jumpDefinition')<CR>
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
 
 " Use K to show documentation in preview window
