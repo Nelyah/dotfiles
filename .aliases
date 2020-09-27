@@ -90,4 +90,4 @@ if type fasd > /dev/null 2>&1; then
     alias sf='fasd -sif'     # interactive file selection
 fi
 
-source "${HOME}/.work"
+[ -f "${HOME}/.work" ] && source "${HOME}/.work"
