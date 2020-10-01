@@ -193,6 +193,8 @@ autocmd! BufWritePost $MYVIMRC :source $MYVIMRC
 
 " Select whole buffer
 nnoremap gV `[V`]
+" Copy whole buffer to clipboard
+nnoremap <leader>gV `[V`]"+y <c-o>
 
 nnoremap ; :
 
