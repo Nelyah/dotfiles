@@ -111,7 +111,7 @@ color.uda.priority.L=black on color250
 
 # Tags
 color.tag.next=rgb440
-color.tag.main=color3 on grey3
+color.tag.main=color179 on grey2
 color.tag.none=
 color.tagged=
 
