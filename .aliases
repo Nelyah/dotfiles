@@ -74,7 +74,7 @@ if type fdfind &> /dev/null; then
     alias fd="fdfind"
 fi
 
-if type task > /dev/null ; then
+if type task > /dev/null 2>&1 ; then
     alias t="task"
 fi
 

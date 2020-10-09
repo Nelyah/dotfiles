@@ -12,7 +12,7 @@ IMAPAccount perso
     PassCmd "bw --session $(get-bw-session) get password 0a7bb4da-59ac-4904-9e2c-abff00836ad6"
     SSLType IMAPS
     SSLVersions TLSv1.2
-    CertificateFile /etc/ssl/certs/ca-certificates.crt
+    # CertificateFile /etc/ssl/certs/ca-certificates.crt
     AuthMech LOGIN
 
 IMAPStore perso-remote
@@ -42,3 +42,41 @@ Channel perso-inbox
 Group perso
     Channel perso-inbox
     Channel perso-folders
+
+
+IMAPAccount soundhound
+    Host imap.gmail.com
+    User cdequeker@soundhound.com
+    PassCmd "bw --session $(get-bw-session) get password 8f77712d-f355-48ce-bd1f-aafb0108e475"
+    SSLType IMAPS
+    SSLVersions TLSv1.2
+    # CertificateFile /etc/ssl/certs/ca-certificates.crt
+    AuthMech LOGIN
+
+
+IMAPStore soundhound-remote
+    Account soundhound
+
+MaildirStore soundhound-local
+    Path ~/.mail/soundhound/
+    Inbox ~/.mail/soundhound/Inbox
+    SubFolders Verbatim
+
+Channel soundhound-folders
+  Master :soundhound-remote:
+  Slave :soundhound-local:
+  Patterns "Inbox" "Drafts" "Archive" "Sent Items" "Trash" "Junk" "Update" "Mailing*"
+  Create Both
+  Expunge Both
+  SyncState *
+
+Channel soundhound-inbox
+    Master :soundhound-remote:"Inbox"
+    Slave :soundhound-local:Inbox
+    Create Both
+    Expunge Both
+
+
+Group soundhound
+    Channel soundhound-inbox
+    Channel soundhound-folders

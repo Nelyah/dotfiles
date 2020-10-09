@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+declare -a list_args=()
+replace_value=''
+while (( $# > 0 )); do
+    case "$1" in
+        --replace)
+            replace_value="$2"
+            shift 2
+            ;;
+        *)
+            list_args+=( "$1" )
+            shift
+            ;;
+    esac
+done
+
+if test -z "$replace_value"; then
+    echo 'You must specify the --replace argument!'
+    exit 1
+fi
+
+
+tmp_repl=$(mktemp)
+tmp_no_repl=$(mktemp)
+cleanup() { local RET=$?; rm -f "$tmp_no_repl" "$tmp_repl" ; exit $RET; }
+trap cleanup EXIT INT TERM HUP ERR
+
+{
+    rg --with-filename -n --no-heading --color=never "${list_args[@]}" | \
+        sed -r 's/^([^:]+):([[0-9]+):(.*)/\1\t\2\t\3/'  > "$tmp_no_repl" &
+    rg --replace "$replace_value" --with-filename -n --no-heading --color=never "${list_args[@]}" | \
+        sed -r 's/^([^:]+):([[0-9]+):(.*)/\1\t\2\t\3/'  > "$tmp_repl" &
+    wait
+} 2> /dev/null
+
+paste "$tmp_no_repl" "$tmp_repl" | \
+    while IFS=$'\t' read -r file1 line_num1 no_replace file2 line_num2 replace; do
+        sed -i "${line_num1}s/^.*$/${replace}/" $file1
+    done
