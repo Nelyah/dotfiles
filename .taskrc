@@ -67,6 +67,7 @@ uda.priority.values=H,,L
 urgency.blocking.coefficient=5
 urgency.blocked.coefficient=-15
 urgency.annotations.coefficient=0
+urgency.user.tag.main.coefficient=-10
 urgency.tags.coefficient=0.0
 urgency.active.coefficient=8
 urgency.uda.priority.H.coefficient=8
