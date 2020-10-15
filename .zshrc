@@ -1,28 +1,59 @@
+set -o emacs
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
-# LS_colors for macos
+if type nvim &> /dev/null; then
+    export EDITOR=nvim
+elif type vim &> /dev/null; then
+    export EDITOR=vim
+else
+    export EDITOR=vi
+fi
+
+zmodload zsh/zle
+autoload -U add-zsh-hook
+
+#{{{ Zplug
+export ZPLUG_HOME="${XDG_CONFIG_HOME}/zplug"
+
+[ ! -d "$ZPLUG_HOME" ] && mkdir -p "$ZPLUG_HOME"
+[ ! -f "$ZPLUG_HOME/init.zsh" ] && git clone https://github.com/zplug/zplug "$ZPLUG_HOME"
+
+source "${ZPLUG_HOME}/init.zsh"
+
+zplug 'zplug/zplug', hook-build:'zplug --self-manage'
+zplug "mafredri/zsh-async", from:"github", use:"async.zsh"
+zplug "plugins/taskwarrior", from:"oh-my-zsh"
+zplug "plugins/git", from:"oh-my-zsh"
+
+# Install plugins if there are plugins that have not been installed
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
+
+zplug load
+#}}}
+
+#{{{ LS_colors
 if [[ $(uname) == "Darwin" ]]; then
     export CLICOLOR=1
 else
     eval `dircolors ~/.dircolors`
 fi
+#}}}
 
-plugins=( taskwarrior )
-
-zmodload zsh/zle
-export ZSH=$HOME/.oh-my-zsh
-export XDG_RUNTIME_DIR=/run/user/$(id -u)
-#
 # Environnement variables
 source ~/.profile
 source ~/.aliases
-source ~/.oh-my-zsh/oh-my-zsh.sh
 
 # Server aliases
 if [ -f /data/homeserver/host_system/environment_config ]; then
     source /data/homeserver/host_system/environment_config
 fi
 
-autoload -U add-zsh-hook
 
 #{{{ VCS
 
@@ -70,12 +101,31 @@ function +vi-git-untracked() {
   fi
 }
 
-add-zsh-hook precmd vcs_info
+_vbe_vcs_info() {                                   
+    cd -q $1                                        
+    vcs_info                                        
+    print ${vcs_info_msg_0_}                        
+}                                                   
+                                                    
+async_init                                          
+async_start_worker vcs_info                         
+async_register_callback vcs_info _vbe_vcs_info_done 
+                                                    
+_vbe_vcs_info_done() {                              
+    local stdout=$3                                 
+    vcs_info_msg_0_=$stdout                         
+    zle reset-prompt                                
+}                                                   
+                                                    
+_vbe_async_worker () {                            
+    async_job vcs_info _vbe_vcs_info $PWD           
+}
+
+add-zsh-hook precmd _vbe_async_worker
 
 #}}}
 
 #{{{ PS1
-
 
 # PS1 colours
 pink="%F{212}" 
@@ -115,18 +165,18 @@ export RPROMPT=$RPROMPT_BASE
 export SPROMPT="zsh: correct %F{red}'%R'%f to %F{red}'%r'%f [%B%Uy%u%bes, %B%Un%u%bo, %B%Ue%u%bdit, %B%Ua%u%bbort]? "
 #}}}
 
-# {{{Record command time
+# {{{ Record command time
 
 typeset -F SECONDS
-function record-start-time() {
+function _record-start-time() {
   emulate -L zsh
   ZSH_START_TIME=${ZSH_START_TIME:-$SECONDS}
 }
 
 
-add-zsh-hook preexec record-start-time
+add-zsh-hook preexec _record-start-time
 
-function report-start-time() {
+function _report-start-time() {
   emulate -L zsh
   if [ $ZSH_START_TIME ]; then
     local DELTA=$(($SECONDS - $ZSH_START_TIME))
@@ -162,12 +212,12 @@ function report-start-time() {
   fi
 }
 
-add-zsh-hook precmd report-start-time
+add-zsh-hook precmd _report-start-time
 
 # }}}
 
 #{{{ Virtual environment
-function virtual_env_info() {
+function _virtual_env_info() {
     if [ $VIRTUAL_ENV ]; then
         export RPROMPT="$RPROMPT%F{1}$(basename $VIRTUAL_ENV)%f"
     else
@@ -176,9 +226,8 @@ function virtual_env_info() {
 }
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
-add-zsh-hook precmd virtual_env_info
-export RPROMPT="$RPROMPT $(virtual_env_info)"
-
+add-zsh-hook precmd _virtual_env_info
+export RPROMPT="$RPROMPT $(_virtual_env_info)"
 # }}}
 
 #{{{ fzf
