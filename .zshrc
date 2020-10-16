@@ -58,6 +58,9 @@ if [ -f /data/homeserver/host_system/environment_config ]; then
     source /data/homeserver/host_system/environment_config
 fi
 
+# Work commands
+[ -f "${HOME}/.work" ] && source "${HOME}/.work"
+
 
 #{{{ VCS
 

@@ -14,7 +14,7 @@ function llth (){
     if [[ -f $1 ]] || [[ -d $1 ]]; then
         ls -lhtG --color=always --time-style=long-iso $1 | head $2
     else
-        ls -lhtG --color=always --time-style=long-iso | head $1
+        ls -lhtG --color=always --time-style=long-iso $2 | head $1
     fi
 }
 
@@ -89,5 +89,3 @@ if type fasd > /dev/null 2>&1; then
     alias sd='fasd -sid'     # interactive directory selection
     alias sf='fasd -sif'     # interactive file selection
 fi
-
-[ -f "${HOME}/.work" ] && source "${HOME}/.work"
