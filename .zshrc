@@ -23,8 +23,12 @@ source "${ZPLUG_HOME}/init.zsh"
 
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 zplug "mafredri/zsh-async", from:"github", use:"async.zsh"
+zplug "lib/clipboard", from:"oh-my-zsh"
+zplug "lib/compfix", from:"oh-my-zsh"
+zplug "lib/completion", from:"oh-my-zsh"
+zplug "lib/git", from:"oh-my-zsh"
 zplug "plugins/taskwarrior", from:"oh-my-zsh"
-zplug "plugins/git", from:"oh-my-zsh"
+
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
@@ -380,5 +384,26 @@ _relPath () {
 # HINT: busybox's "readlink" does not support option '-m', only '-f'
 #       which requires that all but the last path component must exist)
 relpath () { _relPath "$(readlink -m "$1")" "$(readlink -m "$2")"; }
+
+# Taken from OMZ function library
+function op() {
+  local open_cmd
+
+  # define the open command
+  case "$OSTYPE" in
+    darwin*)  open_cmd='open' ;;
+    cygwin*)  open_cmd='cygstart' ;;
+    linux*)   [[ "$(uname -r)" != *icrosoft* ]] && open_cmd='nohup xdg-open' || {
+                open_cmd='cmd.exe /c start ""'
+                [[ -e "$1" ]] && { 1="$(wslpath -w "${1:a}")" || return 1 }
+              } ;;
+    msys*)    open_cmd='start ""' ;;
+    *)        echo "Platform $OSTYPE not supported"
+              return 1
+              ;;
+  esac
+
+  ${=open_cmd} "$@" &>/dev/null
+}
 
 #}}}
