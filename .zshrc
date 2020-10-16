@@ -138,10 +138,33 @@ add-zsh-hook precmd _vbe_async_worker
 pink="%F{212}" 
 yellow="%F{214}" 
 orange="%F{202}" 
+light_red="%F{9}"
 t="%F{0}" 
 
 RPROMPT_BASE="\${vcs_info_msg_0_}"
 setopt prompt_subst
+
+# If in a git repo, remove path that's outside of it
+# and highlights the basename of the git repo
+# Else behaves like a normal path in prompt
+function custom_path ()
+{
+    typeset dir=${1-$PWD}
+
+    [[ -d $dir ]] || return 0
+
+    git_repo_path=$(git rev-parse --show-toplevel 2> /dev/null)
+    if [ -n "$git_repo_path" ]; then
+
+        type readlink &> /dev/null && dir=$(readlink -f "$dir")
+        if [[ "$dir" == "$git_repo_path"* ]]; then
+            dir=${light_red}$(basename "$git_repo_path")${yellow}${dir#${git_repo_path}}
+        fi
+    fi
+
+    dir=${dir/#$HOME/\~}
+    echo $dir
+}
 
 # Anonymous function to avoid leaking NBSP variable.
 function () {
@@ -159,12 +182,12 @@ function () {
     # Note use a non-breaking space at the end of the prompt because we can use it as
     # a find pattern to jump back in tmux.
     local NBSP=' '
-    export PS1="%F{blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}%~%f %F{red}%(?..!)%b%f${pink}%B${SUFFIX}%b%f${NBSP}"
+    export PS1="%F{blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}"'$(custom_path)'" %F{red}%(?..!)%b%f${pink}%B${SUFFIX}%b%f${NBSP}"
     export ZLE_RPROMPT_INDENT=0
   else
     # Don't bother with ZLE_RPROMPT_INDENT here, because it ends up eating the
     # space after PS1.
-    export PS1="%F{blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}%~%f %F{red}%(?..!)%b%f${pink}%B${SUFFIX}%b%f "
+    export PS1="%F{blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}"'$(custom_path)'" %F{red}%(?..!)%b%f${pink}%B${SUFFIX}%b%f "
   fi
 }
 
