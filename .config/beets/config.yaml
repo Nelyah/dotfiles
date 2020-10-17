@@ -1,5 +1,5 @@
-directory: /media/data/music/music_clean/
-library: /media/data/music/beets-library.db
+directory: /data/music/music_clean/
+library: /data/music/beets-library.db
 
 asciify_paths: yes
 threaded: yes
@@ -24,7 +24,6 @@ plugins: [
   discogs,
   # ftintitle,
   missing,
-  chroma,
   # scrub,
   zero,
   # plexupdate,
@@ -37,8 +36,6 @@ plugins: [
 fetchart:
   auto: yes
   cover_names: cover front album art
-  minwidth: 500
-  enforce_ratio: yes
   fanarttv_key: REDACTED
   google_key: REDACTED
   sources: coverart albumart amazon google fanarttv filesystem
