@@ -61,6 +61,11 @@ report.backlog.filter = status:pending and ( +main or project: ) and +backlog
 
 report.next.filter = status:pending limit:page -backlog +READY
 
+report.current.columns     = id,start.age,entry.age,depends,priority,project,tags,recur,scheduled.countdown,due.relative,until.remaining,description,urgency
+report.current.description = Most urgent tasks
+report.current.filter      = status:pending limit:page -backlog
+report.current.labels      = ID,Active,Age,Deps,P,Project,Tag,Recur,S,Due,Until,Description,Urg
+report.current.sort        = urgency-
 
 uda.priority.values=H,,L
 
