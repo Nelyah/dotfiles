@@ -13,7 +13,8 @@ mkdir -p mosh/build
 pushd mosh
 
 ROOT=`pwd`
-target_dir=$HOME/.local/mosh
+target_dir=${1:-~/.local/mosh}
+echo $target_dir
 mkdir -p "${target_dir}"
 
 echo "==================================="

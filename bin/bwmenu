@@ -332,7 +332,7 @@ show_copy_notification() {
   local body=""
   local extra_options=()
 
-  title="<b>$(echo "$1" | jq -r '.name')</b> copied"
+  title="$(echo "$1" | jq -r '.name') copied"
 
   if [[ $SHOW_PASSWORD == "yes" ]]; then
     pass=$(echo "$1" | jq -r '.login.password')
