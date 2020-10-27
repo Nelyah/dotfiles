@@ -113,7 +113,7 @@ color.project.none=
 color.uda.priority.none=
 color.uda.priority.H=bold white on color160
 color.uda.priority.M=rgb040
-color.uda.priority.L=black on color250
+color.uda.priority.L=
 
 # Tags
 color.tag.next=rgb440
