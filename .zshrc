@@ -10,6 +10,8 @@ else
     export EDITOR=vi
 fi
 
+bindkey "\e[3~" delete-char
+
 zmodload zsh/zle
 autoload -U add-zsh-hook
 
