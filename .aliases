@@ -89,3 +89,9 @@ if type fasd > /dev/null 2>&1; then
     alias sd='fasd -sid'     # interactive directory selection
     alias sf='fasd -sif'     # interactive file selection
 fi
+
+# Change the current directory for a tmux session, which determines
+# the starting dir for new windows/panes:
+function tmux-set-cwd {
+    tmux command-prompt -I $PWD "attach -c %1"
+}
