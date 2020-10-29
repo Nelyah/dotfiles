@@ -60,11 +60,13 @@ report.backlog.sort = project+/,entry+
 report.backlog.filter = status:pending and ( +main or project: ) and +backlog
 
 report.next.filter = status:pending limit:page -backlog +READY
+report.next.columns = id,entry.age,depends,priority,project,recur,scheduled.countdown,due.relative,until.remaining,description,tags,urgency
+report.next.labels = ID,Age,Deps,P,Project,Recur,S,Due,Until,Description,Tag,Urgency
 
-report.current.columns     = id,start.age,entry.age,depends,priority,project,tags,recur,scheduled.countdown,due.relative,until.remaining,description,urgency
+report.current.columns     = id,entry.age,depends,priority,project,recur,scheduled.countdown,due.relative,until.remaining,description,tags,urgency
+report.current.labels      = ID,Age,Deps,P,Project,Recur,S,Due,Until,Description,Tag,Urgency
 report.current.description = Most urgent tasks
 report.current.filter      = status:pending limit:page -backlog
-report.current.labels      = ID,Active,Age,Deps,P,Project,Tag,Recur,S,Due,Until,Description,Urg
 report.current.sort        = urgency-
 
 uda.priority.values=H,,L
@@ -83,7 +85,6 @@ bulk = 5
 
 color=on
 
-
 rule.precedence.color=deleted,completed,active,keyword.,due.today,tag.,project.,overdue,scheduled,due,blocked,uda.priority,blocking,recurring,tagged,uda.
 
 # General decoration
@@ -99,12 +100,12 @@ color.debug=color4
 # Task state
 color.completed=grey13 on grey2
 color.deleted=
-color.active=bold white on rgb012
+color.active=bold color38
 color.recurring=rgb013
 color.scheduled=on rgb001
 color.until=
-color.blocked=white on color8
-color.blocking=black on color15
+color.blocked=color243 on grey2
+color.blocking=color170
 
 # Project
 color.project.none=
@@ -113,7 +114,7 @@ color.project.none=
 color.uda.priority.none=
 color.uda.priority.H=bold white on color160
 color.uda.priority.M=rgb040
-color.uda.priority.L=
+color.uda.priority.L=color243
 
 # Tags
 color.tag.next=rgb440
