@@ -1,0 +1,3 @@
+#! /bin/bash
+
+keyctl pipe "$(keyctl request user bw_session)"
