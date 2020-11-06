@@ -1,6 +1,7 @@
 set -o emacs
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export HISTFILE=~/.zsh_history
 
 if type nvim &> /dev/null; then
     export EDITOR=nvim
