@@ -112,7 +112,7 @@ color.project.none=
 
 # Priority
 color.uda.priority.none=
-color.uda.priority.H=bold white on color160
+color.uda.priority.H=bold color9
 color.uda.priority.M=rgb040
 color.uda.priority.L=color243
 
@@ -124,9 +124,9 @@ color.tag.none=
 color.tagged=
 
 # Due
-color.due.today=bold white on color9
+color.due.today=bold color9
 color.due=
-color.overdue=color9
+color.overdue=color9 on grey2
 
 # Report: burndown
 color.burndown.done=on gray5
@@ -178,3 +178,6 @@ color.undo.after=color9
 # color.tag.none=
 color.tag.next=white on rgb001
 context.work=+work
+context.default=-nodefault
+context.notes=proj:notes
+context=default
