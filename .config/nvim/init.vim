@@ -74,6 +74,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'vim-python/python-syntax', {'for': 'python'}                   " Better Python syntax highlighting
     Plug 'tmhedberg/SimpylFold', {'for': 'python'}                       " Better folding in python for docstrings and such
     Plug 'Vigemus/iron.nvim', {'for': 'python'}                          " Interactive REPL over Neovim
+    Plug 'rhysd/vim-clang-format', {'for': 'cpp'}
 
     " Plug 'Konfekt/FastFold', {'for': ['markdown', 'pandoc']}
     Plug 'plasticboy/vim-markdown', {'for': ['markdown', 'pandoc', 'vimwiki.markdown']}      " Many conceal and folding features for Markdown
