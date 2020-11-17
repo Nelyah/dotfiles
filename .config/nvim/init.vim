@@ -178,6 +178,8 @@ nnoremap <silent> <Leader>mcc :setfiletype c<CR>
 nnoremap <silent> <Leader>mcpp :setfiletype cpp<CR>
 nnoremap <silent> <Leader>mmd :setfiletype markdown<CR>
 
+au BufNewFile,BufRead CMakeLists.txt set filetype=cmake
+
 nnoremap <Leader>k :q<CR>
 nnoremap <Leader>1 :only<CR>
 nnoremap <Leader>2 :split<CR>
@@ -828,7 +830,7 @@ nnoremap <silent> gD :call <SID>show_documentation()<CR>
 
 let g:coc_global_extensions = [
     \ 'coc-python', 'coc-snippets',
-    \ 'coc-vimlsp', 'https://github.com/Nelyah/coc-notmuch', 'coc-css',
+    \ 'coc-vimlsp', 'coc-css',
     \ 'coc-json', 'coc-yaml', 'coc-html',
     \ 'coc-git', 'coc-vimtex'
 \]

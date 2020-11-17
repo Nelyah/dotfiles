@@ -44,8 +44,8 @@
         keepBackup = true
 [http]
 [user]
-	name  = Chloé Dequeker
-	email = cdequeker@soundhound.com
+	name  = Nelyah
+	email = contact@nelyah.eu
 [filter "media"]
 	clean    = git media clean %f
 	smudge   = git media smudge %f

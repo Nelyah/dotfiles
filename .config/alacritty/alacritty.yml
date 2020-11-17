@@ -88,14 +88,14 @@ scrolling:
  
 font:
   normal:
-    family: "monospace"
+    family: "Monaco"
     style: "Regular"
   bold:
-    family: "monospace"
+    family: "Monaco"
     style: "Bold"
   # The italic font face
   italic: 
-    family: "monospace" # should be "Menlo" or something on macOS.
+    family: "Monaco" # should be "Menlo" or something on macOS.
     style: "Italic"
     # Style can be specified to pick a specific face.
     # style: Italic
@@ -497,8 +497,6 @@ key_bindings:
   #- { key: W,      mods: Command,         action: Quit             }
   #- { key: F,      mods: Command|Control, action: ToggleFullscreen }
 
-  - { key: Paste,                   action: Paste                            }
-  - { key: Copy,                    action: Copy                             }
   - { key: L,        mods: Control, action: ClearLogNotice                   }
   - { key: L,        mods: Control, chars: "\x0c"                            }
   - { key: Home,     mods: Alt,     chars: "\x1b[1;3H"                       }
