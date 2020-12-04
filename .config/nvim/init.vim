@@ -34,7 +34,13 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'Raimondi/delimitMate'                                          " For parenthesis completion
     Plug 'skywind3000/asyncrun.vim'
 
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}                      " Best completion engine out there (LSP support)
+    " Plug 'neoclide/coc.nvim', {'branch': 'release'}                      " Best completion engine out there (LSP support)
+    Plug 'prabirshrestha/vim-lsp'
+    Plug 'mattn/vim-lsp-settings'
+    Plug 'prabirshrestha/asyncomplete.vim'
+    Plug 'prabirshrestha/asyncomplete-lsp.vim'
+    Plug 'keremc/asyncomplete-clang.vim'
+
     Plug 'jackguo380/vim-lsp-cxx-highlight', {'for': ['c', 'cpp']}
     Plug 'ludovicchabant/vim-gutentags'                                  " (Re)generate tags automatically
     Plug 'godlygeek/tabular'                                             " Tabuliarise and align based on pattern
@@ -1007,15 +1013,6 @@ function! InsertHeader()
 endfunction
 command! InsertHeader call InsertHeader()
 "}}}
-" {{{ Iron lua
-au FileType vimwiki set syntax=markdown
-function! IronLoadLuaFile()
-    let luaconfigfile = g:vimdir . '/plugins.lua'
-        execute "luafile " . luaconfigfile
-endfunction
-
-autocmd! FileType python call IronLoadLuaFile()
-"}}}
 
 " project related bindings 
 nnoremap  <Leader>rtdr :AsyncRun dev-sync -regenerate-test-lists --rdt -d Trademarks ./Trademarks/Trademarks.comspec.se
@@ -1024,10 +1021,51 @@ nnoremap  <Leader>rtf :AsyncRun dev-sync --rft '%:p:h:t'/'%:t'
 nnoremap  <Leader>rts :AsyncStop<CR>
 nnoremap <Leader>rrlpq :!rsync -av /Volumes/Gitty/LPQEULanguages/ dev:/disk1/cdequeker/LPQEULanguages/
 command! -nargs=* Dev :!dev-sync <args>
-cnoreabbrev Dev dev
-nnoremap <Leader>vp :Dev push
+cnoreabbrev Dev denoremap <Leader>vp :Dev push
 nnoremap <Leader>vP :Dev pull
 
+"}}}
+"{{{ vim-lsp
+if executable('pyls')
+    " pip install python-language-server
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'allowlist': ['python'],
+        \ })
+endif
+
+autocmd User asyncomplete_setup call asyncomplete#register_source(
+    \ asyncomplete#sources#clang#get_source_options())
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+    nmap <buffer> gh <plug>(lsp-hover)
+
+    " refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+let g:lsp_virtual_text_enabled = 0
+let g:lsp_highlights_enabled = 0
+let g:lsp_textprop_enabled = 0
+set completeopt=menuone,noinsert,noselect,preview
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 "}}}
 
 let g:cpp_simple_highlight = 1
