@@ -211,3 +211,4 @@ macro index,pager P "<shell-escape>mbsync -a<enter>" "run mbsync to sync all mai
 macro index zc "<collapse-thread>" "collapse thread"
 macro index zo "<collapse-thread>" "collapse thread"
 
+set allow_ansi
