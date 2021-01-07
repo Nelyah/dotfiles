@@ -4,13 +4,14 @@ library: /data/music/beets-library.db
 asciify_paths: yes
 threaded: yes
 per_disc_numbering: yes
+group_albums: yes
 
 import:
   # write metadata to music files
   write: yes
 
   # move imported files from source to the music directory
-  move: no
+  move: yes
   resume: ask
   log: beetslog.log
 
@@ -26,19 +27,29 @@ plugins: [
   missing,
   # scrub,
   zero,
-  # plexupdate,
   duplicates,
   fromfilename,
   convert,
   permissions
 ]
 
+replace:
+  '[\\/]': _        # bask/forward slash
+  '^\.': _          # leading period
+  '[\x00-\x1f]': _  # control characters
+  '[<>:"\?\*\|]': _ # Windows reserved
+  '\.$': _          # trailing period
+  '\s+$': ''        # consecutive whitespace
+  '^\s+': ''        # leading whitespace
+  '[“”]': '"'       # typographical quotes
+
+
 fetchart:
   auto: yes
   cover_names: cover front album art
   fanarttv_key: REDACTED
   google_key: REDACTED
-  sources: coverart albumart amazon google fanarttv filesystem
+  sources: filesystem coverart amazon wikipedia albumart itunes google
 
 embedart:
   auto: yes
@@ -61,6 +72,14 @@ zero:
 
 duplicates:
   count: yes
+  duplicates:
+  tiebreak:
+    items: [bitrate]
+
+match:
+  preferred:
+      countries: ['US', 'GB|UK', 'FR', 'ES', 'IT']
+      original_year: yes
 
 # convert:
 #   auto: no
