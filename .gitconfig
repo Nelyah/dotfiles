@@ -30,6 +30,7 @@
         oups            = commit -a --amend -C HEAD
         d               = difftool
         lsm             = ls-files -m
+        diff            = diff --relative
         push-br         = "!sh -c \"git push --set-upstream origin $(git branch --show-current)\""
         fetch-rbm       = fetch origin master:master
 [branch "master"]
