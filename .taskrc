@@ -59,9 +59,13 @@ report.backlog.labels = ID,Project,Due,Description
 report.backlog.sort = project+/,entry+
 report.backlog.filter = status:pending and ( +main or project: ) and +backlog
 
-report.next.filter = status:pending limit:page -backlog +READY
+report.next.filter = status:pending limit:page -backlog ( +READY or +main ) ( -BLOCKED or +main )
 report.next.columns = id,entry.age,depends,priority,project,recur,scheduled.countdown,due.relative,until.remaining,description,tags,urgency
 report.next.labels = ID,Age,Deps,P,Project,Recur,S,Due,Until,Description,Tag,Urgency
+
+report.new.filter = status:pending limit:page -backlog entry.after:now-2h
+report.new.columns = id,entry.age,depends,priority,project,recur,scheduled.countdown,due.relative,until.remaining,description,tags,urgency
+report.new.labels = ID,Age,Deps,P,Project,Recur,S,Due,Until,Description,Tag,Urgency
 
 report.current.columns     = id,entry.age,depends,priority,project,recur,scheduled.countdown,due.relative,until.remaining,description,tags,urgency
 report.current.labels      = ID,Age,Deps,P,Project,Recur,S,Due,Until,Description,Tag,Urgency
