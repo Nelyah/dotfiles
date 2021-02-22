@@ -66,9 +66,12 @@ alias awk2="awk '{print $2}'"
 alias awk3="awk '{print $3}'"
 alias awk4="awk '{print $4}'"
 
-alias -g vim="nvim"
-alias nvi="nvim -u NORC"
 alias g="git"
+
+if type nvim &> /dev/null; then
+    alias -g vim="nvim"
+    alias nvi="nvim -u NORC"
+fi
 
 if type fdfind &> /dev/null; then
     alias fd="fdfind"
@@ -90,8 +93,22 @@ if type fasd > /dev/null 2>&1; then
     alias sf='fasd -sif'     # interactive file selection
 fi
 
-# Change the current directory for a tmux session, which determines
-# the starting dir for new windows/panes:
-function tmux-set-cwd {
-    tmux command-prompt -I $PWD "attach -c %1"
-}
+if type lf > /dev/null 2>&1; then
+    lf () {
+        local tmp="$(mktemp)"
+        command lf -last-dir-path="$tmp" "$@"
+        if [ -f "$tmp" ]; then
+            dir="$(cat "$tmp")"
+            rm -f "$tmp"
+            [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+        fi
+    }
+fi
+
+if type tmux > /dev/null 2>&1; then
+    # Change the current directory for a tmux session, which determines
+    # the starting dir for new windows/panes:
+    function tmux-set-cwd {
+        tmux command-prompt -I $PWD "attach -c %1"
+    }
+fi
