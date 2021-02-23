@@ -2,11 +2,10 @@
 
 nb_lines=10
 args=()
-target_branch=
 
 while (( $# > 0 )); do
     if grep -E "^[0-9]+$" <<< "$1" &> /dev/null; then
-        nb_lines=$1
+        nb_lines=$( tr -d '-' <<< "$1")
     else
         args+=( "$1" )
     fi

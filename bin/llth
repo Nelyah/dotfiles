@@ -1,0 +1,15 @@
+#! /bin/bash
+
+nb_lines=10
+args=()
+
+while (( $# > 0 )); do
+    if grep -E "^-?[0-9]+$" <<< "$1" &> /dev/null; then
+        nb_lines=$( tr -d '-' <<< "$1")
+    else
+        args+=( "$1" )
+    fi
+    shift
+done
+
+ls -lhtG --color=always --time-style=long-iso "${args[@]}" | head -"$nb_lines"

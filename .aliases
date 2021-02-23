@@ -1,6 +1,5 @@
 # vim: set ft=sh:
-#
-# ls with color
+
 alias grep="grep --color=always"
 alias egrep="egrep --color=always"
 
@@ -8,20 +7,6 @@ if [ "$TERM" != "dumb" ]; then
     export LS_OPTIONS="--color=always --time-style=long-iso -G"
     export LS_DIRFIRST='--group-directories-first'
 fi
-
-# Aliases
-function llth (){
-    if [[ -f $1 ]] || [[ -d $1 ]]; then
-        ls -lhtG --color=always --time-style=long-iso $1 | head $2
-    else
-        ls -lhtG --color=always --time-style=long-iso $2 | head $1
-    fi
-}
-
-if [ -x keyctl ]; then
-    alias get-bw-session="keyctl pipe "$(keyctl request user bw_session)""
-fi
-
 
 export LESS_TERMCAP_md="${yellow}";
 alias ls="ls --color=always" 
@@ -58,30 +43,38 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
-
-alias apt="sudo apt"
+alias ......="cd ../../../../.."
 
 alias awk1="awk '{print $1}'"
 alias awk2="awk '{print $2}'"
 alias awk3="awk '{print $3}'"
 alias awk4="awk '{print $4}'"
 
-alias g="git"
+if [ -x git ] ; then
+    alias g="git"
+    alias ga="git add"
+    alias gs="git status"
+    alias gc="git commit"
+fi
 
-if type nvim &> /dev/null; then
+if [ ! -x open ] && [ -x xdg-open ] ; then
+    alias open="xdg-open"
+fi
+
+if [ -x nvim ] ; then
     alias -g vim="nvim"
     alias nvi="nvim -u NORC"
 fi
 
-if type fdfind &> /dev/null; then
+if [ -x fdfind ] ; then
     alias fd="fdfind"
 fi
 
-if type task > /dev/null 2>&1 ; then
+if [ -x task ] ; then
     alias t="task"
 fi
 
-if type fasd > /dev/null 2>&1; then
+if [ -x fasd ] ; then
     eval "$(fasd --init auto)"
 
     alias z='fzf-fasd-goto-dir'
@@ -93,7 +86,7 @@ if type fasd > /dev/null 2>&1; then
     alias sf='fasd -sif'     # interactive file selection
 fi
 
-if type lf > /dev/null 2>&1; then
+if [ -x lf ] ; then
     lf () {
         local tmp="$(mktemp)"
         command lf -last-dir-path="$tmp" "$@"
@@ -105,10 +98,14 @@ if type lf > /dev/null 2>&1; then
     }
 fi
 
-if type tmux > /dev/null 2>&1; then
+if [ -x tmux ] ; then
     # Change the current directory for a tmux session, which determines
     # the starting dir for new windows/panes:
     function tmux-set-cwd {
         tmux command-prompt -I $PWD "attach -c %1"
     }
+fi
+
+if [ -x keyctl ]; then
+    alias get-bw-session="keyctl pipe "$(keyctl request user bw_session)""
 fi
