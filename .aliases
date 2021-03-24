@@ -50,31 +50,31 @@ alias awk2="awk '{print $2}'"
 alias awk3="awk '{print $3}'"
 alias awk4="awk '{print $4}'"
 
-if [ -x git ] ; then
+if [ -x "$(which git)" ] ; then
     alias g="git"
     alias ga="git add"
     alias gs="git status"
     alias gc="git commit"
 fi
 
-if [ ! -x open ] && [ -x xdg-open ] ; then
+if [ ! -x "$(which open)" ] && [ -x "$(which xdg-open)" ] ; then
     alias open="xdg-open"
 fi
 
-if [ -x nvim ] ; then
+if [ -x "$(which nvim)" ] ; then
     alias -g vim="nvim"
     alias nvi="nvim -u NORC"
 fi
 
-if [ -x fdfind ] ; then
+if [ -x "$(which fdfind)" ] ; then
     alias fd="fdfind"
 fi
 
-if [ -x task ] ; then
+if [ -x "$(which task)" ] ; then
     alias t="task"
 fi
 
-if [ -x fasd ] ; then
+if [ -x "$(which fasd)" ] ; then
     eval "$(fasd --init auto)"
 
     alias z='fzf-fasd-goto-dir'
@@ -86,19 +86,37 @@ if [ -x fasd ] ; then
     alias sf='fasd -sif'     # interactive file selection
 fi
 
-if [ -x lf ] ; then
-    lf () {
-        local tmp="$(mktemp)"
-        command lf -last-dir-path="$tmp" "$@"
+if [ -x "$(which lf)" ] ; then
+
+    _lf-cleanup() {
+        exec 3>&-
+        rm -f "$FIFO_UEBERZUG"
+
         if [ -f "$tmp" ]; then
             dir="$(cat "$tmp")"
             rm -f "$tmp"
             [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
         fi
     }
+
+    lf () {
+        local tmp="$(mktemp)"
+        trap _lf-cleanup EXIT
+
+        if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+            command lf -last-dir-path="$tmp" "$@"
+        else
+            [ ! -d "$HOME/.cache/lf" ] && mkdir --parents "$HOME/.cache/lf"
+            export FIFO_UEBERZUG="$HOME/.cache/lf/ueberzug-$$"
+            mkfifo "$FIFO_UEBERZUG"
+            ueberzug layer -s <"$FIFO_UEBERZUG" -p bash &
+            exec 3>"$FIFO_UEBERZUG"
+            command lf -last-dir-path="$tmp" "$@" 3>&-
+        fi
+    }
 fi
 
-if [ -x tmux ] ; then
+if [ -x "$(which tmux)" ] ; then
     # Change the current directory for a tmux session, which determines
     # the starting dir for new windows/panes:
     function tmux-set-cwd {
@@ -106,6 +124,6 @@ if [ -x tmux ] ; then
     }
 fi
 
-if [ -x keyctl ]; then
-    alias get-bw-session="keyctl pipe "$(keyctl request user bw_session)""
+if [ -x "$(which keyctl)" ]; then
+    alias get-bw-session='keyctl pipe "$(keyctl request user bw_session)"'
 fi
