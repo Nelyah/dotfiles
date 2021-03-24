@@ -39,7 +39,7 @@ report.recap.week.description = The completed tasks of the past seven days
 report.recap.week.columns     = project,description.combined
 report.recap.week.labels      = Proj,Desc
 report.recap.week.sort        = project+/,entry+
-report.recap.week.filter      = status:completed end.after:today-1week -perso
+report.recap.week.filter      = status:completed end.after:today-1week+1day -perso
 
 report.recap.yesterday.description = Tasks completed yesterday
 report.recap.yesterday.columns     = project,description.combined
@@ -72,6 +72,8 @@ report.current.labels      = ID,Age,Deps,P,Project,Recur,S,Due,Until,Description
 report.current.description = Most urgent tasks
 report.current.filter      = status:pending limit:page -backlog
 report.current.sort        = urgency-
+
+report.all.columns = id,status.short,uuid.short,start.active,entry.age,end.age,depends.indicator,priority,project,tags.count,recur.indicator,wait.remaining,scheduled.remaining,due,until.remaining,description
 
 uda.priority.values=H,,L
 
