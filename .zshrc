@@ -1,4 +1,11 @@
+
+# {{{ Edit mode
 set -o emacs
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '^xe' edit-command-line
+bindkey '^x^e' edit-command-line
+#}}}
 
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
@@ -118,24 +125,29 @@ function +vi-git-untracked() {
   fi
 }
 
-_vbe_vcs_info() {                                   
-    cd -q $1                                        
-    vcs_info                                        
-    print ${vcs_info_msg_0_}                        
-}                                                   
-                                                    
-async_init                                          
-async_start_worker vcs_info                         
-async_register_callback vcs_info _vbe_vcs_info_done 
-                                                    
-_vbe_vcs_info_done() {                              
-    local stdout=$3                                 
-    vcs_info_msg_0_=$stdout                         
-    zle reset-prompt                                
-}                                                   
-                                                    
-_vbe_async_worker () {                            
-    async_job vcs_info _vbe_vcs_info $PWD           
+_vbe_vcs_info() {
+    cd -q $1
+    vcs_info
+    print ${vcs_info_msg_0_}
+}
+
+async_init
+async_start_worker vcs_info
+async_register_callback vcs_info _vbe_vcs_info_done
+
+_vbe_vcs_info_done() {
+    local stdout=$3
+    vcs_info_msg_0_=$stdout
+    zle reset-prompt
+}
+
+_vbe_async_worker () {
+    # Restart the worker if it died for some reason
+    async_job vcs_info _vbe_vcs_info $PWD || {
+        async_init
+        async_start_worker vcs_info
+        async_register_callback vcs_info _vbe_vcs_info_done
+    }
 }
 
 add-zsh-hook precmd _vbe_async_worker
@@ -145,11 +157,11 @@ add-zsh-hook precmd _vbe_async_worker
 #{{{ PS1
 
 # PS1 colours
-pink="%F{212}" 
-yellow="%F{214}" 
-orange="%F{202}" 
+pink="%F{212}"
+yellow="%F{214}"
+orange="%F{202}"
 light_red="%F{9}"
-t="%F{0}" 
+t="%F{0}"
 
 RPROMPT_BASE="\${vcs_info_msg_0_}"
 setopt prompt_subst
@@ -224,7 +236,7 @@ function _report-start-time() {
     local HOURS=$((~~(($DELTA - $DAYS * 86400) / 3600)))
     local MINUTES=$((~~(($DELTA - $DAYS * 86400 - $HOURS * 3600) / 60)))
     local SECS=$(($DELTA - $DAYS * 86400 - $HOURS * 3600 - $MINUTES * 60))
-    
+
     if [ $((~~SECS)) -lt 3 ]; then
         export RPROMPT="$RPROMPT_BASE"
         unset ZSH_START_TIME
