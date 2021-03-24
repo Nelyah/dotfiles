@@ -28,26 +28,24 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'easymotion/vim-easymotion'                                     " Easily search and move around the buffer
     Plug 'christoomey/vim-tmux-navigator'                                " Sane binding to navigate between vim and tmux
     Plug 'SirVer/ultisnips'                                              " Interface for Snippets
-    Plug 'honza/vim-snippets'                                            " Provide with many Snippets
+    Plug 'honza/vim-snippets'                                            " Provide with many Snippets to Ultisnips
     Plug 'terryma/vim-expand-region'                                     " Extend visual selection by increasing text objects
     Plug 'terryma/vim-multiple-cursors'                                  " Adding multiple cursors with <c-n>
     Plug 'Raimondi/delimitMate'                                          " For parenthesis completion
     Plug 'skywind3000/asyncrun.vim'
 
-    " Plug 'neoclide/coc.nvim', {'branch': 'release'}                      " Best completion engine out there (LSP support)
-    Plug 'prabirshrestha/vim-lsp'
-    Plug 'mattn/vim-lsp-settings'
-    Plug 'prabirshrestha/asyncomplete.vim'
-    Plug 'prabirshrestha/asyncomplete-lsp.vim'
-    Plug 'keremc/asyncomplete-clang.vim'
+    """"""""""""""""
+    "  Completion  "
+    """"""""""""""""
+    Plug 'neovim/nvim-lsp'                                               " Enable the Neovim built-in LSP
+    Plug 'neovim/nvim-lspconfig'                                         " Set of configuration for the Neovim LSP
+    Plug 'nvim-lua/completion-nvim'                                      " Tool for providing autocompletion interface
+    Plug 'nvim-treesitter/nvim-treesitter'                               " Enable TreeSitter
+    Plug 'nvim-treesitter/completion-treesitter'                         " Add TreeSitter as an autocompletion source
 
-    Plug 'jackguo380/vim-lsp-cxx-highlight', {'for': ['c', 'cpp']}
     Plug 'ludovicchabant/vim-gutentags'                                  " (Re)generate tags automatically
     Plug 'godlygeek/tabular'                                             " Tabuliarise and align based on pattern
-    Plug 'dhruvasagar/vim-table-mode'
     Plug 'unblevable/quick-scope'                                        " Highlight matches when pressing 'f' or 'F'
-    " Plug 'Yggdroot/indentLine'
-    " Plug 'thaerkh/vim-indentguides'
 
     Plug 'tpope/vim-commentary'                                          " comments based on the file type
     Plug 'tpope/vim-surround'                                            " Add/change/remove quotes and stuff around objects
@@ -55,11 +53,8 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'tpope/vim-repeat'                                              " Allows for more complicated repeat using '.'
     Plug 'tpope/vim-eunuch'                                              " Provide with basic commands (chmod, rename, etc...)
     Plug 'tpope/vim-fugitive'                                            " Git Interface
-    Plug 'jreybert/vimagit', {'on': 'Magit'}                             " A great git interface for making commits
-    Plug 'rbong/vim-flog', {'on': 'Flog'}                                " Git graph viewer
-    Plug 'airblade/vim-gitgutter'                                        " git info on the left
+    Plug 'lewis6991/gitsigns.nvim'                                       " git info on the sign column
     Plug 'ryvnf/readline.vim'                                            " Brings readline mappings to ex command
-
 
     """""""""""""""
     "  Interface  "
@@ -67,20 +62,19 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'vim-airline/vim-airline'                                       " line with useful infos
     Plug 'vim-airline/vim-airline-themes'                                " A collection of themes
     Plug 'ap/vim-css-color'                                              " Color highlighter
-    Plug 'Nelyah/onedark.vim'                                          " Colour scheme
+    Plug 'Nelyah/onedark.vim'                                            " Colour scheme
     Plug 'drewtempelmeyer/palenight.vim'
-    " Plug 'powerman/vim-plugin-AnsiEsc'                                   " Adds Ansi escape code support
 
     """""""""""""""""""""""
     "  Language specific  "
     """""""""""""""""""""""
     Plug 'sheerun/vim-polyglot'                                          " Provide many language syntax highlighting
-    Plug 'git@web-git-a-1.melodis.com:terrier/salmon-vim.git'
 
     Plug 'vim-python/python-syntax', {'for': 'python'}                   " Better Python syntax highlighting
     Plug 'tmhedberg/SimpylFold', {'for': 'python'}                       " Better folding in python for docstrings and such
     Plug 'Vigemus/iron.nvim', {'for': 'python'}                          " Interactive REPL over Neovim
     Plug 'rhysd/vim-clang-format', {'for': 'cpp'}
+    Plug 'jackguo380/vim-lsp-cxx-highlight', {'for': ['c', 'cpp']}
 
     " Plug 'Konfekt/FastFold', {'for': ['markdown', 'pandoc']}
     Plug 'plasticboy/vim-markdown', {'for': ['markdown', 'pandoc', 'vimwiki.markdown']}      " Many conceal and folding features for Markdown
@@ -97,17 +91,15 @@ call plug#begin('~/.config/nvim/plugged')
     "  Integrated apps  "
     """""""""""""""""""""
     Plug 'vimwiki/vimwiki'                                               " Wiki for vim
-    " Plug 'tbabej/taskwiki'                                               " Requires vimwiki; integrates with taskwarrior
-" Plug 'lervag/wiki.vim'
+    " Plug 'lervag/wiki.vim'
     Plug 'scrooloose/nerdtree', {'on':  'NERDTreeToggle'}                " NERDtree loaded on toggle
     Plug 'Xuyuanp/nerdtree-git-plugin', {'on':  'NERDTreeToggle'}        " Add git markers for the Nerdtree plugin
     Plug 'majutsushi/tagbar', {'on': 'TagbarToggle'}                     " Opens a tagbar on the right side
-    Plug 'francoiscabrol/ranger.vim', {'on': 'Ranger'}                   " Integrates ranger file browser in vim
     Plug 'junegunn/goyo.vim', {'on': 'Goyo'}                             " Clean interface for writing prose
 
-    Plug 'liuchengxu/vim-which-key'                                      " Nice window to show available bindings
-    Plug 'rhysd/vim-grammarous', {'on': 'GrammarousCheck'}               " Grammar check :)
-    Plug 'mhinz/vim-startify'                                            " Nice startup screen with recent files selections
+    Plug 'nvim-lua/plenary.nvim'                                         " Set of Lua functions used by plugins
+
+    Plug 'rhysd/vim-grammarous', {'on': 'GrammarousCheck'}               " Grammar check
 
     Plug 'tomtom/tlib_vim'                                               " Some script library that may be required by other plugins
     Plug 'Shougo/vimproc.vim', {'build': 'make'}                         " Provide with some async function (and a library of functions)
@@ -463,51 +455,20 @@ augroup END
 "        PLUGINS          "
 """""""""""""""""""""""""""
 
+" {{{ Onedark
+
+try
+" Put this here as it need to be after QuickScope
+colorscheme onedark
+
+catch
+  echo 'onedark not installed. It should work after running :PlugInstall'
+endtry
+
+" }}}
 " {{{ Fugitive
 nnoremap <Leader>gs :vertical botright Gstatus<CR>
 " }}}
-" {{{ Magit
-
-nnoremap <Leader>gm :Magit<CR>
-
-" }}}
-" {{{ vim-flog
-nnoremap <Leader>gf :Flog -all<CR>
-
-
-function! Flogfixuprebase()
-  let commit = flog#get_commit_data(line('.')).short_commit_hash
-  execute 'Gcommit --fixup=' . commit . ' 133_SquashArgument()<CR>'
-endfunction
-
-
-function! Flogcheckout()
-  let commit = flog#get_commit_data(line('.')).short_commit_hash
-  execute 'Floggit checkout ' . commit
-endfunction
-
-function! Flogdiff()
-  let first_commit = flog#get_commit_data(line("'<")).short_commit_hash
-  let last_commit = flog#get_commit_data(line("'>")).short_commit_hash
-  call flog#git('vertical belowright', '!', 'diff ' . first_commit . ' ' . last_commit)
-endfunction
-
-
-function! Flogrebase()
-  let first_commit = flog#get_commit_data(line("'<")).short_commit_hash
-  let last_commit = flog#get_commit_data(line("'>")).short_commit_hash
-  execute 'Grebase -i ' . last_commit . ' ' . first_commit
-  " call flog#git('vertical belowright', '!', 'rebase -i ' . last_commit . ' ' . first_commit)
-endfunction
-
-
-augroup flog
-  autocmd FileType floggraph vnoremap gd :<C-U>call Flogdiff()<CR>
-  autocmd FileType floggraph nnoremap gco :<C-U>call Flogcheckout()<CR>
-  autocmd FileType floggraph vnoremap gr :<C-U>call Flogrebase()<CR>
-augroup END
-
-"}}}
 " {{{ Chromatica
 " let g:clang_library_path='/usr/lib64/libclang.so'
 let g:chromatica#enable_at_startup=1
@@ -617,7 +578,7 @@ let g:vimtex_compiler_method = 'latexmk'
 autocmd FileType tex nnoremap <Leader>c :VimtexTocToggle<CR>
 autocmd FileType tex nnoremap <F5> :VimtexCompile<CR>
 " }}}
-" {{{ fzf plugin
+" {{{ FzF
 autocmd CompleteDone * pclose
 let g:fzf_history_dir = '~/.local/share/fzf-history'
 " [Buffers] Jump to the existing window if possible
@@ -650,6 +611,13 @@ inoremap <c-x>h :Helptags<CR>
 nnoremap <Leader>x :Commands<CR>
 inoremap <M-x> :Commands<CR>
 " Fuzzy search help <leader>?
+
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \   <bang>0)
 
 function! CreateCenteredFloatingWindow()
     let width = min([&columns - 4, max([80, float2nr(&columns/2)])])
@@ -692,9 +660,6 @@ vmap <C-v> <Plug>(expand_region_shrink)
 let g:SimpylFold_docstring_preview = 1
 
 " }}}
-" {{{ Git plugin
-" set diffopt+=vertical
-" }}}
 " {{{ Tabular
 nnoremap <Leader>T= :Tabularize /=<CR>
 vnoremap <Leader>T= :Tabularize /=<CR>
@@ -727,12 +692,6 @@ let g:polyglot_disabled = ['python', 'latex', 'markdown']
 " }}}
 " {{{ python-syntax
 let g:python_highlight_all = 1
-" }}}
-" {{{ git-gutter
-let g:gitgutter_map_keys = 0
-nnoremap <Leader>gp <Plug>GitGutterPreviewHunk
-nnoremap <Leader>gs <Plug>GitGutterStageHunk
-nnoremap <Leader>gu <Plug>GitGutterUndoHunk
 " }}}
 " {{{ Easymotion
 " nnoremap  <Leader>s <Plug>(easymotion-bd-w)
@@ -780,72 +739,6 @@ tnoremap <silent> <m-\> <C-\><C-n>:TmuxNavigatePrevious<cr>
 " }}}
 " {{{ Gutentags
 let g:gutentags_cache_dir = '~/.config/nvim/gutentags'
-" }}}
-" {{{ CoC nvim
-let g:coc_disable_startup_warning = 1
-
-" Use `:Format` to format current buffer
-command! -nargs=0 Format :call CocAction('format')
-
-" Use `:Fold` to fold current buffer
-command! -nargs=? Fold :call CocAction('fold', <f-args>)
-
-" Using CocList
-" Show all diagnostics
-nnoremap <silent> <space><space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions
-nnoremap <silent> <space><space>e  :<C-u>CocList extensions<cr>
-" Show commands
-nnoremap <silent> <space><space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document
-nnoremap <silent> <space><space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols
-nnoremap <silent> <space><space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent> <space><space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent> <space><space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list
-nnoremap <silent> <space><space>p  :<C-u>CocListResume<CR>
-
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-" nnoremap <Plug>(coc-definition) :<C-u>call CocActionAsync('jumpDefinition')
-
-" Remap keys for gotos
-" Use `[c` and `]c` to navigate diagnostics
-nnoremap <silent> [c <Plug>(coc-diagnostic-prev)
-nnoremap <silent> ]c <Plug>(coc-diagnostic-next)
-
-" Remap keys for gotos
-nmap <silent> gd :<C-u>call CocActionAsync('jumpDefinition')<CR>
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-
-" Use K to show documentation in preview window
-nnoremap <silent> gD :call <SID>show_documentation()<CR>
-
-let g:coc_global_extensions = [
-    \ 'coc-python', 'coc-snippets',
-    \ 'coc-vimlsp', 'coc-css',
-    \ 'coc-json', 'coc-yaml', 'coc-html',
-    \ 'coc-git', 'coc-vimtex'
-\]
-
-autocmd FileType mail call coc#config('suggest', {
-    \ 'autoTrigger': 'trigger',
-    \})
-
-
 " }}}
 " {{{ Tmux-Complete
 let g:tmuxcomplete#trigger = ''
@@ -934,13 +827,6 @@ let g:pandoc#syntax#conceal#urls=1
 let g:pandoc#syntax#codeblocks#embeds#langs = ['bash=sh', 'css', 'html', 'js=javascript',
       \ 'typescript=javascript', 'python', 'lua']
 " }}}
-" {{{ Ranger.vim
-let g:ranger_map_keys = 0
-nnoremap <leader>fe :Ranger<CR>
-" }}}
-" {{{ Load Lua plugins conf file
-"luafile $HOME/.config/nvim/plugins.lua
-" }}}
 " {{{ livedown
 " should markdown preview get shown automatically upon opening markdown buffer
 let g:livedown_autorun = 0
@@ -976,19 +862,8 @@ augroup END
 let g:qs_max_chars=500
 
 " }}}
-" {{{ Onedark
-
-try
-" Put this here as it need to be after QuickScope
-colorscheme onedark
-
-catch
-  echo 'onedark not installed. It should work after running :PlugInstall'
-endtry
-
-" }}}
 " {{{ SoundHound
-" {{{ Salmon-vim
+
 " Treat .ter/.ti/.cdt files as cpp files
 autocmd! BufNewFile,BufRead,BufEnter *.ter set filetype=cpp
 autocmd! BufNewFile,BufRead,BufEnter *.ti set filetype=cpp
@@ -1012,63 +887,76 @@ function! InsertHeader()
     call append(line('$'), s:end_lines)
 endfunction
 command! InsertHeader call InsertHeader()
-"}}}
-
-" project related bindings 
-nnoremap  <Leader>rtdr :AsyncRun dev-sync -regenerate-test-lists --rdt -d Trademarks ./Trademarks/Trademarks.comspec.se
-nnoremap  <Leader>rtd :AsyncRun dev-sync --rdt -d Trademarks ./Trademarks/Trademarks.comspec.se
-nnoremap  <Leader>rtf :AsyncRun dev-sync --rft '%:p:h:t'/'%:t'
-nnoremap  <Leader>rts :AsyncStop<CR>
-nnoremap <Leader>rrlpq :!rsync -av /Volumes/Gitty/LPQEULanguages/ dev:/disk1/cdequeker/LPQEULanguages/
-command! -nargs=* Dev :!dev-sync <args>
-cnoreabbrev Dev denoremap <Leader>vp :Dev push
-nnoremap <Leader>vP :Dev pull
 
 "}}}
-"{{{ vim-lsp
-if executable('pyls')
-    " pip install python-language-server
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'pyls',
-        \ 'cmd': {server_info->['pyls']},
-        \ 'allowlist': ['python'],
-        \ })
-endif
-
-autocmd User asyncomplete_setup call asyncomplete#register_source(
-    \ asyncomplete#sources#clang#get_source_options())
-
-function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-    nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> gr <plug>(lsp-references)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> <leader>rn <plug>(lsp-rename)
-    nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
-    nmap <buffer> gh <plug>(lsp-hover)
-
-    " refer to doc to add more commands
-endfunction
-
-augroup lsp_install
-    au!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
-let g:lsp_virtual_text_enabled = 0
-let g:lsp_highlights_enabled = 0
-let g:lsp_textprop_enabled = 0
-set completeopt=menuone,noinsert,noselect,preview
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
-"}}}
-
+" {{{ Neovim completion
 let g:cpp_simple_highlight = 1
 
 hi default LspCxxHlGroupNamespace ctermfg=Yellow guifg=#E5C07B cterm=none gui=none
 hi default LspCxxHlGroupMemberVariable ctermfg=White guifg=#F16E77
+
+" Completion menu
+set completeopt=menuone,noinsert,noselect,preview
+
+" Completion Neovim
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
+let g:completion_matching_smart_case = 1
+let g:completion_enable_snippet = 'UltiSnips'
+
+autocmd BufEnter * lua require'completion'.on_attach()
+let g:completion_auto_change_source = 1
+let g:completion_chain_complete_list = {
+    \'default' : [
+    \    {'complete_items': ['lsp', 'snippet', 'path']},
+    \    {'mode': '<c-p>'},
+    \    {'mode': '<c-n>'}
+    \],
+    \'cpp' : [
+    \    {'complete_items': ['ts', 'lsp', 'snippet', 'path']},
+    \    {'mode': '<c-p>'},
+    \    {'mode': '<c-n>'}
+    \],
+    \'c' : [
+    \    {'complete_items': ['ts', 'lsp', 'snippet', 'path']},
+    \    {'mode': '<c-p>'},
+    \    {'mode': '<c-n>'}
+    \],
+    \'python' : [
+    \    {'complete_items': ['ts', 'lsp', 'snippet', 'path']},
+    \    {'mode': '<c-p>'},
+    \    {'mode': '<c-n>'}
+    \],
+\}
+
+"}}}
+" {{{ Neovim LSP
+
+if executable('clangd')
+    lua require('lspconfig').clangd.setup{ on_attach=require'completion'.on_attach }
+endif
+if executable('pyls')
+    lua require('lspconfig').pyls.setup{ on_attach=require'completion'.on_attach }
+endif
+if executable('bash-language-server')
+    lua require('lspconfig').bashls.setup{ on_attach=require'completion'.on_attach }
+endif
+if executable('vim-language-server')
+    lua require('lspconfig').vimls.setup{ on_attach=require'completion'.on_attach }
+endif
+
+nnoremap <silent> 2gD <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> gh     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gi    <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> gs <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+
+"}}}
+" {{{ gitsigns
+
+lua require('gitsigns').setup()
+
+"}}}
