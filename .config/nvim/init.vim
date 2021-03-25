@@ -200,16 +200,13 @@ nnoremap <leader>gV `[V`]"+y <c-o>
 nnoremap ; :
 
 " Performs a regular search
-nnoremap <leader>d /
+nnoremap <leader>d /\v
 inoremap kj <esc>
 " vnoremap kj <esc>
 tnoremap <Esc> <C-\><C-n>
 autocmd! BufEnter,BufWinEnter,WinEnter term://* startinsert
 
-
-" tnoremap kjjk <C-\><C-n>
-
-" Switching panes using the ctrl key
+" Switching panes using the meta key
 nnoremap <M-h> <C-w>h
 nnoremap <M-j> <C-w>j
 nnoremap <M-k> <C-w>k
@@ -243,33 +240,38 @@ nnoremap <c-m> M
 
 nnoremap <c-e> 7<c-e>
 nnoremap <c-y> 7<c-y>
+vnoremap <c-e> 7<c-e>
+vnoremap <c-y> 7<c-y>
 
 " Saving
 nnoremap <Leader>w :w<CR>
 
 " Save the copy buffer
 noremap <Leader>X "+
-" Copy to clipboard
-vnoremap <leader>y "+y 
-nnoremap <leader>y "+y 
-nnoremap <leader>p o<esc>"+gp
 
+" Copy to clipboard
+vnoremap <leader>y "+y
+nnoremap <leader>y "+y
+nnoremap <leader>p o<esc>"+gp
 
 " Align blocks of texte and keep them selected
 vnoremap < <gv
 vnoremap > >gv
 
 " Used for filetype specific editing
-autocmd FileType tex,mail set spell
-autocmd FileType vimwiki,tex,mail set spelllang=en_gb,fr
-autocmd FileType mail set textwidth=0
-autocmd FileType mail set wrapmargin=0
-autocmd FileType tex set iskeyword+=:,-
+autocmd! FileType tex,mail set spell
+autocmd! FileType vimwiki,tex,mail set spelllang=en_gb,fr,es
+autocmd! FileType tex set iskeyword+=:,-
 
-autocmd FileType mail nnoremap <Leader>gt :call MailJumpToField('To')<CR>
-autocmd FileType mail nnoremap <Leader>gb :call MailJumpToField('Bcc:')<CR>
-autocmd FileType mail nnoremap <Leader>gc :call MailJumpToField('Cc:')<CR>
-autocmd FileType mail nnoremap <Leader>gs :call MailJumpToField('Subject:')<CR>
+augroup mail
+    autocmd!
+    autocmd FileType mail set textwidth=0
+    autocmd FileType mail set wrapmargin=0
+    autocmd FileType mail nnoremap <Leader>gt :call MailJumpToField('To')<CR>
+    autocmd FileType mail nnoremap <Leader>gb :call MailJumpToField('Bcc:')<CR>
+    autocmd FileType mail nnoremap <Leader>gc :call MailJumpToField('Cc:')<CR>
+    autocmd FileType mail nnoremap <Leader>gs :call MailJumpToField('Subject:')<CR>
+augroup END
 
 let g:tex_flavor='latex'
 
@@ -278,8 +280,8 @@ set guioptions=M
 set mouse=a " Use the mouse to slide panes size or scrolling, and copying
 
 set hidden " Allow background buffers without saving
-set splitright
-set splitbelow
+set splitright " Split appears on the right
+set splitbelow " Split appears below
 
 hi CursorLineNr guifg=#dddddd
 set cursorline                        " highlight current line
@@ -288,7 +290,7 @@ set formatoptions+=n                  " smart auto-indenting inside numbered lis
 set incsearch           " search as characters are entered
 set hlsearch            " highlight matches
 set magic               " For regex
-set ignorecase
+set smartcase
 
 " Tab spec
 set tabstop=4
@@ -300,8 +302,6 @@ nnoremap <Leader>l :bn<CR>
 nnoremap <Leader>h :bp<CR>
 nnoremap gl :ls<CR>
 nnoremap gb :ls<CR>:b
-
-nnoremap <silent> <leader>      :<c-u>WhichKey '<Space>'<CR>
 
 nnoremap <Leader>c ggVG:!column -t<CR>
 
@@ -349,19 +349,10 @@ set synmaxcol=1000
 " Color scheme
 set background=dark
 
-"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
-"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
-"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
-if (empty($TMUX))
-  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
-  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
-  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
-  if (has("termguicolors"))
+if (has("termguicolors"))
     set termguicolors
-  endif
 endif
 
-set termguicolors
 
 " Resize window
 nnoremap <silent> <c-up> <c-w>3+
@@ -394,7 +385,6 @@ set wildignore+=*.gif,*.jpg,*.jpeg,*.otf,*.png,*.svg,*.ttf,*.svg,
 " Ignore case when completing
 set wildignorecase
 
-
 set complete+=kspell
 " }}}
 " {{{ Useful functions and commands
@@ -416,7 +406,7 @@ function! MailJumpToField(field)
     let s:line_pattern = search('^' . a:field . ':')
     if (s:line_pattern == 0)
         call cursor(1, 1)
-        execute "normal! O". a:field . ":$" 
+        execute "normal! O". a:field . ":$"
     else
         call cursor(s:line_pattern, 1)
     endif
@@ -425,8 +415,10 @@ endfunction
 " }}}
 " Markdown config {{{
 " Syntax highlight within fenced code blocks
-let g:markdown_fenced_languages = ['bash=sh', 'css', 'html', 'js=javascript',
-      \ 'typescript=javascript', 'python', 'lua']
+let g:markdown_fenced_languages = [
+    \ 'bash=sh', 'css', 'html', 'js=javascript',
+    \ 'typescript=javascript', 'python', 'lua'
+\]
 
 " }}}
 " {{{ Git
@@ -840,7 +832,7 @@ let g:livedown_port = 1337
 " the browser to use, can also be firefox, chrome or other, depending on your executable
 let g:livedown_browser = "firefox"
 "}}}
-" {{{ wiki.vim 
+" {{{ wiki.vim
 let g:wiki_root = '~/cloud/utils/wiki'
 autocmd! BufEnter *.wiki set filetype=pandoc
 "}}}
@@ -953,6 +945,37 @@ nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
 nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
 nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+
+lua << EOF
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+    -- This will disable virtual text, like doing:
+    -- let g:diagnostic_enable_virtual_text = 0
+    virtual_text = false,
+
+    -- This is similar to:
+    -- let g:diagnostic_show_sign = 1
+    -- To configure sign display,
+    --  see: ":help vim.lsp.diagnostic.set_signs()"
+    signs = true,
+
+    -- This is similar to:
+    -- "let g:diagnostic_insert_delay = 1"
+    update_in_insert = false,
+  }
+)
+EOF
+
+" Check for event after that much ms
+set updatetime=700
+
+" Event listener for when we're holding the cursor. This event is called
+" for every 700ms (value of updatetime). If it's true, then show the
+" diagnostics in a popup window
+autocmd! CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
+
+let g:diagnostic_auto_popup_while_jump = 1
+let g:diagnostic_enable_virtual_text = 0
 
 "}}}
 " {{{ gitsigns
