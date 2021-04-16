@@ -1,4 +1,4 @@
-directory: /data/music/music_clean/
+directory: /data/music/library/
 library: /data/music/beets-library.db
 
 asciify_paths: yes
@@ -30,8 +30,13 @@ plugins: [
   duplicates,
   fromfilename,
   convert,
+  extrafiles,
   permissions
 ]
+
+extrafiles:
+    patterns:
+        all: '*.*'
 
 replace:
   '[\\/]': _        # bask/forward slash
