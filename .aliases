@@ -50,31 +50,36 @@ alias awk2="awk '{print $2}'"
 alias awk3="awk '{print $3}'"
 alias awk4="awk '{print $4}'"
 
-if [ -x "$(which git)" ] ; then
+function _command_exists () {
+    [ "$#" -lt 1 ] && return 1
+    hash "$1" &> /dev/null && return 0 || return 1
+}
+
+if _command_exists git ; then
     alias g="git"
     alias ga="git add"
     alias gs="git status"
     alias gc="git commit"
 fi
 
-if [ ! -x "$(which open)" ] && [ -x "$(which xdg-open)" ] ; then
+if ! _command_exists open  && _command_exists xdg-open; then
     alias open="xdg-open"
 fi
 
-if [ -x "$(which nvim)" ] ; then
+if _command_exists nvim ; then
     alias -g vim="nvim"
     alias nvi="nvim -u NORC"
 fi
 
-if [ -x "$(which fdfind)" ] ; then
+if _command_exists fdfind ; then
     alias fd="fdfind"
 fi
 
-if [ -x "$(which task)" ] ; then
+if _command_exists task ; then
     alias t="task"
 fi
 
-if [ -x "$(which fasd)" ] ; then
+if _command_exists fasd ; then
     eval "$(fasd --init auto)"
 
     alias z='fzf-fasd-goto-dir'
@@ -86,7 +91,7 @@ if [ -x "$(which fasd)" ] ; then
     alias sf='fasd -sif'     # interactive file selection
 fi
 
-if [ -x "$(which lf)" ] ; then
+if _command_exists lf ; then
 
     _lf-cleanup() {
         exec 3>&-
@@ -116,7 +121,7 @@ if [ -x "$(which lf)" ] ; then
     }
 fi
 
-if [ -x "$(which tmux)" ] ; then
+if _command_exists tmux ; then
     # Change the current directory for a tmux session, which determines
     # the starting dir for new windows/panes:
     function tmux-set-cwd {
@@ -124,6 +129,6 @@ if [ -x "$(which tmux)" ] ; then
     }
 fi
 
-if [ -x "$(which keyctl)" ]; then
+if _command_exists keyctl; then
     alias get-bw-session='keyctl pipe "$(keyctl request user bw_session)"'
 fi
