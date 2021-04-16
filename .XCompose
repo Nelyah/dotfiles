@@ -1,0 +1,12 @@
+include "/usr/share/X11/locale/en_US.UTF-8/Compose"
+
+<dead_acute> <space> : "'" apostrophe
+<dead_acute> <m> : "'m"
+<dead_acute> <M> : "'M"
+<dead_acute> <t> : "'t"
+<dead_acute> <T> : "'T"
+<dead_acute> <b> : "'b"
+<dead_acute> <B> : "'B"
+<dead_acute> <a> : "á"
+<dead_acute> <c> : "ç"
+<dead_acute> <C> : "Ç"
