@@ -854,6 +854,15 @@ augroup END
 let g:qs_max_chars=500
 
 " }}}
+"{{{ UltiSnips
+" Workaround slowdown in neovim
+if has('nvim')
+    augroup ultisnips_no_auto_expansion
+        au!
+        au VimEnter * au! UltiSnips_AutoTrigger
+    augroup END
+endif
+"}}}
 " {{{ SoundHound
 
 " Treat .ter/.ti/.cdt files as cpp files
@@ -893,6 +902,7 @@ set completeopt=menuone,noinsert,noselect,preview
 " Completion Neovim
 let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
 let g:completion_matching_smart_case = 1
+let g:completion_trigger_keyword_length = 1
 let g:completion_enable_snippet = 'UltiSnips'
 
 autocmd BufEnter * lua require'completion'.on_attach()
