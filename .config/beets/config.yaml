@@ -110,3 +110,5 @@ paths:
   singleton: Singletons/$artist - $title
   comp: Various_Artist/$album%aunique{}/$disc-$track $title
   albumtype:soundtrack: Soundtracks/$album/$disc-$track $title
+
+itemfields: track title albumartist composer artist album
