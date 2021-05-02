@@ -70,8 +70,8 @@ source ~/.profile
 source ~/.aliases
 
 # Server aliases
-if [ -f /data/homeserver/host_system/environment_config ]; then
-    source /data/homeserver/host_system/environment_config
+if [ -f ~/.homeserver ]; then
+    source ~/.homeserver
 else
     # Work commands
     [ -f "${HOME}/.work" ] && source "${HOME}/.work"
