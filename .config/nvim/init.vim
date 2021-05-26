@@ -290,6 +290,7 @@ set formatoptions+=n                  " smart auto-indenting inside numbered lis
 set incsearch           " search as characters are entered
 set hlsearch            " highlight matches
 set magic               " For regex
+set ignorecase
 set smartcase
 
 " Tab spec
@@ -993,3 +994,5 @@ let g:diagnostic_enable_virtual_text = 0
 lua require('gitsigns').setup()
 
 "}}}
+
+set completeopt-=preview
