@@ -2,7 +2,7 @@
 # Rofi extension for BitWarden-cli
 NAME="$(basename "$0")"
 VERSION="0.4"
-DEFAULT_CLEAR=5
+DEFAULT_CLEAR=60
 BW_HASH=
 
 # Options
