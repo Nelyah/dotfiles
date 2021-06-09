@@ -39,7 +39,7 @@ call plug#begin('~/.config/nvim/plugged')
     """"""""""""""""
     Plug 'neovim/nvim-lsp'                                               " Enable the Neovim built-in LSP
     Plug 'neovim/nvim-lspconfig'                                         " Set of configuration for the Neovim LSP
-    Plug 'nvim-lua/completion-nvim'                                      " Tool for providing autocompletion interface
+    Plug 'hrsh7th/nvim-compe'                                            " Tool for providing autocompletion interface
     Plug 'nvim-treesitter/nvim-treesitter'                               " Enable TreeSitter
     Plug 'nvim-treesitter/completion-treesitter'                         " Add TreeSitter as an autocompletion source
 
@@ -78,7 +78,7 @@ call plug#begin('~/.config/nvim/plugged')
 
     " Plug 'Konfekt/FastFold', {'for': ['markdown', 'pandoc']}
     Plug 'plasticboy/vim-markdown', {'for': ['markdown', 'pandoc', 'vimwiki.markdown']}      " Many conceal and folding features for Markdown
-    " Plug 'shime/vim-livedown', {'for': ['markdown', 'pandoc']}
+    Plug 'shime/vim-livedown', {'for': ['markdown', 'pandoc']}
     " Plug 'vim-pandoc/vim-pandoc', {'for': ['pandoc']}                    " Provide a Pandoc interface conversion
     " Plug 'Nelyah/vim-pandoc-syntax', {'for': ['pandoc']}                 " Provide pandoc specific syntax
 
@@ -323,6 +323,10 @@ augroup vimrc_help
   autocmd!
   autocmd BufEnter *.txt if &buftype == 'help' | wincmd L | endif
 augroup END
+
+if executable('rg')
+    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case
+endif
 
 " }}}
 " Interface {{{
@@ -898,53 +902,50 @@ hi default LspCxxHlGroupNamespace ctermfg=Yellow guifg=#E5C07B cterm=none gui=no
 hi default LspCxxHlGroupMemberVariable ctermfg=White guifg=#F16E77
 
 " Completion menu
-set completeopt=menuone,noinsert,noselect,preview
+set completeopt=menuone,noselect
 
-" Completion Neovim
-let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
-let g:completion_matching_smart_case = 1
-let g:completion_trigger_keyword_length = 1
-let g:completion_enable_snippet = 'UltiSnips'
+lua << EOF
+require'compe'.setup {
+  enabled = true;
+  autocomplete = true;
+  debug = false;
+  min_length = 1;
+  preselect = 'enable';
+  throttle_time = 80;
+  source_timeout = 200;
+  incomplete_delay = 400;
+  max_abbr_width = 100;
+  max_kind_width = 100;
+  max_menu_width = 100;
+  documentation = true;
 
-autocmd BufEnter * lua require'completion'.on_attach()
-let g:completion_auto_change_source = 1
-let g:completion_chain_complete_list = {
-    \'default' : [
-    \    {'complete_items': ['lsp', 'snippet', 'path']},
-    \    {'mode': '<c-p>'},
-    \    {'mode': '<c-n>'}
-    \],
-    \'cpp' : [
-    \    {'complete_items': ['ts', 'lsp', 'snippet', 'path']},
-    \    {'mode': '<c-p>'},
-    \    {'mode': '<c-n>'}
-    \],
-    \'c' : [
-    \    {'complete_items': ['ts', 'lsp', 'snippet', 'path']},
-    \    {'mode': '<c-p>'},
-    \    {'mode': '<c-n>'}
-    \],
-    \'python' : [
-    \    {'complete_items': ['ts', 'lsp', 'snippet', 'path']},
-    \    {'mode': '<c-p>'},
-    \    {'mode': '<c-n>'}
-    \],
-\}
+  source = {
+    path = true;
+    buffer = false;
+    calc = true;
+    emoji = true;
+    nvim_lsp = true;
+    nvim_lua = true;
+    vsnip = true;
+    ultisnips = true;
+  };
+}
+EOF
 
 "}}}
 " {{{ Neovim LSP
 
 if executable('clangd')
-    lua require('lspconfig').clangd.setup{ on_attach=require'completion'.on_attach }
+    lua require('lspconfig').clangd.setup{ on_attach=require'compe'.on_attach }
 endif
 if executable('pyls')
-    lua require('lspconfig').pyls.setup{ on_attach=require'completion'.on_attach }
+    lua require('lspconfig').pyls.setup{ on_attach=require'compe'.on_attach }
 endif
 if executable('bash-language-server')
-    lua require('lspconfig').bashls.setup{ on_attach=require'completion'.on_attach }
+    lua require('lspconfig').bashls.setup{ on_attach=require'compe'.on_attach }
 endif
 if executable('vim-language-server')
-    lua require('lspconfig').vimls.setup{ on_attach=require'completion'.on_attach }
+    lua require('lspconfig').vimls.setup{ on_attach=require'compe'.on_attach }
 endif
 
 nnoremap <silent> 2gD <cmd>lua vim.lsp.buf.definition()<CR>
@@ -994,5 +995,3 @@ let g:diagnostic_enable_virtual_text = 0
 lua require('gitsigns').setup()
 
 "}}}
-
-set completeopt-=preview
