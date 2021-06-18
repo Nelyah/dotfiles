@@ -13,7 +13,7 @@ export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=1000
 export SAVEHIST=100000
 
-setopt appendhistory hist_ignore_dups inc_append_history extended_history hist_ignore_all_dups
+setopt appendhistory hist_ignore_dups inc_append_history extended_history hist_ignore_all_dups hist_ignore_space share_history
 
 
 if type nvim &> /dev/null; then
