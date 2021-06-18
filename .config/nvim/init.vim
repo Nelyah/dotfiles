@@ -77,6 +77,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'jackguo380/vim-lsp-cxx-highlight', {'for': ['c', 'cpp']}
 
     " Plug 'Konfekt/FastFold', {'for': ['markdown', 'pandoc']}
+    Plug 'dhruvasagar/vim-table-mode', {'for': ['markdown', 'pandoc', 'vimwiki.markdown']}      " Add a table mode for writing them in markdown
     Plug 'plasticboy/vim-markdown', {'for': ['markdown', 'pandoc', 'vimwiki.markdown']}      " Many conceal and folding features for Markdown
     Plug 'shime/vim-livedown', {'for': ['markdown', 'pandoc']}
     " Plug 'vim-pandoc/vim-pandoc', {'for': ['pandoc']}                    " Provide a Pandoc interface conversion
