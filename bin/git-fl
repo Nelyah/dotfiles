@@ -1,0 +1,89 @@
+#! /bin/bash
+
+DARK_GRAY="$(tput setaf 0)"
+RED="$(tput setaf 1)"
+GREEN="$(tput setaf 2)"
+YELLOW="$(tput setaf 3)"
+BLUE="$(tput setaf 4)"
+MAGENTA="$(tput setaf 5)"
+CYAN="$(tput setaf 6)"
+WHITE="$(tput setaf 7)"
+GRAY="$(tput setaf 8)"
+BOLD="$(tput bold)"
+UNDERLINE="$(tput sgr 0 1)"
+INVERT="$(tput sgr 1 0)"
+NORMAL="$(tput sgr0)"
+
+export DARK_GRAY
+export RED
+export GREEN
+export YELLOW
+export BLUE
+export MAGENTA
+export CYAN
+export WHITE
+export GRAY
+export BOLD
+export UNDERLINE
+export INVERT
+export NORMAL
+
+args=()
+nb_lines=
+
+while (( $# > 0 )); do
+    if grep -E "^[0-9]+$" <<< "$1" &> /dev/null; then
+        nb_lines=$( tr -d '-' <<< "$1")
+    else
+        args+=( "$1" )
+    fi
+    shift
+done
+[ -n "$nb_lines" ] && nb_lines="-${nb_lines}"
+
+_gitLogLineToHash="echo {} | awk '{print \$1}' | head -1"
+
+_gitDiffTool=
+if hash diff-so-fancy &> /dev/null ; then
+    _gitDiffTool='| diff-so-fancy'
+fi
+_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % $_gitDiffTool'"
+
+_curEditor=${EDITOR:-nano}
+
+_filesFromGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --pretty="" --name-only --relative %'  "
+
+[ "$(uname)" = Darwin ] && prefix_key=ctrl || prefix_key=alt
+
+_HEADER='Git fuzzy
+    '"${UNDERLINE}${YELLOW}"'Enter'"${NORMAL}"': Open Diff with the pager
+    '"${UNDERLINE}${YELLOW}${prefix_key}"'-y'"${NORMAL}"': Copy hash to clipboard (requires xclip)
+    '"${UNDERLINE}${YELLOW}${prefix_key}"'-o'"${NORMAL}"': Open files in commit using '"${_curEditor}"'
+    '"${UNDERLINE}${YELLOW}${prefix_key}"'-p'"${NORMAL}"': Cherry-pick commit
+    '"${UNDERLINE}${YELLOW}${prefix_key}"'-f'"${NORMAL}"': Fixup this commit
+    '"${UNDERLINE}${YELLOW}${prefix_key}"'-r'"${NORMAL}"': Interactive rebase from this commit
+
+
+'
+
+_GitLogFormat="%C(212)%>|(5)%h%C(reset)  %C(04)%cd%C(reset)  %C(green)%<(20,trunc)%an%C(reset) %>|(1)%s%C(reset) %C(auto)%d%C(reset)"
+_GitDateFormat="%Y-%m-%d %H:%I:%S"
+
+
+_gitLog () {
+
+_GitCommand="git log  $nb_lines  --color=always  --format=\"$_GitLogFormat\"  --date=format:\"$_GitDateFormat\" ${args[@]}"
+eval "$_GitCommand" | \
+    fzf --no-sort --reverse --tiebreak=index --no-multi \
+        --ansi --preview="$_viewGitLogLine" \
+        --header "$_HEADER" \
+        --toggle-sort=\` \
+        --bind "enter:execute:$_viewGitLogLine   | less -R" \
+        --bind "alt-o:execute:$_filesFromGitLogLine | xargs --no-run-if-empty ${_curEditor} " \
+        --bind "alt-y:execute:$_gitLogLineToHash | xclip" \
+        --bind "alt-p:execute($_gitLogLineToHash | xargs  git cherry-pick)+reload:$_GitCommand" \
+        --bind "alt-f:execute($_gitLogLineToHash | xargs -I % git commit --fixup %)+reload:$_GitCommand"  \
+        --bind "alt-r:execute($_gitLogLineToHash | xargs -I % git rebase -i --autosquash %^ )+reload:$_GitCommand"
+}
+
+_gitLog
