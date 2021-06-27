@@ -62,6 +62,10 @@ if _command_exists git ; then
     alias gc="git commit"
 fi
 
+if _command_exists docker-compose ; then
+    alias dc="docker-compose"
+fi
+
 if ! _command_exists open  && _command_exists xdg-open; then
     alias open="xdg-open"
 fi
