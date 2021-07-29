@@ -11,7 +11,14 @@
 set -e
 
 # define versions
-tmux_version="3.2"
+if hash curl &> /dev/null; then
+    tmux_version=$(curl -s \
+      -H "Accept: application/vnd.github.v3+json" \
+      https://api.github.com/repos/tmux/tmux/releases | jq '.[0].tag_name')
+else
+    tmux_version="3.2"
+fi
+
 tmux_patch_version="" # leave empty for stable releases
 tmux_version="${tmux_version}${tmux_patch_version}"
 
