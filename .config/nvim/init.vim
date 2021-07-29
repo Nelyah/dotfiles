@@ -53,7 +53,7 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'tpope/vim-repeat'                                              " Allows for more complicated repeat using '.'
     Plug 'tpope/vim-eunuch'                                              " Provide with basic commands (chmod, rename, etc...)
     Plug 'tpope/vim-fugitive'                                            " Git Interface
-    Plug 'lewis6991/gitsigns.nvim'                                       " git info on the sign column
+    Plug 'lewis6991/gitsigns.nvim', {'branch': 'main'}                   " git info on the sign column
     Plug 'ryvnf/readline.vim'                                            " Brings readline mappings to ex command
 
     """""""""""""""
