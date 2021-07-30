@@ -32,29 +32,35 @@ autoload -U add-zsh-hook
 #{{{ Zplug
 export ZPLUG_HOME="${XDG_CONFIG_HOME}/zplug"
 
-[ ! -d "$ZPLUG_HOME" ] && mkdir -p "$ZPLUG_HOME"
-[ ! -f "$ZPLUG_HOME/init.zsh" ] && git clone https://github.com/zplug/zplug "$ZPLUG_HOME"
+[ -d "$ZPLUG_HOME" ] && REPLY=yes || read -q "REPLY?Clone Zplug to '$ZPLUG_HOME'? [yN] "
 
-source "${ZPLUG_HOME}/init.zsh"
+if [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
 
-zplug 'zplug/zplug', hook-build:'zplug --self-manage'
-zplug "mafredri/zsh-async", from:"github", use:"async.zsh"
-zplug "lib/clipboard", from:"oh-my-zsh"
-zplug "lib/compfix", from:"oh-my-zsh"
-zplug "lib/completion", from:"oh-my-zsh"
-zplug "lib/git", from:"oh-my-zsh"
-zplug "plugins/taskwarrior", from:"oh-my-zsh"
+    [ ! -d "$ZPLUG_HOME" ] && mkdir -p "$ZPLUG_HOME"
+    [ ! -f "$ZPLUG_HOME/init.zsh" ] && git clone https://github.com/zplug/zplug "$ZPLUG_HOME"
+
+    source "${ZPLUG_HOME}/init.zsh"
+
+    zplug 'zplug/zplug', hook-build:'zplug --self-manage'
+    zplug "mafredri/zsh-async", from:"github", use:"async.zsh"
+    zplug "lib/clipboard", from:"oh-my-zsh"
+    zplug "lib/compfix", from:"oh-my-zsh"
+    zplug "lib/completion", from:"oh-my-zsh"
+    zplug "lib/git", from:"oh-my-zsh"
+    zplug "plugins/taskwarrior", from:"oh-my-zsh"
 
 
-# Install plugins if there are plugins that have not been installed
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
+    # Install plugins if there are plugins that have not been installed
+    if ! zplug check --verbose; then
+        printf "Install? [y/N]: "
+        if read -q; then
+            echo; zplug install
+        fi
     fi
-fi
 
-zplug load
+    zplug load
+    ZPLUG_LOADED=yes
+fi
 #}}}
 
 #{{{ LS_colors
@@ -131,26 +137,28 @@ _vbe_vcs_info() {
     print ${vcs_info_msg_0_}
 }
 
-async_init
-async_start_worker vcs_info
-async_register_callback vcs_info _vbe_vcs_info_done
+if [[ -n "$ZPLUG_LOADED" ]]; then
+    async_init
+    async_start_worker vcs_info
+    async_register_callback vcs_info _vbe_vcs_info_done
 
-_vbe_vcs_info_done() {
-    local stdout=$3
-    vcs_info_msg_0_=$stdout
-    zle reset-prompt
-}
-
-_vbe_async_worker () {
-    # Restart the worker if it died for some reason
-    async_job vcs_info _vbe_vcs_info $PWD || {
-        async_init
-        async_start_worker vcs_info
-        async_register_callback vcs_info _vbe_vcs_info_done
+    _vbe_vcs_info_done() {
+        local stdout=$3
+        vcs_info_msg_0_=$stdout
+        zle reset-prompt
     }
-}
 
-add-zsh-hook precmd _vbe_async_worker
+    _vbe_async_worker () {
+        # Restart the worker if it died for some reason
+        async_job vcs_info _vbe_vcs_info $PWD || {
+            async_init
+            async_start_worker vcs_info
+            async_register_callback vcs_info _vbe_vcs_info_done
+        }
+    }
+
+    add-zsh-hook precmd _vbe_async_worker
+fi
 
 #}}}
 
