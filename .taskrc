@@ -57,9 +57,9 @@ report.backlog.description = List of the projects in the backlog
 report.backlog.columns = id,project,due,description
 report.backlog.labels = ID,Project,Due,Description
 report.backlog.sort = project+/,entry+
-report.backlog.filter = status:pending and ( +main or project: ) and +backlog
+report.backlog.filter = status:pending and ( +meta or +main or project: ) and +backlog
 
-report.next.filter = status:pending limit:page -backlog ( +READY or +main ) ( -BLOCKED or +main )
+report.next.filter = status:pending limit:page -backlog ( +READY or +main or +meta ) ( -BLOCKED or +main or +meta )
 report.next.columns = id,entry.age,depends,priority,project,recur,scheduled.countdown,due.relative,until.remaining,description,tags,urgency
 report.next.labels = ID,Age,Deps,P,Project,Recur,S,Due,Until,Description,Tag,Urgency
 
@@ -81,6 +81,7 @@ urgency.blocking.coefficient=5
 urgency.blocked.coefficient=-15
 urgency.annotations.coefficient=0
 urgency.user.tag.main.coefficient=-10
+urgency.user.tag.meta.coefficient=-20
 urgency.tags.coefficient=0.0
 urgency.active.coefficient=8
 urgency.uda.priority.H.coefficient=8
@@ -111,7 +112,7 @@ color.recurring=rgb013
 color.scheduled=on rgb001
 color.until=
 color.blocked=color243 on grey2
-color.blocking=color170
+color.blocking=color212
 
 # Project
 color.project.none=
@@ -124,6 +125,7 @@ color.uda.priority.L=color243
 
 # Tags
 color.tag.next=rgb440
+color.tag.meta=color140 on grey2
 color.tag.main=color179 on grey2
 color.tag.perso=color28 on grey3
 color.tag.none=
@@ -183,7 +185,7 @@ color.undo.after=color9
 # color.blocking=rgb240
 # color.tag.none=
 color.tag.next=white on rgb001
-context.work=+work
+context.work=-perso
 context.default=-nodefault
 context.notes=proj:notes
-context=default
+context=work
