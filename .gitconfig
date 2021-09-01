@@ -1,69 +1,77 @@
 [color]
-        branch      = auto
-        diff        = auto
-        status      = auto
-        interactive = auto
-        status      = auto
-        ui          = true
+    branch      = auto
+    diff        = auto
+    status      = auto
+    interactive = auto
+    status      = auto
+    ui          = true
+[color "diff-highlight"]
+    oldNormal = red bold
+    oldHighlight = red bold 52
+    newNormal = green bold
+    newHighlight = green bold 22
+[color "diff"]
+    meta = yellow
+    frag = magenta bold
+    commit = yellow bold
+    old = red bold
+    new = green bold
+    whitespace = red reverse
 [alias]
-        st              = status
-        ci              = commit
-        co              = checkout
-        br              = branch
-        rbi             = rebase -i
-        rb              = rebase
-        logg            = log --decorate --graph
-        lg              = log --graph --pretty=tformat:'%Cred%h%Creset -%C(yellow)%d%Creset%s %Cgreen(%an %cr)%Creset' --abbrev-commit --date=relative
-        lga             = "!sh -c 'git log --author=\"$1\" -p $2' -"
-        lol             = log --graph --decorate --pretty=oneline --abbrev-commit
-        lola            = log --graph --decorate --pretty=oneline --abbrev-commit --all
-        tla              = "!sh -c \"git log -${1:-10} --graph --abbrev-commit --decorate=no --date=format:'%Y-%m-%d %H:%I:%S' --format=format:'%C(03)%>|(26)%h%C(reset)  %C(04)%ad%C(reset)  %C(green)%<(20,trunc)%an%C(reset)  %C(auto)%d%C(reset) %>|(1)%s%C(reset)'\""
-        tree            = log --graph --decorate --pretty=oneline --abbrev-commit --all
-        lint            = "!sh -c 'git status | awk \"/modified/ {print \\$3}\" | xargs -L 1 php -l'"
-        logfull         = log --pretty=fuller --graph --stat -p
-        cat             = cat-file -p
-        cop             = "!sh -c \"git checkout ${@} $(git branch --list -av | fzf | sed -e 's,remotes/,,' -e 's,origin/,,' -e 's,^ *[+*]* *,,' | awk '{print $1}')\""
-        unstage         = reset HEAD
-        uncommit        = update-ref HEAD HEAD^
-        uncommithard    = reset --hard HEAD^
-        undomerge       = reset --hard ORIG_HEAD
-        oups            = commit -a --amend -C HEAD
-        d               = difftool
-        lsm             = ls-files -m
-        diff            = diff --relative
-        push-br         = "!sh -c \"git push --set-upstream origin $(git branch --show-current)\""
-        fetch-rbm       = fetch origin master:master
+    st              = status
+    ci              = commit
+    co              = checkout
+    br              = branch
+    rbi             = rebase -i
+    rb              = rebase
+    logg            = log --decorate --graph
+    lg              = log --graph --pretty=tformat:'%Cred%h%Creset -%C(yellow)%d%Creset%s %Cgreen(%an %cr)%Creset' --abbrev-commit --date=relative
+    lga             = "!sh -c 'git log --author=\"$1\" -p $2' -"
+    lol             = log --graph --decorate --pretty=oneline --abbrev-commit
+    lola            = log --graph --decorate --pretty=oneline --abbrev-commit --all
+    tla              = "!sh -c \"git log -${1:-10} --graph --abbrev-commit --decorate=no --date=format:'%Y-%m-%d %H:%I:%S' --format=format:'%C(03)%>|(26)%h%C(reset)  %C(04)%ad%C(reset)  %C(green)%<(20,trunc)%an%C(reset)  %C(auto)%d%C(reset) %>|(1)%s%C(reset)'\""
+    tree            = log --graph --decorate --pretty=oneline --abbrev-commit --all
+    lint            = "!sh -c 'git status | awk \"/modified/ {print \\$3}\" | xargs -L 1 php -l'"
+    logfull         = log --pretty=fuller --graph --stat -p
+    cat             = cat-file -p
+    cop             = "!sh -c \"git checkout ${@} $(git branch --list -av | fzf | sed -e 's,remotes/,,' -e 's,origin/,,' -e 's,^ *[+*]* *,,' | awk '{print $1}')\""
+    unstage         = reset HEAD
+    uncommit        = update-ref HEAD HEAD^
+    uncommithard    = reset --hard HEAD^
+    undomerge       = reset --hard ORIG_HEAD
+    oups            = commit -a --amend -C HEAD
+    d               = difftool
+    lsm             = ls-files -m
+    diff            = diff --relative
+    push-br         = "!sh -c \"git push --set-upstream origin $(git branch --show-current)\""
+    fetch-rbm       = fetch origin master:master
 [branch "master"]
-        remote = origin
-        merge  = refs/heads/master
-        rebase = true
+    remote = origin
+    merge  = refs/heads/master
+    rebase = true
 [core]
-        excludesfile    = ~/.gitignore
-        eol             = lf
-        pager = diff-so-fancy | less --tabs=4 -RFX
+    excludesfile    = ~/.gitignore
+    eol             = lf
+    pager = diff-so-fancy | less --tabs=4 -RFX
 [mergetool]
-        keepBackup = true
+    keepBackup = true
 [http]
 [user]
 	name  = Nelyah
 	email = contact@nelyah.eu
 [filter "media"]
-	clean    = git media clean %f
-	smudge   = git media smudge %f
-	required = true
+    clean    = git media clean %f
+    smudge   = git media smudge %f
+    required = true
 [diff]
     tool   = vimdiff
 [difftool]
     prompt = false
-[color "diff-highlight"]
-	oldNormal = red bold
-	oldHighlight = red bold 52
-	newNormal = green bold
-	newHighlight = green bold 22
-[color "diff"]
-	meta = yellow
-	frag = magenta bold
-	commit = yellow bold
-	old = red bold
-	new = green bold
-	whitespace = red reverse
+[tig "color"]
+    id = color212 default
+    cursor	= white color8 bold underline
+[log]
+    decorate = full
+    date = format:"%Y-%m-%d %H:%M"
+[format]
+    pretty = %C(212)%>|(5)%h%C(reset)  %C(04)%cd%C(reset)  %C(green)%<(20,trunc)%an%C(reset) %>|(1)%s%C(reset) %C(auto)%d%C(reset)

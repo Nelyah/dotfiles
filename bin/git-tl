@@ -16,8 +16,6 @@ done
 
 git log -${nb_lines} \
     --abbrev-commit \
-    --date=format:'%Y-%m-%d %H:%I:%S' \
     --decorate \
     --graph \
-    --format=format:'%C(212)%>|(5)%h%C(reset)  %C(04)%cd%C(reset)  %C(green)%<(20,trunc)%an%C(reset) %>|(1)%s%C(reset) %C(auto)%d%C(reset)' \
     "${args[@]}"
