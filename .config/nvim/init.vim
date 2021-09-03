@@ -59,11 +59,11 @@ call plug#begin('~/.config/nvim/plugged')
     """""""""""""""
     "  Interface  "
     """""""""""""""
-    Plug 'vim-airline/vim-airline'                                       " line with useful infos
-    Plug 'vim-airline/vim-airline-themes'                                " A collection of themes
     Plug 'ap/vim-css-color'                                              " Color highlighter
-    Plug 'Nelyah/onedark.vim'                                            " Colour scheme
-    Plug 'drewtempelmeyer/palenight.vim'
+    Plug 'navarasu/onedark.nvim'                                         " Colour scheme
+    Plug 'ryanoasis/vim-devicons'                                        " Collection of devicons required from some plugins to correctly show 
+    Plug 'hoob3rt/lualine.nvim'                                          " Lua line to show info at the bottom and organise the top bar as well
+    Plug 'kdheepak/tabline.nvim'                                         " Fill the top bar with buffers and tabs
 
     """""""""""""""""""""""
     "  Language specific  "
@@ -456,13 +456,44 @@ augroup END
 " {{{ Onedark
 
 try
-" Put this here as it need to be after QuickScope
-colorscheme onedark
-
+    colorscheme onedark
+lua << EOF
+    vim.cmd[[highlight IncSearch guibg=#135564 guifg=white]]
+    vim.cmd[[highlight Search guibg=#135564 guifg=white]]
+    vim.cmd[[highlight Folded guibg=default guifg=grey]]
+EOF
 catch
   echo 'onedark not installed. It should work after running :PlugInstall'
 endtry
 
+" }}}
+" {{{ Tabline
+lua << EOF
+require('tabline').setup({
+options = {
+    component_separators = {"|" , ""},
+    section_separators = {"" , ""}
+    }
+})
+EOF
+" }}}
+" {{{ LuaLine
+lua << EOF
+require('lualine').setup({
+    options = {
+        theme = 'onedark'
+    },
+    tabline = {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = { require'tabline'.tabline_buffers },
+        lualine_x = { require'tabline'.tabline_tabs },
+        lualine_y = {},
+        lualine_z = {},
+    },
+
+})
+EOF
 " }}}
 " {{{ Fugitive
 nnoremap <Leader>gs :vertical botright Gstatus<CR>
@@ -475,101 +506,6 @@ let g:chromatica#enable_at_startup=1
 map <Leader>n :NERDTreeToggle<return><CR>
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
-" }}}
-" {{{ Airline
-try
-
-let nvim_conf_dir = expand('<sfile>:p:h')
-let target_theme_file = nvim_conf_dir . '/plugged/vim-airline-themes/autoload/airline/themes/space.vim'
-if !filereadable(target_theme_file)
-    call system('cp ' . nvim_conf_dir . '/space.vim ' . target_theme_file)
-    " if v:shell_error
-    "     echom v:shell_error
-    " endif
-endif
-
-
-" Enable CSV integration
-let g:airline#extensions#csv#enabled = 1
-let g:airline#extensions#csv#column_display = 'Name'
-
-" Enable extensions
-let g:airline_extensions = ['branch', 'hunks', 'coc', 'tabline']
-
-" Update section z to just have line number
-let g:airline_section_z = airline#section#create(['%l/%L ', '%v'])
-
-" Do not draw separators for empty sections (only for the active window) >
-let g:airline_skip_empty_sections = 1
-
-" Smartly uniquify buffers names with similar filename, suppressing common parts of paths.
-let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:airline#extensions#tabline#enabled = 1
-
-" Custom setup that removes filetype/whitespace from default vim airline bar
-let g:airline#extensions#default#layout = [['a', 'b', 'c'], ['x', 'warning', 'error', 'z']]
-
-let airline#extensions#coc#stl_format_err = '%E{[%e(#%fe)]}'
-
-let airline#extensions#coc#stl_format_warn = '%W{[%w(#%fw)]}'
-
-" Configure error/warning section to use coc.nvim
-let g:airline_section_error = '%{airline#util#wrap(airline#extensions#coc#get_error(),0)}'
-let g:airline_section_warning = '%{airline#util#wrap(airline#extensions#coc#get_warning(),0)}'
-
-" Hide the Nerdtree status line to avoid clutter
-let g:NERDTreeStatusline = ''
-
-" Disable vim-airline in preview mode
-let g:airline_exclude_preview = 1
-
-" Enable powerline fonts
-let g:airline_powerline_fonts = 1
-
-" Enable caching of syntax highlighting groups
-let g:airline_highlighting_cache = 1
-
-" Define custom airline symbols
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
-endif
-
-" Don't show git changes to current file in airline
-let g:airline#extensions#hunks#enabled=0
-
-" unicode symbols
-let g:airline_left_sep = '»'
-let g:airline_left_sep = '▶'
-let g:airline_right_sep = '«'
-let g:airline_right_sep = '◀'
-let g:airline_symbols.linenr = '␊'
-let g:airline_symbols.linenr = '␤'
-let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.branch = '⎇'
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.paste = 'Þ'
-let g:airline_symbols.paste = '∥'
-let g:airline_symbols.whitespace = 'Ξ'
-
-" airline symbols
-let g:airline_left_sep = ' '
-let g:airline_left_alt_sep = ' '
-let g:airline_right_sep = ' '
-let g:airline_right_alt_sep = ' '
-let g:airline_symbols.branch = ' '
-let g:airline_symbols.readonly = ' '
-let g:airline_symbols.linenr = ' '
-
-" Vim airline theme
-let g:airline_theme='palenight'
-
-catch
-  echo 'Airline not installed. It should work after running :PlugInstall'
-endtry
-
-" }}}
-" {{{ Palenight
-let g:palenight_terminal_italics=1
 " }}}
 " {{{ VimTex
 let g:vimtex_compiler_method = 'latexmk'
