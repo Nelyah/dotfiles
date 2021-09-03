@@ -88,17 +88,14 @@ scrolling:
  
 font:
   normal:
-    family: "Monaco"
+    family: "Hack Nerd Font"
     style: "Regular"
   bold:
-    family: "Monaco"
+    family: "Hack Nerd Font"
     style: "Bold"
-  # The italic font face
   italic: 
-    family: "Monaco" # should be "Menlo" or something on macOS.
+    family: "Hack Nerd Font"
     style: "Italic"
-    # Style can be specified to pick a specific face.
-    # style: Italic
 
   # Point size of the font
   size: 10
