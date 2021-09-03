@@ -76,14 +76,9 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'rhysd/vim-clang-format', {'for': 'cpp'}
     Plug 'jackguo380/vim-lsp-cxx-highlight', {'for': ['c', 'cpp']}
 
-    " Plug 'Konfekt/FastFold', {'for': ['markdown', 'pandoc']}
     Plug 'dhruvasagar/vim-table-mode', {'for': ['markdown', 'pandoc', 'vimwiki.markdown']}      " Add a table mode for writing them in markdown
     Plug 'plasticboy/vim-markdown', {'for': ['markdown', 'pandoc', 'vimwiki.markdown']}      " Many conceal and folding features for Markdown
     Plug 'shime/vim-livedown', {'for': ['markdown', 'pandoc']}
-    " Plug 'vim-pandoc/vim-pandoc', {'for': ['pandoc']}                    " Provide a Pandoc interface conversion
-    " Plug 'Nelyah/vim-pandoc-syntax', {'for': ['pandoc']}                 " Provide pandoc specific syntax
-
-    " Plug 'arakashic/chromatica.nvim', {'for': ['c', 'cpp']}              " Better syntax highlighting for c and cpp languages
 
     Plug 'lervag/vimtex', {'for': ['tex', 'latex']}                      " Many LateX features
     Plug 'ymatz/vim-latex-completion', {'for': ['tex', 'latex']}         " Better LateX completion
@@ -92,7 +87,6 @@ call plug#begin('~/.config/nvim/plugged')
     "  Integrated apps  "
     """""""""""""""""""""
     Plug 'vimwiki/vimwiki'                                               " Wiki for vim
-    " Plug 'lervag/wiki.vim'
     Plug 'scrooloose/nerdtree', {'on':  'NERDTreeToggle'}                " NERDtree loaded on toggle
     Plug 'Xuyuanp/nerdtree-git-plugin', {'on':  'NERDTreeToggle'}        " Add git markers for the Nerdtree plugin
     Plug 'majutsushi/tagbar', {'on': 'TagbarToggle'}                     " Opens a tagbar on the right side
@@ -447,6 +441,10 @@ augroup git_rebase
 augroup END
 
 "}}}
+" {{{ Expand regions
+vmap v <Plug>(expand_region_expand)
+vmap <C-v> <Plug>(expand_region_shrink)
+" }}}
 
 
 """""""""""""""""""""""""""
@@ -497,10 +495,6 @@ EOF
 " }}}
 " {{{ Fugitive
 nnoremap <Leader>gs :vertical botright Gstatus<CR>
-" }}}
-" {{{ Chromatica
-" let g:clang_library_path='/usr/lib64/libclang.so'
-let g:chromatica#enable_at_startup=1
 " }}}
 " {{{ NERDtree
 map <Leader>n :NERDTreeToggle<return><CR>
@@ -585,13 +579,9 @@ autocmd! FileType fzf
 nnoremap <F8> :TagbarToggle<CR>
 
 " }}}
-" {{{ Expand regions
-vmap v <Plug>(expand_region_expand)
-vmap <C-v> <Plug>(expand_region_shrink)
-" }}}
 " {{{ Python folding
 " Be able to read doc
-let g:SimpylFold_docstring_preview = 1
+let g:SimplylFold_docstring_preview = 1
 
 " }}}
 " {{{ Tabular
@@ -756,11 +746,6 @@ nnoremap <leader>eo :FZFwiki<CR>
 " {{{ vim-markdown
 let vim_markdown_folding_disabled = 1
 " }}}
-" {{{ vim-pandoc-syntex
-let g:pandoc#syntax#conceal#urls=1
-let g:pandoc#syntax#codeblocks#embeds#langs = ['bash=sh', 'css', 'html', 'js=javascript',
-      \ 'typescript=javascript', 'python', 'lua']
-" }}}
 " {{{ livedown
 " should markdown preview get shown automatically upon opening markdown buffer
 let g:livedown_autorun = 0
@@ -773,10 +758,6 @@ let g:livedown_port = 1337
 
 " the browser to use, can also be firefox, chrome or other, depending on your executable
 let g:livedown_browser = "firefox"
-"}}}
-" {{{ wiki.vim
-let g:wiki_root = '~/cloud/utils/wiki'
-autocmd! BufEnter *.wiki set filetype=pandoc
 "}}}
 " {{{ Taskwiki
 let g:taskwiki_markup_syntax = "markdown"
@@ -928,7 +909,5 @@ let g:diagnostic_enable_virtual_text = 0
 
 "}}}
 " {{{ gitsigns
-
 lua require('gitsigns').setup()
-
 "}}}
