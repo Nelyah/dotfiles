@@ -50,7 +50,7 @@
     merge  = refs/heads/master
     rebase = true
 [core]
-    excludesfile    = ~/.gitignore
+    excludesfile    = ~/.globalgitignore
     eol             = lf
     pager = diff-so-fancy | less --tabs=4 -RFX
 [mergetool]
