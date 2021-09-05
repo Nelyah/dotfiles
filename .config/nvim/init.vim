@@ -468,18 +468,54 @@ endtry
 " {{{ Tabline
 lua << EOF
 require('tabline').setup({
-options = {
-    component_separators = {"|" , ""},
-    section_separators = {"" , ""}
+    options = {
+        component_separators = {"", ""},
+        section_separators = {"", ""},
     }
 })
 EOF
 " }}}
 " {{{ LuaLine
 lua << EOF
+local function lualine_file_location ()
+    return table.concat(vim.api.nvim_win_get_cursor(0), ' ')
+end
+
+local function lualine_file_readonly()
+    if vim.bo.readonly then
+        return '[READ ONLY]'
+    else
+        return ''
+    end
+end
+
 require('lualine').setup({
     options = {
-        theme = 'onedark'
+        theme = 'onedark',
+        component_separators = {"", ""},
+        section_separators = {"", ""},
+    },
+    sections = {
+        lualine_a = {'mode'},
+        lualine_b = {
+            'branch',
+            {
+              'diff',
+              color_added = '#77b300',
+              color_modified = '#e67300',
+              color_removed = '#ff1a1a',
+            },
+        },
+        lualine_c = {
+            {
+                'filename',
+                file_status = false,
+            },
+            lualine_file_readonly
+        },
+        lualine_x = {'encoding', 'filetype'},
+        lualine_y = {'progress'},
+        lualine_z = {lualine_file_location}
     },
     tabline = {
         lualine_a = {},
