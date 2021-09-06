@@ -482,8 +482,10 @@ local function lualine_file_location ()
 end
 
 local function lualine_file_readonly()
-    if vim.bo.readonly then
-        return '[READ ONLY]'
+    if vim.fn.filereadable(vim.fn.expand('%')) == 0 and #vim.fn.expand('%') > 0 then
+        return '%#ErrorMsg#' .. '[NOT READABLE]'
+    elseif vim.bo.readonly then
+        return '%#WarningMsg#' .. '[READ ONLY]'
     else
         return ''
     end
