@@ -50,6 +50,31 @@ alias awk2="awk '{print $2}'"
 alias awk3="awk '{print $3}'"
 alias awk4="awk '{print $4}'"
 
+_error_log () {
+    echo -e "$*" >&2 > /dev/null
+}
+
+venv () {
+    # Expects the name of a python virtualenv and will try to activate it
+    # acts as a shortcut for `source ${1}/bin/activate`
+
+    virtual_activate="${1}/bin/activate"
+
+    if [ -f "$virtual_activate" ]; then
+        . "$virtual_activate"
+    elif [ ! -d "$1" ]; then
+        _error_log "Error: No such virtualenv directory: '$1'"
+        return 1
+    elif [ ! -f "$virtual_activate" ]; then
+        _error_log "Error: No 'activate' script in virtualenv directory: '${1}/bin/'"
+        _error_log "Is the folder given a virtualenv?"
+        return 1
+    else
+        _error_log "Unknown error, exiting."
+        return 1
+    fi
+}
+
 function _command_exists () {
     [ "$#" -lt 1 ] && return 1
     hash "$1" &> /dev/null && return 0 || return 1
