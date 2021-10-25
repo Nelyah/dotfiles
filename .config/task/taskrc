@@ -11,7 +11,7 @@
 # Use the command 'task show' to see all defaults and overrides
 
 # Files
-data.location=~/.config/task
+data.location=$XDG_CONFIG_HOME/task/data/
 
 # Color theme (uncomment one to use)
 #include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/light-16.theme
@@ -188,4 +188,3 @@ color.tag.next=white on rgb001
 context.work=-perso
 context.default=-nodefault
 context.notes=proj:notes
-context=work
