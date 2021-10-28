@@ -18,6 +18,7 @@
     new = green bold
     whitespace = red reverse
 [alias]
+    cp              = cherry-pick
     st              = status
     ci              = commit
     co              = checkout
