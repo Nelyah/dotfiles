@@ -40,4 +40,4 @@ vim.cmd[[ autocmd! BufNewFile,BufRead,BufEnter *.cdt set filetype=cpp ]]
 
 vim._expand_pat('%')
 
-vim.cmd[[ command! InsertHeader call InsertHeader() ]]
+vim.cmd[[ command! InsertHeader call v:lua.InsertHeader() ]]
