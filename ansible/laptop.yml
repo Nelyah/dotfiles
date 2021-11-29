@@ -1,0 +1,8 @@
+---
+
+- hosts: localhost
+  connection: local
+
+  roles:
+    - role: common
+      become: yes

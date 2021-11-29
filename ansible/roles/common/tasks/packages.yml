@@ -1,0 +1,47 @@
+---
+
+- name: Install packages
+  package:
+    name:
+      - afew
+      - alacritty
+      - alot
+      - base-devel
+      - bat
+      - ctags
+      - docker
+      - docker-compose
+      - duf
+      - fd
+      - fzf
+      - git
+      - htop
+      - isync
+      - jq
+      - lynx
+      - msmtp
+      - ncdu
+      - neovim
+      - nextcloud-client
+      - notmuch
+      - python-pip
+      - ripgrep
+      - rofi
+      - signal-desktop
+      - tmux
+      - ulauncher
+      - vdirsyncer
+      - wget
+      - x-arc-shadow
+      - xclip
+      - yay
+    state: present
+    update_cache: true
+
+
+    #> In AUR
+    #      - bitwarden-bin
+    #      - bitwarden-cli
+    #      - lua-language-server
+    #      - nerd-fonts-source-code-pro
+# vi:ft=yaml.ansible
