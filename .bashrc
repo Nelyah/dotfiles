@@ -1,98 +1,137 @@
-# Environnement variable
-source ~/.profile
-source ~/.aliases
-source ~/.shell-functions
+#
+# ~/.bashrc
+#
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-~/.miniconda3/etc/profile.d/conda.sh
+[[ $- != *i* ]] && return
 
-# Couleurs du préfix du terminal
-NONE="\[\033[0;33m\]"
-NM="\[\033[0;38m\]"
-HI="\[\033[00;38;5;212m\]"
-HII="\[\033[0;36m\]"
-SI="\[\033[00;38;5;214m\]"
-IN="\[\033[0m\]"
+colors() {
+	local fgc bgc vals seq0
 
+	printf "Color escapes are %s\n" '\e[${value};...;${value}m'
+	printf "Values 30..37 are \e[33mforeground colors\e[m\n"
+	printf "Values 40..47 are \e[43mbackground colors\e[m\n"
+	printf "Value  1 gives a  \e[1mbold-faced look\e[m\n\n"
 
-# Check if the current session is a SSH session or not
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-    export SESSION_TYPE=remote
-else
-    export SESSION_TYPE=
-fi
+	# foreground colors
+	for fgc in {30..37}; do
+		# background colors
+		for bgc in {40..47}; do
+			fgc=${fgc#37} # white
+			bgc=${bgc#40} # black
 
-# Testing if this user is a common one
-KNOWN_USER=1
-for e in ${LIST_USER[@]};
-do
-    [[ $e == $(whoami) ]] && KNOWN_USER=0 && break
-done
+			vals="${fgc:+$fgc;}${bgc}"
+			vals=${vals%%;}
 
-if [[ $KNOWN_USER == 0 ]]
-then
-    PS1_USER="Chloé"
-else
-    PS1_USER=$(whoami)
-fi
-
-# Testing if this hostname is a known one
-KNOWN_HOST=1
-for e in ${LIST_PC[@]};
-do
-    [[ $e == $(hostname --short) ]] && KNOWN_HOST=0 && break
-done
-
-if [[ $KNOWN_HOST == 0 ]] && [[ $SESSION_TYPE != remote ]]
-then
-    PS1_HOST=""
-else
-    PS1_HOST="@$(hostname --short)"
-fi
-export PS1="$SI\w$HI ${PS1_USER}${PS1_HOST} $ $IN"
-
-
-
-
-if [ -f ~/.pm/pm.bash ]; then
-    # PM functions
-    source ~/.pm/pm.bash
-    alias pma="pm add"
-    alias pmg="pm go"
-    alias pmrm="pm remove"
-    alias pml="pm list"
-fi
-
-if type fzf &> /dev/null; then
-    [ -f ~/.config/fzf/key-bindings.bash ] && source ~/.config/fzf/key-bindings.bash
-    [ -f ~/.config/fzf/completion.bash ] && source ~/.config/fzf/completion.bash
-
-    [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-    e() {
-        local dir
-        dir=$(fasd -Rdl |\
-            sed "s:$HOME:~:" |\
-            fzf --no-sort +m -q "$*" |\
-            sed "s:~:$HOME:")\
-        && pushd "$dir"
-    }
-fi
-
-# Return relative path from canonical absolute dir path $1 to canonical
-# absolute dir path $2 ($1 and/or $2 may end with one or no "/").
-# Does only need POSIX shell builtins (no external command)
-relPath () {
-    local common path up
-    common=${1%/} path=${2%/}/
-    while test "${path#"$common"/}" = "$path"; do
-        common=${common%/*} up=../$up
-    done
-    path=$up${path#"$common"/}; path=${path%/}; printf %s "${path:-.}"
+			seq0="${vals:+\e[${vals}m}"
+			printf "  %-9s" "${seq0:-(default)}"
+			printf " ${seq0}TEXT\e[m"
+			printf " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
+		done
+		echo; echo
+	done
 }
 
-# Return relative path from dir $1 to dir $2 (Does not impose any
-# restrictions on $1 and $2 but requires GNU Core Utility "readlink"
-# HINT: busybox's "readlink" does not support option '-m', only '-f'
-#       which requires that all but the last path component must exist)
-relpath () { relPath "$(readlink -m "$1")" "$(readlink -m "$2")"; }
+[ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
+
+# Change the window title of X terminals
+case ${TERM} in
+	xterm*|rxvt*|Eterm*|aterm|kterm|gnome*|interix|konsole*)
+		PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007"'
+		;;
+	screen*)
+		PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\033\\"'
+		;;
+esac
+
+use_color=true
+
+# Set colorful PS1 only on colorful terminals.
+# dircolors --print-database uses its own built-in database
+# instead of using /etc/DIR_COLORS.  Try to use the external file
+# first to take advantage of user additions.  Use internal bash
+# globbing instead of external grep binary.
+safe_term=${TERM//[^[:alnum:]]/?}   # sanitize TERM
+match_lhs=""
+[[ -f ~/.dir_colors   ]] && match_lhs="${match_lhs}$(<~/.dir_colors)"
+[[ -f /etc/DIR_COLORS ]] && match_lhs="${match_lhs}$(</etc/DIR_COLORS)"
+[[ -z ${match_lhs}    ]] \
+	&& type -P dircolors >/dev/null \
+	&& match_lhs=$(dircolors --print-database)
+[[ $'\n'${match_lhs} == *$'\n'"TERM "${safe_term}* ]] && use_color=true
+
+if ${use_color} ; then
+	# Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
+	if type -P dircolors >/dev/null ; then
+		if [[ -f ~/.dir_colors ]] ; then
+			eval $(dircolors -b ~/.dir_colors)
+		elif [[ -f /etc/DIR_COLORS ]] ; then
+			eval $(dircolors -b /etc/DIR_COLORS)
+		fi
+	fi
+
+	if [[ ${EUID} == 0 ]] ; then
+		PS1='\[\033[01;31m\][\h\[\033[01;36m\] \W\[\033[01;31m\]]\$\[\033[00m\] '
+	else
+		PS1='\[\033[01;32m\][\u@\h\[\033[01;37m\] \W\[\033[01;32m\]]\$\[\033[00m\] '
+	fi
+
+	alias ls='ls --color=auto'
+	alias grep='grep --colour=auto'
+	alias egrep='egrep --colour=auto'
+	alias fgrep='fgrep --colour=auto'
+else
+	if [[ ${EUID} == 0 ]] ; then
+		# show root@ when we don't have colors
+		PS1='\u@\h \W \$ '
+	else
+		PS1='\u@\h \w \$ '
+	fi
+fi
+
+unset use_color safe_term match_lhs sh
+
+alias cp="cp -i"                          # confirm before overwriting something
+alias df='df -h'                          # human-readable sizes
+alias free='free -m'                      # show sizes in MB
+alias np='nano -w PKGBUILD'
+alias more=less
+
+xhost +local:root > /dev/null 2>&1
+
+# Bash won't get SIGWINCH if another process is in the foreground.
+# Enable checkwinsize so that bash will check the terminal size when
+# it regains control.  #65623
+# http://cnswww.cns.cwru.edu/~chet/bash/FAQ (E11)
+shopt -s checkwinsize
+
+shopt -s expand_aliases
+
+# export QT_SELECT=4
+
+# Enable history appending instead of overwriting.  #139609
+shopt -s histappend
+
+#
+# # ex - archive extractor
+# # usage: ex <file>
+ex ()
+{
+  if [ -f $1 ] ; then
+    case $1 in
+      *.tar.bz2)   tar xjf $1   ;;
+      *.tar.gz)    tar xzf $1   ;;
+      *.bz2)       bunzip2 $1   ;;
+      *.rar)       unrar x $1     ;;
+      *.gz)        gunzip $1    ;;
+      *.tar)       tar xf $1    ;;
+      *.tbz2)      tar xjf $1   ;;
+      *.tgz)       tar xzf $1   ;;
+      *.zip)       unzip $1     ;;
+      *.Z)         uncompress $1;;
+      *.7z)        7z x $1      ;;
+      *)           echo "'$1' cannot be extracted via ex()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}

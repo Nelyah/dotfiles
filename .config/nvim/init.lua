@@ -68,23 +68,6 @@ require('packer').startup(function(use)
         config = function () require('plugins.vim-tmux-navigator').setup() end
     }
     -- }}}
-    -- {{{ UltiSnips
-    use {                                                   -- Interface for Snippets
-        'SirVer/ultisnips',
-        config = function ()
-            vim.g.UltiSnipsExpandTrigger = '<c-c>'
-            vim.g.UltiSnipsJumpForwardTrigger = '<c-c>'
-            vim.g.UltiSnipsJumpBackwardTrigger = '<c-b>'
-
-            require('utils').create_augroup('ultisnips_no_auto_expansion', {
-                'VimEnter * au! UltiSnips_AutoTrigger',
-            })
-        end
-    }
-    -- }}}
-    -- {{{ Vim-Snippets
-    use 'honza/vim-snippets'                                -- Provide with many Snippets to Ultisnips
-    -- }}}
     -- {{{ Vim Expand Region - Extend visual selection by increasing text objects
     use {
         'terryma/vim-expand-region',
@@ -126,7 +109,6 @@ require('packer').startup(function(use)
             'hrsh7th/cmp-buffer',
             'hrsh7th/cmp-path',
             'hrsh7th/cmp-cmdline',
-            'quangnguyen30192/cmp-nvim-ultisnips',
         },
     }
     -- }}}

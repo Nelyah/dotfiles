@@ -3,6 +3,8 @@
 - name: Install packages
   package:
     name:
+      - python-pip
+      - lf
       - afew
       - alacritty
       - alot
@@ -44,4 +46,5 @@
     #      - bitwarden-cli
     #      - lua-language-server
     #      - nerd-fonts-source-code-pro
+    #      - nerd-fonts-hack
 # vi:ft=yaml.ansible
