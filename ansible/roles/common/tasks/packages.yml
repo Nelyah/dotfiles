@@ -3,13 +3,15 @@
 - name: Install packages
   package:
     name:
-      - python-pip
-      - lf
       - afew
       - alacritty
       - alot
       - base-devel
+      - bash-language-server
       - bat
+      - bc
+      - clang
+      - cmake
       - ctags
       - docker
       - docker-compose
@@ -17,25 +19,49 @@
       - fd
       - fzf
       - git
+      - gnome-keyring # Required for applications to store secrets
       - htop
+      - inetutils
+      - inkscape
       - isync
       - jq
+      - lf
+      - libsecret # Required for applications to access secrets
+      - lightdm #enable systemd afterwards
+      - lightdm-webkit2-greeter
+      - lua-language-server
       - lynx
       - msmtp
       - ncdu
       - neovim
+      - networkmanager
+      - networkmanager-openconnect
+      - networkmanager-openvpn
       - nextcloud-client
       - notmuch
+      - nvidia
+      - obs-studio
+      - openssh
+      - pavucontrol # sound
+      - pulseaudio
+      - pulseaudio-alsa
       - python-pip
       - ripgrep
       - rofi
       - signal-desktop
+      - task
+      - thunderbird
+      - tig
       - tmux
+      - ttf-dejavu # to get a correct monospace font
       - ulauncher
       - vdirsyncer
+      - vlc
       - wget
       - x-arc-shadow
       - xclip
+      - xfce4
+      - xfce4-goodies
       - yay
     state: present
     update_cache: true
@@ -44,7 +70,6 @@
     #> In AUR
     #      - bitwarden-bin
     #      - bitwarden-cli
-    #      - lua-language-server
-    #      - nerd-fonts-source-code-pro
+    #      - cadmus-deb
     #      - nerd-fonts-hack
 # vi:ft=yaml.ansible
