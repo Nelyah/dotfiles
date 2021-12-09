@@ -54,6 +54,7 @@
       - tig
       - tmux
       - ttf-dejavu # to get a correct monospace font
+      - transmission-gtk
       - ulauncher
       - vdirsyncer
       - vlc
