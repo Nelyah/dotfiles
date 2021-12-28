@@ -1,0 +1,125 @@
+#! /bin/bash
+
+get_project_regular_tasks_uuid () {
+    task export recap.week | \
+        jq -r --arg PROJ "$1" '.[]
+                               | select(.project == $PROJ)
+                               | select( .tags == null or all(.tags[]; . != "main"))
+                               | .uuid'
+}
+
+get_done_project_main_tasks_uuid () {
+    task export recap.week | \
+        jq -r --arg PROJ "$1" '.[]
+                               | select(.project == $PROJ)
+                               | select( .tags != null and any(.tags[]; . == "main"))
+                               | .uuid'
+}
+
+get_progress_project_main_tasks_uuid () {
+    task export list | \
+        jq -r --arg PROJ "$1" '.[]
+                               | select(.project == $PROJ)
+                               | select( .tags != null and any(.tags[]; . == "main")
+                                         and all(.tags[]; . != "backlog"))
+                               | .uuid'
+}
+
+sed_gitlab () {
+    sed -r 's,^( *- )(.*git\..*/)([^/]*),\1[!\3](\2\3),' -
+}
+
+sed_jira () {
+    sed -r 's,^( *- )(.*jira\..*/)([^/]*),\1[\3](\2\3),' -
+}
+
+format_main_task () {
+    task_uuid="$1"
+    task_status="$2"
+    [ -n "$task_status" ] && task_status="[$task_status] "
+
+    echo "- ${task_status}$(task "$task_uuid" export | jq -r '.[].description' )"
+    task "$task_uuid" export | jq -r '.[]
+                                      | select(.annotations != null)
+                                      | "    - " + .annotations[].description' | \
+        sed_gitlab | \
+        sed_jira
+}
+
+format_regular_task () {
+    task_uuid="$1"
+
+    echo "    - $(task "$task_uuid" export | jq -r '.[].description' )"
+    task "$task_uuid" export | jq -r '.[]
+                                      | select(.annotations != null)
+                                      | "        - " + .annotations[].description' | \
+        sed_gitlab | \
+        sed_jira
+}
+
+print_done_projects () {
+    for proj in "${done_projects[@]}"; do
+        for uuid in $(get_done_project_main_tasks_uuid "$proj"); do
+            format_main_task "$uuid" "done"
+        done
+        for uuid in $(get_project_regular_tasks_uuid "$proj"); do
+            format_regular_task "$uuid"
+        done
+        echo ""
+    done
+}
+
+print_progress_projects () {
+    for proj in "${progress_projects[@]}"; do
+        for uuid in $(get_progress_project_main_tasks_uuid "$proj"); do
+            format_main_task "$uuid" "progress"
+        done
+        for uuid in $(get_project_regular_tasks_uuid "$proj"); do
+            format_regular_task "$uuid"
+        done
+        echo ""
+    done
+}
+
+print_orphan_tasks () {
+    for uuid in $(task export recap.week | jq -r '.[] | select(.project == null and .description != "Week recap") | .uuid'); do
+        # Format as main because it gets the same indentation
+        format_main_task "$uuid"
+    done
+}
+
+check_requirements () {
+    if ! hash task &> /dev/null; then
+        echo "Error: You must install taskwarrior ('task')" >&2
+        exit 1
+    fi
+
+    if ! hash jq &> /dev/null; then
+        echo "Error: You must install 'jq'" >&2
+        exit 1
+    fi
+}
+
+main () {
+    check_requirements
+
+    progress_projects=()
+    all_projects=( $(task export recap.week | jq -r '.[] | select(.project != null) | .project' | sort -u) )
+    done_projects=( $(task export recap.week | \
+        jq -r '.[] | select(.project != null)
+                   | select(.tags != null)
+                   | select(any(.tags[]; . == "main"))
+                   | .project' | \
+        sort -u)
+    )
+
+    for proj in "${all_projects[@]}"; do
+        ! grep -q "\b${proj}\b" <<< "${done_projects[@]}" && progress_projects+=( "$proj" )
+    done
+
+    print_orphan_tasks
+    print_done_projects
+    print_progress_projects
+}
+
+main
