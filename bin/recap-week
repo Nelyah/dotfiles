@@ -1,15 +1,15 @@
 #! /bin/bash
 
 get_project_regular_tasks_uuid () {
-    task status:completed end.after:'today-1week+1day' -main proj:"$1" export | jq -r '.[].uuid'
+    task status:completed end.after:'today-1week+1day' -main 'proj ==' "$1" export | jq -r '.[].uuid'
 }
 
 get_done_project_main_tasks_uuid () {
-    task status:completed end.after:'today-1week+1day' +main proj:"$1" export | jq -r '.[].uuid'
+    task status:completed end.after:'today-1week+1day' +main 'proj ==' "$1" export | jq -r '.[].uuid'
 }
 
 get_progress_project_main_tasks_uuid () {
-    task status:pending -backlog +main proj:"$1" export | jq -r '.[].uuid'
+    task status:pending -backlog +main 'proj ==' "$1" export | jq -r '.[].uuid'
 }
 
 sed_gitlab () {
