@@ -2,21 +2,39 @@ local M = {}
 
 local fn = vim.fn
 local utils = require('utils')
+local lspconfig = require('lspconfig')
+local configs = require('lspconfig/configs')
 
 function M.setup ()
     local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
     if (fn.executable('clangd') == 1) then
-        require('lspconfig').clangd.setup{ capabilities = capabilities }
+        lspconfig.clangd.setup{ capabilities = capabilities }
     end
     if (fn.executable('pylsp') == 1) then
-        require('lspconfig').pylsp.setup{ capabilities = capabilities }
+        lspconfig.pylsp.setup{ capabilities = capabilities }
     end
     if (fn.executable('bash-language-server') == 1) then
-        require('lspconfig').bashls.setup{ capabilities = capabilities }
+        lspconfig.bashls.setup{ capabilities = capabilities }
     end
     if (fn.executable('vim-language-server') == 1) then
-        require('lspconfig').vimls.setup{ capabilities = capabilities}
+        lspconfig.vimls.setup{ capabilities = capabilities}
     end
+
+    if (fn.executable('zk') == 1) then
+        configs.zk = {
+          default_config = {
+            cmd = {'zk', 'lsp'},
+            filetypes = {'markdown'},
+            root_dir = function()
+              return vim.loop.cwd()
+            end,
+            settings = {}
+          };
+        }
+
+        lspconfig.zk.setup({ capabilities = capabilities })
+    end
+
 
     local cmd = nil
 
