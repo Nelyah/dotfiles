@@ -80,10 +80,26 @@ function _command_exists () {
     hash "$1" &> /dev/null && return 0 || return 1
 }
 
+if _command_exists zk ; then
+    note () {
+        local notes_dir="$HOME/cloud/utils/notes/"
+        local exclude_path=( --exclude="$HOME/cloud/utils/notes/diary" )
+        if [[ "$1" == "list" ]] || [[ "$1" == "edit" ]]; then
+            action="$1"
+            shift
+            zk --working-dir "$notes_dir" "$action" "${exclude_path[@]}" "$@"
+        else
+            zk --working-dir "$notes_dir" "$@"
+        fi
+    }
+fi
+
+alias vim-cmd="vim --headless --cmd 'set noswapfile' --cmd 'set shortmess=A' --cmd 'set splitright' -u NONE"
+alias vim-cmd-head="vim --cmd 'set noswapfile' --cmd 'set shortmess=A' --cmd 'set splitright' -u NONE"
+
 if _command_exists git ; then
     alias g="git"
     alias ga="git add"
-    alias gs="git status"
     alias gc="git commit"
 fi
 
