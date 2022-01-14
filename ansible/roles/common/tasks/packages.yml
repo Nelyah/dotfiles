@@ -12,6 +12,7 @@
       - bc
       - clang
       - cmake
+      - calibre
       - ctags
       - docker
       - docker-compose
@@ -23,6 +24,7 @@
       - htop
       - inetutils
       - inkscape
+      - ipython
       - isync
       - jq
       - lf
@@ -46,6 +48,7 @@
       - pulseaudio
       - pulseaudio-alsa
       - python-pip
+      - redshift
       - ripgrep
       - rofi
       - signal-desktop
@@ -63,12 +66,12 @@
       - xclip
       - xfce4
       - xfce4-goodies
-      - yay
     state: present
     update_cache: true
 
 
     #> In AUR
+    #      - yay
     #      - bitwarden-bin
     #      - bitwarden-cli
     #      - cadmus-deb
