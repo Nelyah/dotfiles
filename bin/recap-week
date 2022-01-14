@@ -1,11 +1,11 @@
 #! /bin/bash
 
 get_project_regular_tasks_uuid () {
-    task status:completed end.after:'today-1week+1day' -main 'proj ==' "$1" export | jq -r '.[].uuid'
+    task status:completed end.after:'today-1week' -main 'proj ==' "$1" export | jq -r '.[].uuid'
 }
 
 get_done_project_main_tasks_uuid () {
-    task status:completed end.after:'today-1week+1day' +main 'proj ==' "$1" export | jq -r '.[].uuid'
+    task status:completed end.after:'today-1week' +main 'proj ==' "$1" export | jq -r '.[].uuid'
 }
 
 get_progress_project_main_tasks_uuid () {
@@ -83,11 +83,11 @@ main () {
     check_requirements
 
     progress_projects=()
-    all_projects=( $(task status:completed end.after:'today-1week+1day' export | \
+    all_projects=( $(task status:completed end.after:'today-1week' export | \
         jq -r '.[] | select(.project != null)
                    | .project' | \
         sort -u) )
-    done_projects=( $(task status:completed end.after:'today-1week+1day' +main export | \
+    done_projects=( $(task status:completed end.after:'today-1week' +main export | \
         jq -r '.[] | select(.project != null)
                    | .project' | \
         sort -u)
