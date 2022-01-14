@@ -1,23 +1,35 @@
 #! /bin/bash
 
+get_project_argument () {
+    grep -qE "(-and|and-)" <<< "$1" && echo "proj:$1" || echo "proj == $1"
+}
+
 get_project_regular_tasks_uuid () {
-    task status:completed end.after:'today-1week+1day' -main 'proj ==' "$1" export | jq -r '.[].uuid'
+    project_argument="$(get_project_argument "$1")"
+    task status:completed end.after:'today-6days' -main "$project_argument" export | jq -r '.[].uuid'
 }
 
 get_done_project_main_tasks_uuid () {
-    task status:completed end.after:'today-1week+1day' +main 'proj ==' "$1" export | jq -r '.[].uuid'
+    project_argument="$(get_project_argument "$1")"
+    task status:completed end.after:'today-6days' +main "$project_argument" export | jq -r '.[].uuid'
+}
+
+get_deleted_project_main_tasks_uuid () {
+    project_argument="$(get_project_argument "$1")"
+    task status:deleted end.after:'today-6days' +main "$project_argument" export | jq -r '.[].uuid'
 }
 
 get_progress_project_main_tasks_uuid () {
-    task status:pending -backlog +main 'proj ==' "$1" export | jq -r '.[].uuid'
+    project_argument="$(get_project_argument "$1")"
+    task status:pending -backlog +main "$project_argument" export | jq -r '.[].uuid'
 }
 
 sed_gitlab () {
-    sed -r 's,^( *- )(.*git\..*/)([^/]*),\1[!\3](\2\3),' -
+    sed -E 's,^( *- )(.*git\..*/)([^/]*),\1[!\3](\2\3),'
 }
 
 sed_jira () {
-    sed -r 's,^( *- )(.*jira\..*/)([^/]*),\1[\3](\2\3),' -
+    sed -E 's,^( *- )(.*jira\..*/)([^/]*),\1[\3](\2\3),'
 }
 
 format_main_task () {
@@ -41,6 +53,18 @@ format_regular_task () {
                                       | "        - " + .annotations[].description' | \
         sed_gitlab | \
         sed_jira
+}
+
+print_deleted_projects () {
+    for proj in "${deleted_projects[@]}"; do
+        for uuid in $(get_deleted_project_main_tasks_uuid "$proj"); do
+            format_main_task "$uuid" "cancelled"
+        done
+        for uuid in $(get_project_regular_tasks_uuid "$proj"); do
+            format_regular_task "$uuid"
+        done
+        echo ""
+    done
 }
 
 print_done_projects () {
@@ -83,20 +107,28 @@ main () {
     check_requirements
 
     progress_projects=()
-    all_projects=( $(task status:completed end.after:'today-1week+1day' export | \
+    all_projects=( $(task \( status:completed or status:deleted \) end.after:'today-6days' export | \
         jq -r '.[] | select(.project != null)
                    | .project' | \
         sort -u) )
-    done_projects=( $(task status:completed end.after:'today-1week+1day' +main export | \
+    done_projects=( $(task status:completed end.after:'today-6days' +main export | \
+        jq -r '.[] | select(.project != null)
+                   | .project' | \
+        sort -u)
+    )
+    deleted_projects=( $(task status:deleted end.after:'today-6days' +main export | \
         jq -r '.[] | select(.project != null)
                    | .project' | \
         sort -u)
     )
 
     for proj in "${all_projects[@]}"; do
-        ! grep -q "\b${proj}\b" <<< "${done_projects[@]}" && progress_projects+=( "$proj" )
+        ! grep -qE "\b${proj}([^.]|\b)" <<< "${done_projects[@]}" && \
+            ! grep -qE "\b${proj}([^.]|\b)" <<< "${deleted_projects[@]}" && \
+            progress_projects+=( "$proj" )
     done
 
+    print_deleted_projects
     print_done_projects
     print_progress_projects
 }
