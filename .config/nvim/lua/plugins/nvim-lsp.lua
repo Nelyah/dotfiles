@@ -108,7 +108,7 @@ function M.setup ()
     -- Event listener for when we're holding the cursor. This event is called
     -- for every 700ms (value of updatetime). If it's true, then show the
     -- diagnostics in a popup window
-    vim.cmd[[autocmd! CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics({focusable = false})]]
+    vim.cmd[[autocmd! CursorHold * lua vim.diagnostic.open_float({scope = 'line', focusable = false})]]
 
     vim.g.diagnostic_auto_popup_while_jump = 1
     vim.g.diagnostic_enable_virtual_text = 0
