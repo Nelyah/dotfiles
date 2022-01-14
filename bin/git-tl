@@ -1,21 +1,43 @@
 #! /bin/bash
 
 nb_lines=10
+files=()
 args=()
 
 while (( $# > 0 )); do
-    if grep -E "^[0-9]+$" <<< "$1" &> /dev/null; then
-        nb_lines=$( tr -d '-' <<< "$1")
-    else
-        args+=( "$1" )
-    fi
-    shift
+    case "$1" in
+        -a) args+=( --author=".*$2.*" )
+            shift 2
+        ;;
+        *)
+            if grep -E "^-?[0-9]+$" <<< "$1" &> /dev/null; then
+                nb_lines="$( tr -d '-' <<< "$1")"
+            elif [ -e "$1" ]; then
+                [[ "${#files}" == 0 ]] && files+=( '--' )
+                files+=( "$1" )
+            else
+                args+=( "$1" )
+            fi
+            shift
+        ;;
+    esac
 done
+
+_date_format='%Y-%m-%d %H:%I:%S'
+pretty_format="$(git config --get format.pretty)"
+if [ -z "$pretty_format" ]; then
+    pretty_format="%C(212)%>|(5)%h%C(reset)  %C(04)%cd%C(reset)  %C(green)%<(20,trunc)%an%C(reset) %>|(1)%s%C(reset) %C(auto)%d%C(reset)"
+fi
 
 [[ "${#args[@]}" == 0 ]] && args+=( HEAD )
 
-git log -${nb_lines} \
+git log -"${nb_lines}" \
+    --date=format:"$_date_format" \
+    --format=format:"$pretty_format" \
     --abbrev-commit \
     --decorate \
     --graph \
-    "${args[@]}"
+    --regexp-ignore-case \
+    --extended-regexp \
+    "${args[@]}" \
+    "${files[@]}"
