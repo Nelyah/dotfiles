@@ -83,7 +83,6 @@ function _command_exists () {
 if _command_exists git ; then
     alias g="git"
     alias ga="git add"
-    alias gs="git status"
     alias gc="git commit"
 fi
 
