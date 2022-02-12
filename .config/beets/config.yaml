@@ -106,7 +106,7 @@ ignore: .AppleDouble ._* *~ .DS_Store
 # Paths and filenames for music files
 # relative to music directory
 paths:
-  default: $album%aunique{}/$disc-$track $title
+  default: $albumartist/$album%aunique{album albumartist, composer}/$disc-$track $title
   singleton: Singletons/$artist - $title
   comp: Various_Artist/$album%aunique{}/$disc-$track $title
   albumtype:soundtrack: Soundtracks/$album/$disc-$track $title
