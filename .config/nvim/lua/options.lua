@@ -21,7 +21,7 @@ vim.opt.synmaxcol = 1000                        -- Only highlight first 1000 cha
 vim.opt.complete = vim.opt.complete + 'kspell'
 
 if (vim.fn.has("termguicolors")) then
-    vim.g.termguicolors = true
+    vim.opt.termguicolors = true
 end
 
 vim.opt.showmode = false                        -- Hide default mode text (i.e. INSERT below status line)
@@ -100,3 +100,16 @@ vim.opt.wildignore = vim.opt.wildignore + {
 
 vim.opt.wildignorecase = true -- Ignore case when completing
 -- }}}
+
+-- this allows to avoid having the blank separation between the characters in the
+-- terminal
+vim.opt.fillchars = {
+  diff = '⣿', -- BOX DRAWINGS
+  vert = '┃', -- HEAVY VERTICAL (U+2503, UTF-8: E2 94 83)
+  fold = '─',
+  msgsep = '‾',
+  eob = ' ', -- Hide end of buffer ~
+  foldopen = '▾',
+  foldsep = '│',
+  foldclose = '▸',
+}

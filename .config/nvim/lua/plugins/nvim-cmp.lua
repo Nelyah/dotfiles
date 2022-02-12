@@ -58,6 +58,7 @@ function M.setup ()
         c = cmp.mapping.close(),
       }),
       ['<CR>'] = nil,
+      ['<C-c>'] = cmp.mapping.confirm({ select = true }),
     },
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },

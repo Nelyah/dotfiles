@@ -20,7 +20,10 @@ function M.setup ()
         },
         files = {
             cmd     = search_cmd,
-        }
+        },
+        lsp = {
+            git_icons = false,
+        },
     }
 
 

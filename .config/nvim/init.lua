@@ -1,3 +1,8 @@
+require('options')
+require('mappings')
+require('autocmd')
+require('work.soundhound')
+
 --{{{ Plugins
 
 local fn = vim.fn
@@ -68,6 +73,15 @@ require('packer').startup(function(use)
         config = function () require('plugins.vim-tmux-navigator').setup() end
     }
     -- }}}
+    -- {{{ Vim Expand Region - Extend visual selection by increasing text objects
+    use {
+        'terryma/vim-expand-region',
+        config = function ()
+            vim.cmd[[ vmap v <Plug>(expand_region_expand) ]]
+            vim.cmd[[ vmap <C-v> <Plug>(expand_region_shrink) ]]
+        end,
+    }
+    -- }}}
     -- {{{ UltiSnips
     use {                                                   -- Interface for Snippets
         'SirVer/ultisnips',
@@ -84,15 +98,6 @@ require('packer').startup(function(use)
     -- }}}
     -- {{{ Vim-Snippets
     use 'honza/vim-snippets'                                -- Provide with many Snippets to Ultisnips
-    -- }}}
-    -- {{{ Vim Expand Region - Extend visual selection by increasing text objects
-    use {
-        'terryma/vim-expand-region',
-        config = function ()
-            vim.cmd[[ vmap v <Plug>(expand_region_expand) ]]
-            vim.cmd[[ vmap <C-v> <Plug>(expand_region_shrink) ]]
-        end,
-    }
     -- }}}
 
     -- {{{ Vim Multiple Cursor
@@ -117,6 +122,11 @@ require('packer').startup(function(use)
         config = function () require('plugins.nvim-lsp').setup() end,
     }
     -- }}}
+    use {
+        'williamboman/nvim-lsp-installer',
+        requires = {'neovim/nvim-lspconfig'},
+        config = require('plugins.nvim-lsp').nvim_lsp_installer_setup,
+    }
     -- {{{ Nvim Cmp - Provide autocompletion
     use {
         'hrsh7th/nvim-cmp',
@@ -414,8 +424,3 @@ require('packer').startup(function(use)
     end
 end)
 --}}}
-
-require('options')
-require('mappings')
-require('autocmd')
-require('work.soundhound')
