@@ -2,6 +2,11 @@ vim.g.mapleader = ' '
 vim.opt.number = true                           -- line numbers
 vim.opt.encoding = 'utf-8'
 
+-- Remove 'latin1' from the default list because on large files, vim can't figure out
+-- it needs to use 'utf-8' and not 'latin1'. This results in multi-byte characters not
+-- being rendered correctly
+vim.o.fileencodings = 'ucs-bom,utf-8,default'
+
 vim.opt.autoread = true                         -- reload automatically a file if not changed
 vim.opt.mouse = 'a'                             -- Use the mouse to slide panes size or scrolling, and copying
 vim.opt.hidden = true                           -- Allow background buffers without saving
@@ -46,7 +51,7 @@ if vim.fn.executable('rg') then
     vim.g.grepprg='rg --vimgrep --no-heading --smart-case'
 end
 
-vim.opt.pumheight = 20
+vim.opt.pumheight = 20 -- Maximum number of items to show in the popup menu
 
 
 -- {{{ Temporary files
