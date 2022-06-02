@@ -6,35 +6,6 @@ function M.setup ()
     vim.cmd[[hi default LspCxxHlGroupNamespace ctermfg=Yellow guifg=#E5C07B cterm=none gui=none]]
     vim.cmd[[hi default LspCxxHlGroupMemberVariable ctermfg=White guifg=#F16E77]]
 
-    -- Completion menu
-    -- vim.opt.completeopt = {'menuone', 'noselect' }
-
-    -- require'compe'.setup({
-    --   enabled = true,
-    --   autocomplete = true,
-    --   debug = false,
-    --   min_length = 1,
-    --   preselect = 'enable',
-    --   throttle_time = 80,
-    --   source_timeout = 200,
-    --   incomplete_delay = 400,
-    --   max_abbr_width = 100,
-    --   max_kind_width = 100,
-    --   max_menu_width = 100,
-    --   documentation = true,
-
-    --   source = {
-    --     path = true,
-    --     buffer = false,
-    --     calc = true,
-    --     emoji = true,
-    --     nvim_lsp = true,
-    --     nvim_lua = true,
-    --     vsnip = true,
-    --     ultisnips = true,
-    --   };
-    -- })
-    -- Setup nvim-cmp.
   local cmp = require'cmp'
 
   cmp.setup({
@@ -61,6 +32,7 @@ function M.setup ()
       ['<C-c>'] = cmp.mapping.confirm({ select = true }),
     },
     sources = cmp.config.sources({
+      { name = 'neorg' },
       { name = 'nvim_lsp' },
       -- { name = 'vsnip' }, -- For vsnip users.
       -- { name = 'luasnip' }, -- For luasnip users.

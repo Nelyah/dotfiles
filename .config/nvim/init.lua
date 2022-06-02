@@ -127,6 +127,27 @@ require('packer').startup(function(use)
         requires = {'neovim/nvim-lspconfig'},
         config = require('plugins.nvim-lsp').nvim_lsp_installer_setup,
     }
+    -- {{{ Neorg
+    use {
+        "nvim-neorg/neorg",
+        after = "nvim-treesitter",
+        config = function()
+            require('neorg').setup {
+                load = {
+                    ["core.defaults"] = {},
+                    ["core.norg.concealer"] = {},
+                    ["core.norg.qol.toc"] = {},
+                    ["core.norg.completion"] = {
+                       config = {
+                           engine = "nvim-cmp",
+                       }
+                    }
+                },
+            }
+        end,
+        requires = "nvim-lua/plenary.nvim"
+    }
+    -- }}}
     -- {{{ Nvim Cmp - Provide autocompletion
     use {
         'hrsh7th/nvim-cmp',
