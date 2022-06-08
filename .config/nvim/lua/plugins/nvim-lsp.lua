@@ -86,15 +86,15 @@ end
 function M.setup ()
     local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-    utils.nnoremap('gD', '<cmd>lua vim.lsp.buf.definition()<CR>')
-    utils.nnoremap('gh',  '<cmd>lua vim.lsp.buf.hover()<CR>')
-    utils.nnoremap('gi',  '<cmd>lua vim.lsp.buf.implementation()<CR>')
-    utils.nnoremap('gs',  '<cmd>lua vim.lsp.buf.signature_help()<CR>')
-    utils.nnoremap('1gD', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
-    utils.nnoremap('gr',  '<cmd>lua vim.lsp.buf.references()<CR>')
-    utils.nnoremap('g0',  '<cmd>lua vim.lsp.buf.document_symbol()<CR>')
-    utils.nnoremap('gW',  '<cmd>lua vim.lsp.buf.workspace_symbol()<CR>')
-    utils.nnoremap('gd',  '<cmd>lua vim.lsp.buf.declaration()<CR>')
+    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.definition()<CR>')
+    vim.keymap.set('n', 'gh',  '<cmd>lua vim.lsp.buf.hover()<CR>')
+    vim.keymap.set('n', 'gi',  '<cmd>lua vim.lsp.buf.implementation()<CR>')
+    vim.keymap.set('n', 'gs',  '<cmd>lua vim.lsp.buf.signature_help()<CR>')
+    vim.keymap.set('n', '1gD', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
+    vim.keymap.set('n', 'gr',  '<cmd>lua vim.lsp.buf.references()<CR>')
+    vim.keymap.set('n', 'g0',  '<cmd>lua vim.lsp.buf.document_symbol()<CR>')
+    vim.keymap.set('n', 'gW',  '<cmd>lua vim.lsp.buf.workspace_symbol()<CR>')
+    vim.keymap.set('n', 'gd',  '<cmd>lua vim.lsp.buf.declaration()<CR>')
 
     vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
       vim.lsp.diagnostic.on_publish_diagnostics, {

@@ -43,7 +43,7 @@ function M.setup ()
     vim.cmd[[ command! ShowDiaryLastWeekRecap execute 'edit' . system('ls -t ' . g:vimwiki_soundhound.path . '/diary/week-recap* | head -1') ]]
     vim.cmd[[ command! RecapDiaryWeek call v:lua.RecapDiaryWeek() ]]
     vim.cmd[[ command! FZFwiki execute 'FZF ' . g:vimwiki_soundhound.path ]]
-    utils.nnoremap('<leader>eo', ':FZFwiki<CR>')
+    vim.keymap.set('n', '<leader>eo', '<cmd>FZFwiki<CR>')
 end
 
 function RecapDiaryWeek ()

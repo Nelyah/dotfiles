@@ -2,94 +2,92 @@ local utils = require('utils')
 local fn = vim.fn
 
 -- To fix spelling mistakes
-utils.nnoremap('z-', 'z=1<enter><enter>')
+vim.keymap.set('n', 'z-', 'z=1<enter><enter>')
 
-utils.nnoremap('<Leader>fi', ':e $MYVIMRC<CR>')
-utils.nnoremap('<Leader>fd', ':lcd %:h<CR>')
+vim.keymap.set('n', '<Leader>fi', '<cmd>e $MYVIMRC<CR>')
+vim.keymap.set('n', '<Leader>fd', '<cmd>lcd %:h<CR>')
 
-utils.nnoremap('<down>', ':cnext<CR>')
-utils.nnoremap('<up>', ':cprevious<CR>')
+vim.keymap.set('n', '<down>', '<cmd>cnext<CR>')
+vim.keymap.set('n', '<up>', '<cmd>cprevious<CR>')
 
 -- Filetype, requires FT command defined for FzfLua
-utils.nnoremap('<Leader>m', ':FT<CR>')
+vim.keymap.set('n', '<Leader>m', '<cmd>FT<CR>')
 
-utils.nnoremap('<Leader>k', ':q<CR>')
-utils.nnoremap('<Leader>1', ':only<CR>')
-utils.nnoremap('<Leader>2', ':split<CR>')
-utils.nnoremap('<Leader>3', ':vsplit<CR>')
+vim.keymap.set('n', '<Leader>k', '<cmd>q<CR>')
+vim.keymap.set('n', '<Leader>1', '<cmd>only<CR>')
+vim.keymap.set('n', '<Leader>2', '<cmd>split<CR>')
+vim.keymap.set('n', '<Leader>3', '<cmd>vsplit<CR>')
 
 -- Select whole buffer
-utils.nnoremap('gV', '`[V`]')
+vim.keymap.set('n', 'gV', '`[V`]')
 -- Copy whole buffer to system clipboard
-utils.nnoremap('<leader>gV', '`[V`]"+y <c-o>')
+vim.keymap.set('n', '<leader>gV', '`[V`]"+y <c-o>')
 
-utils.nnoremap(';', ':')
+vim.keymap.set('n', ';', ':')
 
 -- Performs a regular search
-utils.nnoremap('<leader>d', '/\\v', {silent = false})
-utils.inoremap('kj', '<esc>')
-utils.tnoremap('<Esc>', '<C-\\><C-n>')
+vim.keymap.set('n', '<leader>d', '/\\v', {silent = false})
+vim.keymap.set('i', 'kj', '<esc>')
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
 
 -- Switching panes using the meta key
-utils.nnoremap('<M-h>', '<C-w>h')
-utils.nnoremap('<M-j>', '<C-w>j')
-utils.nnoremap('<M-k>', '<C-w>k')
-utils.nnoremap('<M-l>', '<C-w>l')
+vim.keymap.set('n', '<M-h>', '<C-w>h')
+vim.keymap.set('n', '<M-j>', '<C-w>j')
+vim.keymap.set('n', '<M-k>', '<C-w>k')
+vim.keymap.set('n', '<M-l>', '<C-w>l')
 
 -- Navigate display lines
-utils.nnoremap('j', 'gj')
-utils.nnoremap('k', 'gk')
-utils.vnoremap('j', 'gj')
-utils.vnoremap('k', 'gk')
+vim.keymap.set('n', 'j', 'gj')
+vim.keymap.set('n', 'k', 'gk')
+vim.keymap.set('v', 'j', 'gj')
+vim.keymap.set('v', 'k', 'gk')
 
 -- If using a count to move up or down, ignore display lines
-utils.vnoremap('k', 'v:count == 0 ? "gk" : "\\<Esc>".v:count."k"', {expr = true})
-utils.vnoremap('j', 'v:count == 0 ? "gj" : "\\<Esc>".v:count."j"', {expr = true})
-utils.nnoremap('k', 'v:count == 0 ? "gk" : "\\<Esc>".v:count."k"', {expr = true})
-utils.nnoremap('j', 'v:count == 0 ? "gj" : "\\<Esc>".v:count."j"', {expr = true})
+vim.keymap.set('n', 'k', 'v:count == 0 ? "gk" : "\\<Esc>".v:count."k"', {expr = true})
+vim.keymap.set('n', 'j', 'v:count == 0 ? "gj" : "\\<Esc>".v:count."j"', {expr = true})
 
-utils.noremap('H', '5h')
-utils.noremap('J', '5j')
-utils.noremap('K', '5k')
-utils.noremap('L', '5l')
-utils.nnoremap('<c-j>', 'J')
-utils.nnoremap('<c-h>', 'H')
-utils.nnoremap('<c-l>', 'L')
-utils.nnoremap('<c-m>', 'M')
+vim.keymap.set({'n', 'v'}, 'H', '5h')
+vim.keymap.set({'n', 'v'}, 'J', '5j')
+vim.keymap.set({'n', 'v'}, 'K', '5k')
+vim.keymap.set({'n', 'v'}, 'L', '5l')
+vim.keymap.set('n', '<c-j>', 'J')
+vim.keymap.set('n', '<c-h>', 'H')
+vim.keymap.set('n', '<c-l>', 'L')
+vim.keymap.set('n', '<c-m>', 'M')
 
-utils.nnoremap('<c-e>', '7<c-e>')
-utils.nnoremap('<c-y>', '7<c-y>')
-utils.vnoremap('<c-e>', '7<c-e>')
-utils.vnoremap('<c-y>', '7<c-y>')
+vim.keymap.set('n', '<c-e>', '7<c-e>')
+vim.keymap.set('n', '<c-y>', '7<c-y>')
+vim.keymap.set('v', '<c-e>', '7<c-e>')
+vim.keymap.set('v', '<c-y>', '7<c-y>')
 
-utils.nnoremap('Y', 'y$')
+vim.keymap.set('n', 'Y', 'y$')
 
 -- Saving
-utils.nnoremap('<Leader>w', ':w<CR>')
+vim.keymap.set('n', '<Leader>w', '<cmd>w<CR>')
 
 -- Copy to clipboard
-utils.vnoremap('<leader>y', '"+y')
-utils.nnoremap('<leader>y', '"+y')
-utils.nnoremap('<leader>p', 'o<esc>"+gp')
+vim.keymap.set('v', '<leader>y', '"+y')
+vim.keymap.set('n', '<leader>y', '"+y')
+vim.keymap.set('n', '<leader>p', 'o<esc>"+gp')
 
 -- Align blocks of texte and keep them selected
-utils.vnoremap('<', '<gv')
-utils.vnoremap('>', '>gv')
+vim.keymap.set('v', '<', '<gv')
+vim.keymap.set('v', '>', '>gv')
 
-utils.nnoremap('<Leader>l', ':bn<CR>')
-utils.nnoremap('<Leader>h', ':bp<CR>')
+vim.keymap.set('n', '<Leader>l', '<cmd>bn<CR>')
+vim.keymap.set('n', '<Leader>h', '<cmd>bp<CR>')
 
 -- Close the current buffer and move to the previous one
-utils.nnoremap('<Leader>q', ':bp <BAR> bd #<CR>')
+vim.keymap.set('n', '<Leader>q', '<cmd>bp <BAR> bd #<CR>')
 
 -- Turn off highlight after search
-utils.nnoremap('<Leader>a', ':noh<CR>')
+vim.keymap.set('n', '<Leader>a', '<cmd>noh<CR>')
 
 -- Resize window
-utils.nnoremap('<c-up>', '<c-w>3+')
-utils.nnoremap('<c-down>', '<c-w>3-')
-utils.nnoremap('<c-left>', '<c-w>3<')
-utils.nnoremap('<c-right>', '<c-w>3>')
+vim.keymap.set('n', '<c-up>', '<c-w>3+')
+vim.keymap.set('n', '<c-down>', '<c-w>3-')
+vim.keymap.set('n', '<c-left>', '<c-w>3<')
+vim.keymap.set('n', '<c-right>', '<c-w>3>')
 
 -- {{{ Pasting without replacing register
 
@@ -98,13 +96,12 @@ _G.restore_register = function()
     fn.setreg('"', restore_reg)
     return ''
 end
-_G.replace_value_with_register = function()
+
+vim.keymap.set('v', 'p', function ()
     restore_reg = fn.getreg('"')
     return "p@=v:lua.restore_register()\"
-end
-
-utils.vnoremap('p', 'v:lua.replace_value_with_register()', {expr = true})
+end, {expr = true})
 -- }}}
 
-utils.inoremap('<s-Tab>', 'pumvisible() ? "\\<C-p>" : "\\<S-Tab>"', {expr = true})
-utils.inoremap('<Tab>', 'pumvisible() ? "\\<C-n>" : "\\<Tab>"', {expr = true})
+vim.keymap.set('i', '<s-Tab>', function () return vim.fn.pumvisible() == 1 and "<C-p>" or "<S-Tab>" end, {expr = true})
+vim.keymap.set('i', '<Tab>', function () return vim.fn.pumvisible() == 1 and "<C-n>" or "<Tab>" end, {expr = true})
