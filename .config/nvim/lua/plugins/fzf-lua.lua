@@ -29,16 +29,16 @@ function M.setup ()
 
     vim.cmd('command! FT call v:lua.FuzzyFileTypes()')
 
-    utils.nnoremap('<leader>o', ":lua require('fzf-lua').files()<CR>")
-    utils.nnoremap('<leader>O', ":lua require('fzf-lua').grep()<CR>")
-    utils.nnoremap('<leader>i', ":lua require('fzf-lua').grep({search = ''})<CR>")
-    utils.nnoremap('<leader>I', ":lua require('fzf-lua').live_grep()<CR>")
-    utils.nnoremap('<leader>s', ":lua require('fzf-lua').blines()<CR>")
-    utils.nnoremap('<leader>x', ":lua require('fzf-lua').commands()<CR>")
-    utils.nnoremap('<c-x>h', ":lua require('fzf-lua').help_tags()<CR>")
-    utils.nnoremap('<leader>us', ":lua require('fzf-lua').git_status()<CR>")
-    utils.nnoremap(',', ":lua require('fzf-lua').buffers()<CR>")
-    utils.nnoremap('z=', ":lua require('fzf-lua').spell_suggest()<CR>")
+    vim.keymap.set('n', '<leader>o', "<cmd>lua require('fzf-lua').files()<CR>")
+    vim.keymap.set('n', '<leader>O', "<cmd>lua require('fzf-lua').grep()<CR>")
+    vim.keymap.set('n', '<leader>i', "<cmd>lua require('fzf-lua').grep({search = ''})<CR>")
+    vim.keymap.set('n', '<leader>I', "<cmd>lua require('fzf-lua').live_grep()<CR>")
+    vim.keymap.set('n', '<leader>s', "<cmd>lua require('fzf-lua').blines()<CR>")
+    vim.keymap.set('n', '<leader>x', "<cmd>lua require('fzf-lua').commands()<CR>")
+    vim.keymap.set('n', '<c-x>h', "<cmd>lua require('fzf-lua').help_tags()<CR>")
+    vim.keymap.set('n', '<leader>us', "<cmd>lua require('fzf-lua').git_status()<CR>")
+    vim.keymap.set('n', ',', "<cmd>lua require('fzf-lua').buffers()<CR>")
+    vim.keymap.set('n', 'z=', "<cmd>lua require('fzf-lua').spell_suggest()<CR>")
 end
 
 return M

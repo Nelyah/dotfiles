@@ -63,18 +63,17 @@ function M.setup ()
       header =  { 'fg', 'Comment' },
     }
 
-    utils.nnoremap(',', ':Buffers<CR>')
-    utils.nnoremap('<Leader>i', ':Rg<CR>')
-    utils.nnoremap('<Leader>o', ':FZF<CR>')
-    utils.nnoremap('<Leader>t', ':Tags<CR>')
-    utils.nnoremap('<Leader>T', ':BTags<CR>')
-    utils.nnoremap('<Leader>fp', ':GFiles<CR>')
-    utils.nnoremap('<Leader>s', ':BLines<CR>')
+    vim.keymap.set('n', ',', '<cmd>Buffers<CR>')
+    vim.keymap.set('n', '<Leader>i', '<cmd>Rg<CR>')
+    vim.keymap.set('n', '<Leader>o', '<cmd>FZF<CR>')
+    vim.keymap.set('n', '<Leader>t', '<cmd>Tags<CR>')
+    vim.keymap.set('n', '<Leader>T', '<cmd>BTags<CR>')
+    vim.keymap.set('n', '<Leader>fp', '<cmd>GFiles<CR>')
+    vim.keymap.set('n', '<Leader>s', '<cmd>BLines<CR>')
 
-    utils.nnoremap('<c-x>h', ':Helptags<CR>')
-    utils.inoremap('<c-x>h', ':Helptags<CR>')
-    utils.nnoremap('<Leader>x', ':Commands<CR>')
-    utils.inoremap('<M-x>', ':Commands<CR>')
+    vim.keymap.set({'n', 'i'}, '<c-x>h', '<cmd>Helptags<CR>')
+    vim.keymap.set('n', '<Leader>x', '<cmd>Commands<CR>')
+    vim.keymap.set('i', '<M-x>', '<cmd>Commands<CR>')
     -- Fuzzy search help <leader>?
 
     vim.cmd[[

@@ -62,8 +62,8 @@ require('packer').startup(function(use)
     use {                                                   -- Easily search and move around the buffer
     'easymotion/vim-easymotion',
         config = function ()
-            require('utils').map('/', '<Plug>(easymotion-sn)')
-            require('utils').omap('/', '<Plug>(easymotion-tn)')
+            vim.keymap.set('n', '/', '<Plug>(easymotion-sn)', {remap=true})
+            vim.keymap.set('o', '/', '<Plug>(easymotion-tn)', {remap=true})
         end,
     }
     -- }}}
@@ -202,8 +202,7 @@ require('packer').startup(function(use)
     use {
         'godlygeek/tabular',
         config = function ()
-            require('utils').nnoremap('<Leader>T=', ':Tabularize /=<CR>')
-            require('utils').vnoremap('<Leader>T=', ':Tabularize /=<CR>')
+            vim.keymap.set({'n', 'v'}, '<Leader>T=', '<cmd>Tabularize /=<CR>')
         end,
     }
     -- }}}
@@ -228,7 +227,7 @@ require('packer').startup(function(use)
     use {
         'tpope/vim-fugitive',
         config = function ()
-            require('utils').nnoremap('<Leader>gs', ':vertical botright Gstatus<CR>')
+            vim.keymap.set('n', '<Leader>gs', '<cmd>vertical botright Gstatus<CR>')
         end
     }
     -- }}}
@@ -370,6 +369,7 @@ require('packer').startup(function(use)
     -----------------------
     --  Integrated apps  --
     -----------------------
+
     -- {{{ VimWiki
     use {
         'vimwiki/vimwiki',
@@ -381,7 +381,7 @@ require('packer').startup(function(use)
         'majutsushi/tagbar',
         cmd = 'TagbarToggle',
         config = function ()
-            require('utils').nnoremap('<F8>', ':TagbarToggle<CR>')
+            vim.keymap.set('n', '<F8>', '<cmd>TagbarToggle<CR>')
         end,
     }
     -- }}}
@@ -435,7 +435,7 @@ require('packer').startup(function(use)
                 },
             })
         end,
-        setup = function () require('utils').nnoremap('<leader>n', ':NvimTreeToggle<CR>') end,
+        setup = function () vim.keymap.set('n', '<leader>n', '<cmd>NvimTreeToggle<CR>') end,
         requires = {'kyazdani42/nvim-web-devicons'},
     }
     -- }}}
