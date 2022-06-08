@@ -29,6 +29,14 @@ bindkey "\e[3~" delete-char
 zmodload zsh/zle
 autoload -U add-zsh-hook
 
+_git_tl () {
+    echo ""
+    git tl
+    zle reset-prompt
+}
+zle -N widget-git-tl _git_tl
+bindkey '\C-o' widget-git-tl
+
 #{{{ Zplug
 export ZPLUG_HOME="${XDG_CONFIG_HOME}/zplug"
 
