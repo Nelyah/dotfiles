@@ -7,15 +7,10 @@ require('work.soundhound')
 
 local fn = vim.fn
 
-local function file_exists(name)
-   local f=io.open(name,"r")
-   if f~=nil then io.close(f) return true else return false end
-end
-
 local packer_install_dir = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
 
 local packer_bootstrap = false
-if not file_exists(packer_install_dir .. '/lua/packer.lua') then
+if not require('utils').file_exists(packer_install_dir .. '/lua/packer.lua') then
     packer_bootstrap = fn.system({'git', 'clone', '--depth', '1',
                                   'https://github.com/wbthomason/packer.nvim', packer_install_dir
                                  })
@@ -24,23 +19,6 @@ end
 require('packer').startup(function(use)
 
     use 'wbthomason/packer.nvim'
-    -- {{{ DiffView
-    use {
-        'sindrets/diffview.nvim',
-        config = function ()
-            require('utils').create_augroup('diffView', {
-                'FileType DiffviewFiles nmap <c-j> j<CR>',
-                'FileType DiffviewFiles nmap <c-k> k<CR>',
-            })
-        end,
-    }
-    -- }}}
-    -- {{{ Fzf.vim
-    use {                                                   -- Fuzzy search everything
-        'junegunn/fzf.vim',
-        config = require('plugins.fzf').setup(),
-    }
-    -- }}}
     -- {{{ FzfLua
     use {                                                   -- Install Lua interface for FZF
         'ibhagwan/fzf-lua',
@@ -58,94 +36,73 @@ require('packer').startup(function(use)
     }
     -- }}}
 
-    -- {{{ EasyMotion
-    use {                                                   -- Easily search and move around the buffer
-    'easymotion/vim-easymotion',
-        config = function ()
-            vim.keymap.set('n', '/', '<Plug>(easymotion-sn)', {remap=true})
-            vim.keymap.set('o', '/', '<Plug>(easymotion-tn)', {remap=true})
-        end,
-    }
-    -- }}}
     -- {{{ VimTmuxNavigator
     use {                                                   -- Sane binding to navigate between vim and tmux
         'christoomey/vim-tmux-navigator',
-        config = function () require('plugins.vim-tmux-navigator').setup() end
-    }
-    -- }}}
-    -- {{{ Vim Expand Region - Extend visual selection by increasing text objects
-    use {
-        'terryma/vim-expand-region',
         config = function ()
-            vim.cmd[[ vmap v <Plug>(expand_region_expand) ]]
-            vim.cmd[[ vmap <C-v> <Plug>(expand_region_shrink) ]]
-        end,
-    }
-    -- }}}
-    -- {{{ UltiSnips
-    use {                                                   -- Interface for Snippets
-        'SirVer/ultisnips',
-        config = function ()
-            vim.g.UltiSnipsExpandTrigger = '<c-c>'
-            vim.g.UltiSnipsJumpForwardTrigger = '<c-c>'
-            vim.g.UltiSnipsJumpBackwardTrigger = '<c-b>'
+            vim.g.tmux_navigator_no_mappings = 1
 
-            require('utils').create_augroup('ultisnips_no_auto_expansion', {
-                'VimEnter * au! UltiSnips_AutoTrigger',
-            })
+            vim.keymap.set('n', '<m-h>', '<cmd>TmuxNavigateLeft<cr>')
+            vim.keymap.set('n', '<m-j>', '<cmd>TmuxNavigateDown<cr>')
+            vim.keymap.set('n', '<m-k>', '<cmd>TmuxNavigateUp<cr>')
+            vim.keymap.set('n', '<m-l>', '<cmd>TmuxNavigateRight<cr>')
+            vim.keymap.set('n', '<m-\\>', '<cmd>TmuxNavigatePrevious<cr>')
+
+            vim.keymap.set('t', '<m-h>', '<C-\\><C-n><cmd>TmuxNavigateLeft<cr>')
+            vim.keymap.set('t', '<m-j>', '<C-\\><C-n><cmd>TmuxNavigateDown<cr>')
+            vim.keymap.set('t', '<m-k>', '<C-\\><C-n><cmd>TmuxNavigateUp<cr>')
+            vim.keymap.set('t', '<m-l>', '<C-\\><C-n><cmd>TmuxNavigateRight<cr>')
+            vim.keymap.set('t', '<m-\\>', '<C-\\><C-n><cmd>TmuxNavigatePrevious<cr>')
         end
     }
     -- }}}
-    -- {{{ Vim-Snippets
-    use 'honza/vim-snippets'                                -- Provide with many Snippets to Ultisnips
+    -- {{{ LuaSnip
+    use {
+        'L3MON4D3/LuaSnip',
+        after = {'nvim-cmp'},
+        config = function() 
+            require("luasnip.loaders.from_vscode").lazy_load()
+            vim.keymap.set('i', '<c-c>', function ()
+                if require('luasnip').expand_or_jumpable() == true then
+                    return '<Plug>luasnip-expand-or-jump'
+                else
+                    return '<c-c>'
+                end
+            end)
+        end,
+        requires = {'rafamadriz/friendly-snippets'}
+    }
     -- }}}
 
     -- {{{ Vim Multiple Cursor
-    use 'terryma/vim-multiple-cursors'                      -- Adding multiple cursors with <c-n>
+    use 'terryma/vim-multiple-cursors'
     -- }}}
-    -- {{{ DelimitMate - parenthesis completion
-    use 'Raimondi/delimitMate'                              -- For parenthesis completion
-    -- }}}
-    -- {{{ Asyncrun - Run commands in the background
-    use 'skywind3000/asyncrun.vim'                          -- Allows to run commands in the background
+    -- {{{ nvim-autopairs - Autocomplete parenthesis
+    use {
+        'windwp/nvim-autopairs',
+        config = function() require("nvim-autopairs").setup({}) end,
+    }
     -- }}}
 
-    ------------------
-    --  Completion  --
-    ------------------
+    --------------------
+    ----  Completion  --
+    --------------------
     -- {{{ Nvim LSP - Enable the built-in LSP
-    use 'neovim/nvim-lsp'
-    -- }}}
-    -- {{{ Nvim LSP config - Set of configuration for the Neovim LSP
     use {
-        'neovim/nvim-lspconfig',
+        'neovim/nvim-lsp',
+        requires = {
+            'neovim/nvim-lspconfig', -- Easier configuration interface for Neovim LSP
+            'hrsh7th/nvim-cmp',
+            'hrsh7th/cmp-nvim-lsp',
+        },
         config = function () require('plugins.nvim-lsp').setup() end,
     }
     -- }}}
+    -- {{{ LspInstaller
     use {
         'williamboman/nvim-lsp-installer',
         requires = {'neovim/nvim-lspconfig'},
-        config = require('plugins.nvim-lsp').nvim_lsp_installer_setup,
-    }
-    -- {{{ Neorg
-    use {
-        "nvim-neorg/neorg",
-        after = "nvim-treesitter",
-        config = function()
-            require('neorg').setup {
-                load = {
-                    ["core.defaults"] = {},
-                    ["core.norg.concealer"] = {},
-                    ["core.norg.qol.toc"] = {},
-                    ["core.norg.completion"] = {
-                       config = {
-                           engine = "nvim-cmp",
-                       }
-                    }
-                },
-            }
-        end,
-        requires = "nvim-lua/plenary.nvim"
+        config = function () require('plugins.nvim-lsp').nvim_lsp_installer_setup() end,
     }
     -- }}}
     -- {{{ Nvim Cmp - Provide autocompletion
@@ -158,6 +115,8 @@ require('packer').startup(function(use)
             'hrsh7th/cmp-path',
             'hrsh7th/cmp-cmdline',
             'quangnguyen30192/cmp-nvim-ultisnips',
+            'nvim-treesitter/completion-treesitter',
+            'saadparwaiz1/cmp_luasnip',
         },
     }
     -- }}}
@@ -167,7 +126,7 @@ require('packer').startup(function(use)
         run = ':TSUpdate',
         config = function ()
             require'nvim-treesitter.configs'.setup({
-              ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+              ensure_installed = "all", -- either "all" or a list of languages
               ignore_install = {}, -- List of parsers to ignore installing
               highlight = {
                 enable = true,              -- false will disable the whole extension
@@ -180,30 +139,6 @@ require('packer').startup(function(use)
               },
             })
         end
-    }
-    -- }}}
-    -- {{{ Nvim Completion-TreeSitter - Add treesitter as completion source
-    use 'nvim-treesitter/completion-treesitter'
-    -- }}}
-    -- {{{ Quick-Scope - Highlight letters when matching 'f' or 'F'
-    use {
-        'unblevable/quick-scope',
-        config = function ()
-            vim.g.qs_highlight_on_keys = { 'f', 'F' } -- Trigger a highlight only when pressing f and F.
-            vim.g.qs_max_chars=500 -- Disable plugin on long lines
-            require('utils').create_augroup('qs_colors', {
-              'ColorScheme * highlight QuickScopePrimary guifg=#afff5f gui=underline ctermfg=155 cterm=underline',
-              'ColorScheme * highlight QuickScopeSecondary guifg=#5fffff gui=underline ctermfg=81 cterm=underline',
-            })
-        end,
-    }
-    -- }}}
-    -- {{{ Tabular - Align text based on pattern
-    use {
-        'godlygeek/tabular',
-        config = function ()
-            vim.keymap.set({'n', 'v'}, '<Leader>T=', '<cmd>Tabularize /=<CR>')
-        end,
     }
     -- }}}
 
@@ -246,9 +181,9 @@ require('packer').startup(function(use)
     use 'ryvnf/readline.vim'
     -- }}}
 
-    -----------------
-    --  Interface  --
-    -----------------
+    -------------------
+    ----  Interface  --
+    -------------------
     -- {{{ Nvim colorizer - Colour highlighter
     use {
         'norcalli/nvim-colorizer.lua',
@@ -290,20 +225,9 @@ require('packer').startup(function(use)
     }
     -- }}}
 
-    -- {{{ Todo Comments -- Highlight them and make them searchable
-    use {
-        'folke/todo-comments.nvim',
-        config = function ()
-            require("todo-comments").setup()
-        end,
-        requires = "nvim-lua/plenary.nvim",
-    }
-    -- }}}
-
-
-    -------------------------
-    --  Language specific  --
-    -------------------------
+    ---------------------------
+    ----  Language specific  --
+    ---------------------------
     -- {{{ SympylFold - Python language folding
     use {
         'tmhedberg/SimpylFold',
@@ -313,25 +237,24 @@ require('packer').startup(function(use)
         end,
     }
     -- }}}
-    -- {{{ Iron.nvim - Interactive REPL
-    use {                                                   -- Interactive REPL over Neovim
-        'Vigemus/iron.nvim',
-        ft = 'python',
-    }
-    -- }}}
     -- {{{ Vim ClangFormat - Brings command such as ClangFormat
     use {
         'rhysd/vim-clang-format',
         ft = 'cpp',
     }
     -- }}}
-
-    -- {{{ Vim Table Mode - Add Table mode for writing them in Markdown
+    -- {{{ Black nvim format
     use {
-        'dhruvasagar/vim-table-mode',
-        ft = { 'markdown', 'pandoc', 'vimwiki.markdown' },
+        'averms/black-nvim',
+        config = function ()
+            vim.cmd[[let g:black#settings = { 'line_length': 120 }]]
+        end,
     }
     -- }}}
+    -- {{{ Salmon vim
+    use 'git@git.soundhound.com:terrier/salmon-vim'
+    -- }}}
+
     -- {{{ Vim Markdown - Many conceal and folding features
     use {
         'plasticboy/vim-markdown',
@@ -341,88 +264,33 @@ require('packer').startup(function(use)
         end,
     }
     -- }}}
-    -- {{{ Vim Livedown - Preview Markdown on browser
-    use {
-        'shime/vim-livedown',
-        ft = { 'markdown', 'pandoc' },
-        config = function ()
-            vim.g.livedown_autorun = 0 -- Show preview automatically upon opening markdown buffer
-            vim.g.livedown_open = 1 -- Pop-up the browser window upon previewing
-            vim.g.livedown_port = 1337 -- Livedown server port
-            vim.g.livedown_browser = 'firefox' -- Browser to user
-        end
-    }
-    -- }}}
-    -- {{{ VimTex
-    use {
-        'lervag/vimtex',
-        ft = { 'tex', 'latex' },
-        config = function ()
-            vim.g.vimtex_compiler_method = 'latexmk'
-            vim.g.vimtex_compiler_progname = 'nvr'
-            vim.cmd[[ autocmd FileType tex nnoremap <Leader>c :VimtexTocToggle<CR> ]]
-            vim.cmd[[ autocmd FileType tex nnoremap <F5> :VimtexCompile<CR> ]]
-        end
-    }
+    -- {{{ Markdown preview
+    use({
+        "iamcco/markdown-preview.nvim",
+        run = function() vim.fn["mkdp#util#install"]() end,
+    })
     -- }}}
 
-    -----------------------
-    --  Integrated apps  --
-    -----------------------
+    -------------------------
+    ----  Integrated apps  --
+    -------------------------
 
-    -- {{{ VimWiki
+    -- {{{ DiffView
     use {
-        'vimwiki/vimwiki',
-        config = function () require('plugins.vimwiki').setup() end,
+        'sindrets/diffview.nvim',
     }
     -- }}}
     -- {{{ TagBar -- Show symbols information on side window
-    use {                                                   -- Opens a tagbar on the right side
+    use {
         'majutsushi/tagbar',
         cmd = 'TagbarToggle',
-        config = function ()
-            vim.keymap.set('n', '<F8>', '<cmd>TagbarToggle<CR>')
-        end,
-    }
-    -- }}}
-    -- {{{ Goyo -- Distraction-free writing environment
-    use {
-        'junegunn/goyo.vim',
-        config = function ()
-            function GoyoEnter ()
-              vim.bo.quitting = false
-              vim.bo.quitting_bang = false
-              vim.cmd[[ autocmd! QuitPre <buffer> let b:quitting = 1 ]]
-              vim.cmd[[ cabbrev <buffer> q! let b:quitting_bang = 1 <bar> q! ]]
-            end
-
-            function GoyoLeave ()
-              -- Quit Vim if this is the only remaining buffer
-              if vim.bo.quitting and vim.cmd[[ len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) ]] == 1 then
-                if vim.bo.quitting_bang then
-                  vim.cmd[[ qa! ]]
-                else
-                  vim.cmd[[ qa ]]
-                end
-              end
-            end
-
-            vim.cmd[[ autocmd! User GoyoEnter v:lua.GoyoEnter() ]]
-            vim.cmd[[ autocmd! User GoyoLeave v:lua.GoyoLeave() ]]
+        setup = function ()
+            vim.keymap.set('n', '<F8>', '<cmd>TagbarToggle<CR>') -- Opens a tagbar on the right side
         end,
     }
     -- }}}
     -- {{{ Plenary.nvim -- Set of Lua functions used by other plugins
     use 'nvim-lua/plenary.nvim'
-    -- }}}
-    -- {{{ Vim Grammarous -- Send text for grammar analysis
-    use {
-        'rhysd/vim-grammarous',
-        cmd = 'GrammarousCheck',
-    }
-    -- }}}
-    -- {{{ tlib_vim --  Some script library that may be required by other plugins
-    use 'tomtom/tlib_vim'
     -- }}}
     -- {{{ NvimTree -- Show files on side window
     use {
@@ -442,8 +310,7 @@ require('packer').startup(function(use)
 
     if packer_bootstrap then
         require('packer').sync()
+        require('packer').compile()
     end
 end)
 --}}}
-
-vim.cmd[[ autocmd FileType gitcommit lua vim.loop.spawn('git', {args = {'update-handles'}}, vim.schedule_wrap(function() require('completion-sources.handles').setup() end )) ]]

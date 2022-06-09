@@ -1,9 +1,7 @@
 local M = {}
 
-local fn = vim.fn
 local utils = require('utils')
-local lspconfig = require('lspconfig')
-local configs = require('lspconfig/configs')
+local keymap = vim.keymap
 
 function M.get_capabilities()
   local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -66,11 +64,13 @@ function M.nvim_lsp_installer_setup ()
                     },
                 },
             }
-        end
-
-        if server.name == 'clangd' or server.name == 'pylsp'
-           or server.name == 'vimls' or server.name == 'zk' then
-
+        elseif server.name == 'clangd' and utils.file_exists("/mnt/filer-a-7/disk1/koudai/clang-terrier/latest/bin/clangd") then
+            opts = {
+                capabilities = lsputils.get_capabilities(),
+                -- cmd = {"/mnt/filer-a-7/disk1/koudai/clang-terrier/latest/bin/clangd"},
+                cmd = {"/mnt/filer-a-7/disk1/koudai/clang-terrier/release-candidate/bin/clangd"},
+            }
+        else
             opts = {
                 capabilities = lsputils.get_capabilities(),
             }
@@ -86,15 +86,15 @@ end
 function M.setup ()
     local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.definition()<CR>')
-    vim.keymap.set('n', 'gh',  '<cmd>lua vim.lsp.buf.hover()<CR>')
-    vim.keymap.set('n', 'gi',  '<cmd>lua vim.lsp.buf.implementation()<CR>')
-    vim.keymap.set('n', 'gs',  '<cmd>lua vim.lsp.buf.signature_help()<CR>')
-    vim.keymap.set('n', '1gD', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
-    vim.keymap.set('n', 'gr',  '<cmd>lua vim.lsp.buf.references()<CR>')
-    vim.keymap.set('n', 'g0',  '<cmd>lua vim.lsp.buf.document_symbol()<CR>')
-    vim.keymap.set('n', 'gW',  '<cmd>lua vim.lsp.buf.workspace_symbol()<CR>')
-    vim.keymap.set('n', 'gd',  '<cmd>lua vim.lsp.buf.declaration()<CR>')
+    keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.definition()<CR>')
+    keymap.set('n', 'gh',  '<cmd>lua vim.lsp.buf.hover()<CR>')
+    keymap.set('n', 'gi',  '<cmd>lua vim.lsp.buf.implementation()<CR>')
+    keymap.set('n', 'gs',  '<cmd>lua vim.lsp.buf.signature_help()<CR>')
+    keymap.set('n', '1gD', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
+    keymap.set('n', 'gr',  '<cmd>lua vim.lsp.buf.references()<CR>')
+    keymap.set('n', 'g0',  '<cmd>lua vim.lsp.buf.document_symbol()<CR>')
+    keymap.set('n', 'gW',  '<cmd>lua vim.lsp.buf.workspace_symbol()<CR>')
+    keymap.set('n', 'gd',  '<cmd>lua vim.lsp.buf.declaration()<CR>')
 
     vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
       vim.lsp.diagnostic.on_publish_diagnostics, {

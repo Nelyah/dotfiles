@@ -1,11 +1,11 @@
 vim.g.mapleader = ' '
 vim.opt.number = true                           -- line numbers
-vim.opt.encoding = 'utf-8'
 
 -- Remove 'latin1' from the default list because on large files, vim can't figure out
 -- it needs to use 'utf-8' and not 'latin1'. This results in multi-byte characters not
 -- being rendered correctly
 vim.o.fileencodings = 'ucs-bom,utf-8,default'
+vim.opt.encoding = 'utf-8'
 
 vim.opt.autoread = true                         -- reload automatically a file if not changed
 vim.opt.mouse = 'a'                             -- Use the mouse to slide panes size or scrolling, and copying
@@ -19,10 +19,10 @@ vim.opt.relativenumber = true                   -- show relative numbers in gutt
 vim.opt.cursorline = true                       -- highlight current line
 vim.opt.autoindent = true                       -- Enable automatic indent
 
-vim.optautoread = true                          -- Automatically reload modified files
+vim.opt.autoread = true                          -- Automatically reload modified files
 vim.opt.lazyredraw = true                       -- Don't redraw while executing macros, etc
 vim.opt.cmdheight = 2                           -- Better display for messages
-vim.opt.synmaxcol = 1000                        -- Only highlight first 1000 chars for better performance
+vim.opt.synmaxcol = 5000                        -- Only highlight first 1000 chars for better performance
 vim.opt.complete = vim.opt.complete + 'kspell'
 
 if (vim.fn.has("termguicolors")) then

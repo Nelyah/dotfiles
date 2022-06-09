@@ -41,3 +41,5 @@ vim.cmd[[ autocmd! BufNewFile,BufRead,BufEnter *.cdt set filetype=cpp ]]
 vim._expand_pat('%')
 
 vim.cmd[[ command! InsertHeader call v:lua.InsertHeader() ]]
+
+vim.g.python3_host_prog = '/mnt/filer-a-7/disk2/terrier/cdequeker/Python-3.7.13/neovim_python/bin/python'

@@ -1,7 +1,5 @@
 local M = {}
 
-local utils = require('utils')
-
 function FuzzyFileTypes ()
     require('fzf-lua').filetypes()
 end
@@ -25,7 +23,6 @@ function M.setup ()
             git_icons = false,
         },
     }
-
 
     vim.cmd('command! FT call v:lua.FuzzyFileTypes()')
 
