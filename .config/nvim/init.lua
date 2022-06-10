@@ -73,38 +73,32 @@ require('packer').startup(function(use)
         config = function () require('plugins.vim-tmux-navigator').setup() end
     }
     -- }}}
-    -- {{{ Vim Expand Region - Extend visual selection by increasing text objects
+    -- {{{ LuaSnip
     use {
-        'terryma/vim-expand-region',
-        config = function ()
-            vim.cmd[[ vmap v <Plug>(expand_region_expand) ]]
-            vim.cmd[[ vmap <C-v> <Plug>(expand_region_shrink) ]]
+        'L3MON4D3/LuaSnip',
+        after = {'nvim-cmp'},
+        config = function()
+            require("luasnip.loaders.from_vscode").lazy_load()
+            vim.keymap.set('i', '<c-c>', function ()
+                if require('luasnip').expand_or_jumpable() == true then
+                    return '<Plug>luasnip-expand-or-jump'
+                else
+                    return '<c-c>'
+                end
+            end)
         end,
+        requires = {'rafamadriz/friendly-snippets'}
     }
-    -- }}}
-    -- {{{ UltiSnips
-    use {                                                   -- Interface for Snippets
-        'SirVer/ultisnips',
-        config = function ()
-            vim.g.UltiSnipsExpandTrigger = '<c-c>'
-            vim.g.UltiSnipsJumpForwardTrigger = '<c-c>'
-            vim.g.UltiSnipsJumpBackwardTrigger = '<c-b>'
-
-            require('utils').create_augroup('ultisnips_no_auto_expansion', {
-                'VimEnter * au! UltiSnips_AutoTrigger',
-            })
-        end
-    }
-    -- }}}
-    -- {{{ Vim-Snippets
-    use 'honza/vim-snippets'                                -- Provide with many Snippets to Ultisnips
     -- }}}
 
     -- {{{ Vim Multiple Cursor
     use 'terryma/vim-multiple-cursors'                      -- Adding multiple cursors with <c-n>
     -- }}}
-    -- {{{ DelimitMate - parenthesis completion
-    use 'Raimondi/delimitMate'                              -- For parenthesis completion
+    -- {{{ nvim-autopairs
+    use {
+        'windwp/nvim-autopairs',
+        config = function() require("nvim-autopairs").setup({}) end,
+    }
     -- }}}
     -- {{{ Asyncrun - Run commands in the background
     use 'skywind3000/asyncrun.vim'                          -- Allows to run commands in the background
@@ -122,11 +116,13 @@ require('packer').startup(function(use)
         config = function () require('plugins.nvim-lsp').setup() end,
     }
     -- }}}
+    -- {{{ Nvim LSP Installer
     use {
         'williamboman/nvim-lsp-installer',
         requires = {'neovim/nvim-lspconfig'},
         config = require('plugins.nvim-lsp').nvim_lsp_installer_setup,
     }
+    -- }}}
     -- {{{ Neorg
     use {
         "nvim-neorg/neorg",
@@ -157,7 +153,7 @@ require('packer').startup(function(use)
             'hrsh7th/cmp-buffer',
             'hrsh7th/cmp-path',
             'hrsh7th/cmp-cmdline',
-            'quangnguyen30192/cmp-nvim-ultisnips',
+            'saadparwaiz1/cmp_luasnip',
         },
     }
     -- }}}
@@ -184,19 +180,6 @@ require('packer').startup(function(use)
     -- }}}
     -- {{{ Nvim Completion-TreeSitter - Add treesitter as completion source
     use 'nvim-treesitter/completion-treesitter'
-    -- }}}
-    -- {{{ Quick-Scope - Highlight letters when matching 'f' or 'F'
-    use {
-        'unblevable/quick-scope',
-        config = function ()
-            vim.g.qs_highlight_on_keys = { 'f', 'F' } -- Trigger a highlight only when pressing f and F.
-            vim.g.qs_max_chars=500 -- Disable plugin on long lines
-            require('utils').create_augroup('qs_colors', {
-              'ColorScheme * highlight QuickScopePrimary guifg=#afff5f gui=underline ctermfg=155 cterm=underline',
-              'ColorScheme * highlight QuickScopeSecondary guifg=#5fffff gui=underline ctermfg=81 cterm=underline',
-            })
-        end,
-    }
     -- }}}
     -- {{{ Tabular - Align text based on pattern
     use {
@@ -313,12 +296,6 @@ require('packer').startup(function(use)
         end,
     }
     -- }}}
-    -- {{{ Iron.nvim - Interactive REPL
-    use {                                                   -- Interactive REPL over Neovim
-        'Vigemus/iron.nvim',
-        ft = 'python',
-    }
-    -- }}}
     -- {{{ Vim ClangFormat - Brings command such as ClangFormat
     use {
         'rhysd/vim-clang-format',
@@ -339,18 +316,6 @@ require('packer').startup(function(use)
         config = function ()
             vim.g.vim_markdown_folding_disabled = 1
         end,
-    }
-    -- }}}
-    -- {{{ Vim Livedown - Preview Markdown on browser
-    use {
-        'shime/vim-livedown',
-        ft = { 'markdown', 'pandoc' },
-        config = function ()
-            vim.g.livedown_autorun = 0 -- Show preview automatically upon opening markdown buffer
-            vim.g.livedown_open = 1 -- Pop-up the browser window upon previewing
-            vim.g.livedown_port = 1337 -- Livedown server port
-            vim.g.livedown_browser = 'firefox' -- Browser to user
-        end
     }
     -- }}}
     -- {{{ VimTex
@@ -420,9 +385,6 @@ require('packer').startup(function(use)
         'rhysd/vim-grammarous',
         cmd = 'GrammarousCheck',
     }
-    -- }}}
-    -- {{{ tlib_vim --  Some script library that may be required by other plugins
-    use 'tomtom/tlib_vim'
     -- }}}
     -- {{{ NvimTree -- Show files on side window
     use {
