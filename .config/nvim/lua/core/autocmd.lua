@@ -82,3 +82,29 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- }}}
+
+vim.keymap.set("i", "<m-b>", function()
+    vim.cmd([[normal! b]])
+    vim.cmd([[startinsert]])
+end)
+
+vim.keymap.set("i", "<m-f>", function()
+    vim.cmd([[normal! w]])
+    vim.cmd([[startinsert]])
+end)
+
+vim.keymap.set("i", "<c-b>", function()
+    vim.cmd([[normal! i]])
+end)
+
+vim.keymap.set("i", "<c-f>", function()
+    vim.cmd([[normal! la]])
+end)
+
+vim.keymap.set("i", "<c-e>", function()
+    vim.cmd([[normal! A]])
+end)
+
+vim.keymap.set("i", "<c-a>", function()
+    vim.cmd([[normal! 0i]])
+end)

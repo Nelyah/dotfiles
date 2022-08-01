@@ -5,33 +5,6 @@ plugin({
     "sindrets/diffview.nvim",
 })
 -- }}}
-
--- {{{ Fzf.vim
-plugin({ -- Fuzzy search everything
-    "junegunn/fzf.vim",
-    config = require("modules.ui.fzf").setup(),
-})
--- }}}
-
--- {{{ FzfLua
-plugin({ -- Install Lua interface for FZF
-    "ibhagwan/fzf-lua",
-    config = function()
-        require("modules.ui.fzf-lua").setup()
-    end,
-    requires = {
-        "vijaymarupudi/nvim-fzf",
-        "kyazdani42/nvim-web-devicons",
-    },
-})
--- }}}
--- {{{ Fzf.vim
-plugin({ -- Install FZF
-    "junegunn/fzf",
-    run = "./install --bin",
-})
--- }}}
-
 -- {{{ Vim Fugitive - Git interface
 plugin({
     "tpope/vim-fugitive",
@@ -40,7 +13,6 @@ plugin({
     end,
 })
 -- }}}
-
 -- {{{ Gitsigns - Git information on the sign column
 plugin({
     "lewis6991/gitsigns.nvim",
@@ -52,7 +24,6 @@ plugin({
     end,
 })
 -- }}}
-
 -- {{{ Nvim colorizer - Colour highlighter
 plugin({
     "norcalli/nvim-colorizer.lua",
@@ -70,7 +41,6 @@ plugin({
     end,
 })
 -- }}}
-
 -- {{{ LuaLine - Status line and buffer line
 plugin({
     "nvim-lualine/lualine.nvim",
@@ -100,7 +70,6 @@ plugin({
     },
 })
 -- }}}
-
 -- {{{ Todo Comments -- Highlight them and make them searchable
 plugin({
     "folke/todo-comments.nvim",
@@ -110,7 +79,6 @@ plugin({
     requires = "nvim-lua/plenary.nvim",
 })
 -- }}}
-
 -- {{{ TagBar -- Show symbols information on side window
 plugin({ -- Opens a tagbar on the right side
     "majutsushi/tagbar",
@@ -120,7 +88,6 @@ plugin({ -- Opens a tagbar on the right side
     end,
 })
 -- }}}
-
 -- {{{ NvimTree -- Show files on side window
 plugin({
     "kyazdani42/nvim-tree.lua",
@@ -137,4 +104,23 @@ plugin({
     end,
     requires = { "kyazdani42/nvim-web-devicons" },
 })
+-- }}}
+-- {{{ Telescope
+plugin({
+    "nvim-telescope/telescope.nvim",
+    requires = { "nvim-lua/plenary.nvim", "kyazdani42/nvim-web-devicons" },
+    config = function()
+        require("modules.ui.telescope").setup()
+    end,
+})
+if vim.fn.executable("make") then
+    plugin({
+        "nvim-telescope/telescope-fzf-native.nvim",
+        run = "make",
+        config = function()
+            require("telescope").load_extension("fzf")
+        end,
+        requires = { "nvim-telescope/telescope.nvim" },
+    })
+end
 -- }}}
