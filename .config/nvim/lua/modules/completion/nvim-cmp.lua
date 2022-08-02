@@ -54,11 +54,12 @@ function M.setup()
                 c = cmp.mapping.close(),
             }),
             ["<CR>"] = nil,
-            -- ['<C-c>'] = cmp.mapping.confirm({ select = true }),
+            ['<C-s>'] = cmp.mapping.confirm({ select = true }),
         },
         sources = cmp.config.sources({
             { name = "neorg" },
             { name = "nvim_lsp" },
+            { name = "luasnip" },
             -- { name = 'vsnip' }, -- For vsnip users.
             -- { name = 'ultisnips' }, -- For ultisnips users.
             -- { name = 'snippy' }, -- For snippy users.

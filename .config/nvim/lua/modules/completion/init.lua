@@ -8,10 +8,10 @@ plugin({
 		require("luasnip.loaders.from_vscode").lazy_load()
 		vim.keymap.set("i", "<c-c>", function()
 			if require("luasnip").expand_or_jumpable() == true then
-				return "<Plug>luasnip-expand-or-jump"
-			else
-				return "<c-c>"
+                require("luasnip").expand_or_jump()
+                return
 			end
+            return "<c-c>"
 		end)
 	end,
 	requires = { "rafamadriz/friendly-snippets" },
