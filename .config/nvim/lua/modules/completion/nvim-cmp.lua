@@ -18,8 +18,33 @@ function M.setup()
         mapping = {
             ["<c-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
             ["<c-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-            ["<Tab>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-            ["<S-Tab>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+            -- @note: Fixes an issue with nvim in an ssh session where pressing <tab> would actually
+            --        output the characters "<Tab>". This solution was taken from:
+            --        https://www.reddit.com/r/neovim/comments/scnj6i/help_nvimcmp_input_tab_when_pressing_stab_with/
+            ["<Tab>"] = cmp.mapping(function(_)
+                if cmp.visible() then
+                    if cmp.get_active_entry() then
+                        cmp.select_next_item()
+                    else
+                        cmp.close()
+                        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "nt", true)
+                    end
+                    return
+                end
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "nt", true)
+            end),
+            ["<S-Tab>"] = cmp.mapping(function(_)
+                if cmp.visible() then
+                    if cmp.get_active_entry() then
+                        cmp.select_prev_item()
+                    else
+                        cmp.close()
+                        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "nt", true)
+                    end
+                    return
+                end
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "nt", true)
+            end),
             ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
             ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
             ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
