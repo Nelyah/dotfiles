@@ -23,24 +23,14 @@ function M.setup()
             --        https://www.reddit.com/r/neovim/comments/scnj6i/help_nvimcmp_input_tab_when_pressing_stab_with/
             ["<Tab>"] = cmp.mapping(function(_)
                 if cmp.visible() then
-                    if cmp.get_active_entry() then
-                        cmp.select_next_item()
-                    else
-                        cmp.close()
-                        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "nt", true)
-                    end
+                    cmp.select_next_item()
                     return
                 end
                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "nt", true)
             end),
             ["<S-Tab>"] = cmp.mapping(function(_)
                 if cmp.visible() then
-                    if cmp.get_active_entry() then
-                        cmp.select_prev_item()
-                    else
-                        cmp.close()
-                        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "nt", true)
-                    end
+                    cmp.select_prev_item()
                     return
                 end
                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "nt", true)
@@ -54,7 +44,7 @@ function M.setup()
                 c = cmp.mapping.close(),
             }),
             ["<CR>"] = nil,
-            ['<C-s>'] = cmp.mapping.confirm({ select = true }),
+            ["<C-s>"] = cmp.mapping.confirm({ select = true }),
         },
         sources = cmp.config.sources({
             { name = "neorg" },
