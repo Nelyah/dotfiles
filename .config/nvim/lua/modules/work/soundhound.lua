@@ -54,6 +54,10 @@ local register_treesitter_parser = function()
 end
 
 local setup = function()
+    local has_treesitter, _ = pcall(require, 'nvim-treesitter')
+    if not has_treesitter then
+        return
+    end
     register_treesitter_parser()
 
     plugin("git@git.soundhound.com:cdequeker/tree-sitter-ter-queries.git")

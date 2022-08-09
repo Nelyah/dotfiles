@@ -1,7 +1,5 @@
 local Pack = {}
 
-local packer_plugin = require("packer")
-
 local function file_exists(name)
     local f = io.open(name, "r")
     if f ~= nil then
@@ -38,6 +36,11 @@ function Pack:new()
 end
 
 function Pack:load_plugins()
+    local has_packer, packer_plugin = pcall(require, "packer")
+    if not has_packer then
+        print("Restart nvim before installing plugins.")
+        return
+    end
     packer_plugin.startup(function(use)
         for _, plugin in ipairs(self.plugins) do
             use(plugin)
@@ -59,6 +62,6 @@ function Pack.register_plugin(opts)
     table.insert(Pack.plugins, opts)
 end
 
-local p = Pack:new()
+Pack:bootstrap()
 
-return p
+return Pack:new()
