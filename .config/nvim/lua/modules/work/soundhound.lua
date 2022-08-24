@@ -61,6 +61,7 @@ local setup = function()
     register_treesitter_parser()
 
     plugin("git@git.soundhound.com:cdequeker/tree-sitter-ter-queries.git")
+    plugin('git@git.soundhound.com:terrier/salmon-vim')
 
     vim.filetype.add({
         extension = { ter = "ter" },
