@@ -7,7 +7,6 @@ vim.opt.encoding = "utf-8"
 -- being rendered correctly
 vim.o.fileencodings = "ucs-bom,utf-8,default"
 
-vim.opt.autoread = true                    -- reload automatically a file if not changed
 vim.opt.mouse = "a"                        -- Use the mouse to slide panes size or scrolling, and copying
 vim.opt.hidden = true                      -- Allow background buffers without saving
 vim.opt.splitright = true                  -- Split appears on the right
@@ -19,7 +18,7 @@ vim.opt.relativenumber = true              -- show relative numbers in gutter
 vim.opt.cursorline = true                  -- highlight current line
 vim.opt.autoindent = true                  -- Enable automatic indent
 
-vim.optautoread = true                     -- Automatically reload modified files
+vim.opt.autoread = true                     -- Automatically reload modified files
 vim.opt.lazyredraw = true                  -- Don't redraw while executing macros, etc
 vim.opt.cmdheight = 2                      -- Better display for messages
 vim.opt.synmaxcol = 1000                   -- Only highlight first 1000 chars for better performance
