@@ -18,8 +18,8 @@ local insertHeader = function()
         end
 
         for _, out in pairs({
-            "#ifndef " .. cur_filename,
-            "#define " .. cur_filename,
+            "#ifndef " .. upper_filename,
+            "#define " .. upper_filename,
             "",
         }) do
             table.insert(start_lines, out)
@@ -27,7 +27,7 @@ local insertHeader = function()
 
         for _, out in pairs({
             "",
-            "#endif /* " .. cur_filename .. " */",
+            "#endif /* " .. upper_filename .. " */",
         }) do
             table.insert(end_lines, out)
         end
