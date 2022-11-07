@@ -124,3 +124,11 @@ if vim.fn.executable("make") then
     })
 end
 -- }}}
+-- {{{ Markdown Preview
+plugin({
+    "iamcco/markdown-preview.nvim",
+    run = function()
+        vim.fn["mkdp#util#install"]()
+    end,
+})
+-- }}}

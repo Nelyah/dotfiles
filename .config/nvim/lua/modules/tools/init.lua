@@ -50,7 +50,7 @@ plugin("tpope/vim-commentary") -- comments based on the file type
 plugin("tpope/vim-surround")
 plugin("tpope/vim-repeat") -- Allow repeating plugin actions and more
 plugin("tpope/vim-eunuch") -- Provide basic commands (chmod, mkdir, rename, etc.)
-plugin("ryvnf/readline.vim")
+plugin({ "ryvnf/readline.vim", branch = "main" })
 
 plugin({ -- Add Table mode for writing them in Markdown
     "dhruvasagar/vim-table-mode",
