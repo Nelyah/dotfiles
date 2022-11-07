@@ -17,7 +17,7 @@ local on_attach = function(client, bufnr)
     vim.keymap.set("n", "g0", "<cmd>lua vim.lsp.buf.document_symbol()<CR>")
     vim.keymap.set("n", "gW", "<cmd>lua vim.lsp.buf.workspace_symbol()<CR>")
     vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.declaration()<CR>")
-    vim.keymap.set("n", "gF", "<cmd>lua vim.lsp.buf.format()<CR>")
+    vim.keymap.set("n", "gF", "<cmd>lua vim.lsp.buf.format({ timeout_ms = 5000 })<CR>")
 end
 
 function M.mason_lspconfig()
