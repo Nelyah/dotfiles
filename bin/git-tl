@@ -29,7 +29,6 @@ if [ -z "$pretty_format" ]; then
     pretty_format="%C(212)%>|(5)%h%C(reset)  %C(04)%cd%C(reset)  %C(green)%<(20,trunc)%an%C(reset) %>|(1)%s%C(reset) %C(auto)%d%C(reset)"
 fi
 
-git config --get --bool tl.graph
 graph_config="$(git config --get --bool tl.graph)" || graph_config=true
 "$graph_config" && graph_arg="--graph" || graph_arg=""
 
