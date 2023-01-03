@@ -23,10 +23,16 @@ M.setup = function()
         pickers = {
             commands = layout_small_bottom,
             filetypes = layout_small_bottom,
+            live_grep_args = {
+                mappings = {
+                    i = { ["<c-f>"] = require("telescope.actions").to_fuzzy_refine }
+                },
+            },
         },
     })
 
     local telescope_builtin = require("telescope.builtin")
+    local telescope_extensions = require("telescope").extensions
     vim.keymap.set("n", "<leader>o", function()
         -- Telescope doesn't yet support selecting multiple files
         -- see https://github.com/nvim-telescope/telescope.nvim/issues/1048#issuecomment-1140280174
@@ -55,7 +61,7 @@ M.setup = function()
         return telescope_builtin.find_files(opts_ff)
     end)
     vim.keymap.set("n", "<leader>i", function()
-        telescope_builtin.live_grep()
+        telescope_extensions.live_grep_args.live_grep_args()
     end)
     vim.keymap.set("n", "<leader>x", function()
         telescope_builtin.commands()

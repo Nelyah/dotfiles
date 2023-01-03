@@ -123,6 +123,13 @@ if vim.fn.executable("make") then
         requires = { "nvim-telescope/telescope.nvim" },
     })
 end
+plugin({
+    "nvim-telescope/telescope-live-grep-args.nvim",
+    requires = { "nvim-telescope/telescope.nvim" },
+    config = function()
+        require("telescope").load_extension("live_grep_args")
+    end,
+})
 -- }}}
 -- {{{ Markdown Preview
 plugin({
