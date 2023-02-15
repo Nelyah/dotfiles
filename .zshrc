@@ -80,6 +80,7 @@ fi
 #}}}
 
 # Environnement variables
+source ~/.env
 source ~/.profile
 source ~/.aliases
 
