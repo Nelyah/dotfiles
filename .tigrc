@@ -1,0 +1,119 @@
+# Tig default configuration
+#
+# Please see 'man tigrc' for a complete reference.
+
+# Settings
+# --------
+# Most of these settings can be toggleable, either via the toggle-*
+# actions or via the option menu (bound to `o` by default).
+
+# View settings
+#
+# Supported column types and their options:
+#
+#   author
+#    - display (enum) [no|full|abbreviated|email|email-user]
+#					: Show author information?
+#    - width (int)			: Fixed width when nonzero
+#    - maxwidth (int)			: Autosize limit
+#
+#   commit-title
+#    - display (bool)			: Show the commit title?
+#    - graph (enum) [no|v2|v1]		: Show the commit graph? (main view only)
+#    - refs (bool)			: Show branches, tags and remotes? (main view only)
+#    - overflow (boolint)		: Highlight overflows? Defaults to 50 when enabled.
+#
+#   date
+#    - display (enum) [no|default|relative|relative-compact|custom]
+#					: Show dates?
+#    - local (bool)			: Show local dates?
+#    - format (string)			: Custom strftime(3) format
+#					  Note: %Z is formatted as %z
+#    - width (int)			: Fixed width when nonzero
+#
+#   file-name
+#    - display (enum) [no|always|auto]	: Show file names?
+#    - width (int)			: Fixed width when nonzero
+#    - maxwidth (int)			: Autosize limit
+#
+#   file-size
+#    - display (enum) [no|default|units]
+#					: Show file sizes?
+#    - width (int)			: Fixed width when nonzero
+#
+#   id
+#    - display (bool)			: Show commit/tree ID?
+#    - width (int)			: Fixed width when nonzero
+#
+#   line-number
+#    - display (bool)			: Show line numbers?
+#    - interval (int)			: Interval between line numbers; defaults to 5
+#    - width (int)			: Fixed width when nonzero
+#
+#   mode
+#    - display (bool)			: Show file modes?
+#    - width (int)			: Fixed width when nonzero
+#
+#   ref
+#    - display (bool)			: Show ref names?
+#    - width (int)			: Fixed width when nonzero
+#    - maxwidth (int)			: Autosize limit
+#
+#   status
+#    - display (enum) [no|short|long]	: Show status label?
+#
+#   text
+#    - display (bool)			: Show text?
+#    - commit-title-overflow (boolint)	: Highlight overflow in log and diff view?
+# the default configuration file is https://github.com/jonas/tig/blob/master/tigrc
+
+set main-view             = line-number:no,interval=5 id:yes date:default author:full commit-title:yes,graph,refs,overflow=no
+set main-view-date        = custom
+set main-view-date-format = "%Y-%m-%d %H:%M"
+set ignore-case           = smart-case
+set mouse                 = yes
+set mouse-scroll          = 5
+# set diff-highlight        = true
+set refresh-mode          = periodic
+set refresh-interval      = 3
+set tab-size              = 4
+# show untracked files in one dir as a dir like `git status` instead of multiple files
+set status-show-untracked-dirs = false
+
+# bindings priorities: view->generic->default
+bind generic    E    !>sh -c "nvim ~/.tigrc"
+bind generic    S    view-stage
+bind generic    g    none # disable single g
+bind generic    f    !git commit --fixup %(commit)
+bind main    f    !git commit --fixup %(commit)
+bind main    r    !git rebase --autosquash -i %(commit)^
+bind generic    gs   view-grep
+bind generic    gg   move-first-line
+bind generic    G    move-last-line
+bind generic    p    none # disable single p for pager(default)
+bind generic    pl   !git pull
+bind generic    pl   !git pull %(remote)
+bind generic    pu   !<git push
+bind generic    pU   !<git push -u %(remote) %(repo:head)
+bind generic    v    :source ~/.tigrc
+bind main       G    move-last-line # overwrite the default
+bind generic    <Ctrl-f>   scroll-page-down
+bind generic    <Ctrl-b>   scroll-page-up
+bind generic D       >git difftool --tool=vimdiff --trust-exit-code --no-prompt %(commit)^! -- %(file)
+bind generic w       >git difftool --tool=vimdiff --trust-exit-code --no-prompt %(commit)^! -- %(file)
+bind diff w       >git difftool --tool=vimdiff --trust-exit-code --no-prompt %(commit)^! -- %(file)
+
+set line-graphics = utf-8
+
+# Override the default terminal colors to white on black.
+color default		white	black
+# Diff colors
+color diff-header	yellow	default
+color diff-index	blue	default
+color status	red	red
+color title-focus	red	default
+color title-blur	red	default
+color diff-chunk	red	red
+color "Reported-by:"	green	default
+# View-specific color
+color tree.date		black	cyan	bold
