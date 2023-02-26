@@ -49,8 +49,7 @@ local register_treesitter_parser = function()
         },
         filetype = "ter", -- if filetype does not match the parser name
     }
-    local ft_to_parser = require("nvim-treesitter.parsers").filetype_to_parsername
-    ft_to_parser.ter = "ter" -- the someft filetype will use the python parser and queries.
+    vim.treesitter.language.register("ter", "ter")
 end
 
 local setup = function()
