@@ -37,6 +37,14 @@ _git_tl () {
 zle -N widget-git-tl _git_tl
 bindkey '\C-o' widget-git-tl
 
+_git_status () {
+    echo ""
+    git status
+    zle reset-prompt
+}
+zle -N widget-git-status _git_status
+bindkey '\C-k' widget-git-status
+
 #{{{ Zplug
 export ZPLUG_HOME="${XDG_CONFIG_HOME}/zplug"
 
