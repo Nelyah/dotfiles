@@ -3,4 +3,5 @@
 */.*.swp
 .*.swo
 */.*.swo
+.cache
 compile_commands.json
