@@ -88,9 +88,9 @@ fi
 #}}}
 
 # Environnement variables
-source ~/.env
 source ~/.profile
 source ~/.aliases
+source ~/.env
 
 # Server aliases
 if [ -f ~/.homeserver ]; then
