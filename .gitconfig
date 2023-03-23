@@ -160,3 +160,71 @@
 	push = HEAD
 [submodule]
 	fetchJobs = 12
+
+[tig]
+    line-graphics         = auto
+    main-view             = line-number:no,interval=5 id:yes date:default author:full commit-title:yes,graph,refs,overflow=no
+    main-view-date        = custom
+    ignore-case           = smart-case
+    main-view-date-format = \"%Y-%m-%d %H:%M\"
+    mouse                 = yes
+    mouse-scroll          = 5
+    refresh-mode          = periodic
+    refresh-interval      = 3
+    tab-size              = 4
+    # show untracked files in one dir as a dir like `git status` instead of multiple files
+    status-show-untracked-dirs = false
+[tig "color"]
+    title-focus = cyan default
+    title-blur = cyan default
+    palette-0 = color206 default bold ; This is the main graph lines
+    palette-1 = yellow default bold ; this is the merge graph lines
+
+
+;   !	Run the command in the foreground with output shown.
+;   @	Run the command in the background with no output.
+;   ?	Prompt the user before executing the command.
+;   +	Run the command synchronously, and echo the first line of output to the status bar.
+;   <	Exit Tig after executing the command.
+;   >	Re-open Tig instantly in the last displayed view after executing the command.
+;
+; User-defined commands can optionally refer to Tig's internal state
+; using the following variable names, which are substituted before
+; commands are run:
+;
+;   %(head)		The current ref ID. Defaults to HEAD
+;   %(commit)		The current commit ID.
+;   %(blob)		The current blob ID.
+;   %(branch)		The current branch name.
+;   %(remote)		The current remote name.
+;   %(tag)		The current tag name.
+;   %(stash)		The current stash name.
+;   %(directory)	The current directory path in the tree view;
+;			empty for the root directory.
+;   %(file)		The currently selected file.
+;   %(ref)		The reference given to blame or HEAD if undefined.
+;   %(revargs)		The revision arguments passed on the command line.
+;   %(fileargs)		The file arguments passed on the command line.
+;   %(cmdlineargs)	All other options passed on the command line.
+;   %(diffargs)		The diff options from `diff-options` or `TIG_DIFF_OPTS`
+;   %(prompt)		Prompt for the argument value.
+
+[tig "bind"]
+    generic =    E          !>sh -c "nvim ~/.tigrc"
+    generic =    S          view-stage
+    generic =    g          none # disable single g
+    main    =    f          +git commit --fixup %(commit)
+    main    =    r          >git rebase --autosquash -i %(commit)^
+    generic =    b          view-refs
+    generic =    gs         view-grep
+    generic =    gg         move-first-line
+    generic =    G          move-last-line
+    generic =    p          none # disable single p for pager(default)
+    generic =    pl         !git pull
+    generic =    pl         !git pull %(remote)
+    generic =    pu         !<git push
+    generic =    pU         !<git push -u %(remote) %(repo:head)
+    main    =    G          move-last-line # overwrite the default
+    generic =    <Ctrl-f>   scroll-page-down
+    generic =    <Ctrl-b>   scroll-page-up
+    refs    =    D          ?+git branch -D %(branch)
