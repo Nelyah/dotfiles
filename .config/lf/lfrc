@@ -22,3 +22,16 @@ map gd cd ~/cloud/Documents
 map gdd cd /media/data
 map gdn cd /media/data/nextcloud
 map gdb cd /media/data/wordpress
+
+cmd fzf_jump ${{
+    res="$(find . 2>/dev/null | fzf --reverse --header='Jump to location' | sed 's/\\/\\\\/g;s/"/\\"/g')"
+    if [ -d "$res" ] ; then
+        cmd="cd"
+    elif [ -f "$res" ] ; then
+        cmd="select"
+    else
+        exit 0
+    fi
+    lf -remote "send $id $cmd \"$res\""
+}}
+map <c-f> :fzf_jump
