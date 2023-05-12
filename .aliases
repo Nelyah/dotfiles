@@ -3,22 +3,6 @@
 alias grep="grep --color=always"
 alias egrep="egrep --color=always"
 
-if [ "$TERM" != "dumb" ]; then
-    export LS_OPTIONS="--color=always --time-style=long-iso -G"
-    export LS_DIRFIRST='--group-directories-first'
-fi
-
-export LESS_TERMCAP_md="${yellow}";
-alias ls="ls --color=always" 
-alias ll="ls -lh $LS_OPTIONS $LS_DIRFIRST"
-alias lla="ls -lha $LS_OPTIONS $LS_DIRFIRST"
-alias llt="ls -lht $LS_OPTIONS"
-alias lld="ls -lhd $LS_OPTIONS"
-alias llad="ls -lhad $LS_OPTIONS"
-alias llda="ls -lhad $LS_OPTIONS"
-alias llta="ls -lht $LS_OPTIONS"
-alias llat="ls -laht $LS_OPTIONS"
-
 alias rm="rm -i"
 alias rebash="source ~/.bashrc"
 alias irssi@freenode="irssi -c chat.freenode.net -p 6667 -n Nelyah"
@@ -176,4 +160,30 @@ fi
 
 if _command_exists keyctl; then
     alias get-bw-session='keyctl pipe "$(keyctl request user bw_session)"'
+fi
+
+if [ "$TERM" != "dumb" ]; then
+	export LS_OPTIONS="--color=always --time-style=long-iso -G"
+	export LS_DIRFIRST='--group-directories-first'
+fi
+
+if _command_exists exa; then
+    [ -f "${XDG_CONFIG_HOME}/exa/config.sh" ] && . "${XDG_CONFIG_HOME}/exa/config.sh"
+    COMMON_EXA_ARGS="--git"
+	alias ls="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS}"
+	alias ll="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long"
+	alias lla="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long --all"
+    # oldest means newest on top
+	alias llt="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long --sort=oldest"
+else
+	export LESS_TERMCAP_md="${yellow}"
+	alias ls="ls --color=always"
+	alias ll="ls -lh $LS_OPTIONS $LS_DIRFIRST"
+	alias lla="ls -lha $LS_OPTIONS $LS_DIRFIRST"
+	alias llt="ls -lht $LS_OPTIONS"
+	alias lld="ls -lhd $LS_OPTIONS"
+	alias llad="ls -lhad $LS_OPTIONS"
+	alias llda="ls -lhad $LS_OPTIONS"
+	alias llta="ls -lht $LS_OPTIONS"
+	alias llat="ls -laht $LS_OPTIONS"
 fi

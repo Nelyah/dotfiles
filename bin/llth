@@ -3,13 +3,17 @@
 nb_lines=10
 args=()
 
-while (( $# > 0 )); do
-    if grep -E "^-?[0-9]+$" <<< "$1" &> /dev/null; then
-        nb_lines=$( tr -d '-' <<< "$1")
-    else
-        args+=( "$1" )
-    fi
-    shift
+while (($# > 0)); do
+	if grep -E "^-?[0-9]+$" <<<"$1" &>/dev/null; then
+		nb_lines=$(tr -d '-' <<<"$1")
+	else
+		args+=("$1")
+	fi
+	shift
 done
 
-ls -lhtG --color=always --time-style=long-iso "${args[@]}" | head -"$nb_lines"
+if hash exa &>/dev/null; then
+	exa --long "${args[@]}" | head -"$nb_lines"
+else
+	ls -lhtG --color=always --time-style=long-iso "${args[@]}" | head -"$nb_lines"
+fi
