@@ -1,0 +1,12 @@
+#! /bin/bash
+
+git checkout "${@}" \
+	"$(git branch --list -av |
+		sed -r \
+			-e 's,remotes/([^[:space:]]+),\1        ,' \
+			-e 's,origin/([^[:space:]]+),\1       ,' \
+			-e 's,^ *[+*]* *,,' | \
+        grep -v HEAD | 
+        fzf | 
+        awk '{print $1}'
+    )"

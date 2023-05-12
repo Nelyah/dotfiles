@@ -100,6 +100,7 @@
 #     red). The values of these variables may be specified as in color.branch.<slot>.
 [color "status"]
 [alias]
+    ane             = commit --amend --no-edit
     cp              = cherry-pick
     st              = status
     ci              = commit
@@ -117,7 +118,6 @@
     lint            = "!sh -c 'git status | awk \"/modified/ {print \\$3}\" | xargs -L 1 php -l'"
     logfull         = log --pretty=fuller --graph --stat -p
     cat             = cat-file -p
-    cop             = "!sh -c \"git checkout ${@} $(git branch --list -av | fzf | sed -e 's,remotes/,,' -e 's,origin/,,' -e 's,^ *[+*]* *,,' | awk '{print $1}')\""
     unstage         = reset HEAD
     uncommit        = update-ref HEAD HEAD^
     uncommithard    = reset --hard HEAD^
