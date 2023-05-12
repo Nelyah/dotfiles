@@ -1,4 +1,3 @@
-
 # {{{ Edit mode
 set -o emacs
 autoload -U edit-command-line
@@ -79,18 +78,19 @@ if [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
 fi
 #}}}
 
+# Environnement variables
+source ~/.profile
+source ~/.aliases
+source ~/.env
+
 #{{{ LS_colors
 if [[ $(uname) == "Darwin" ]]; then
-    export CLICOLOR=1
+    eval `gdircolors ~/.dircolors`
 else
     eval `dircolors ~/.dircolors`
 fi
 #}}}
 
-# Environnement variables
-source ~/.profile
-source ~/.aliases
-source ~/.env
 
 # Server aliases
 if [ -f ~/.homeserver ]; then
