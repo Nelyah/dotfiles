@@ -4,7 +4,6 @@ set previewer ~/scripts/lf/preview
 set relativenumber true
 set previewer pistol
 # set hidden true
-set color256 true
 set drawbox true
 set ignorecase true
 
@@ -14,6 +13,7 @@ map D delete
 map J push 5j
 map K push 5k
 map r rename
+map <c-c> quit
 
 map gh cd ~/
 map gc cd ~/cloud/
@@ -35,3 +35,31 @@ cmd fzf_jump ${{
     lf -remote "send $id $cmd \"$res\""
 }}
 map <c-f> :fzf_jump
+
+cmd bulk-rename ${{
+    index=$(mktemp /tmp/lf-bulk-rename-index.XXXXXXXXXX)
+    if [ -n "${fs}" ]; then
+        echo "$fs" > $index
+    else
+        echo "$(ls "$(dirname $f)" | tr ' ' "\n")" > $index
+    fi
+    index_edit=$(mktemp /tmp/lf-bulk-rename.XXXXXXXXXX)
+    cat $index > $index_edit
+    $EDITOR $index_edit
+    if [ $(cat $index | wc -l) -eq $(cat $index_edit | wc -l) ]; then
+        max=$(($(cat $index | wc -l)+1))
+        counter=1
+        while [ $counter -le $max ]; do
+            a="$(cat $index | sed "${counter}q;d")"
+            b="$(cat $index_edit | sed "${counter}q;d")"
+            counter=$(($counter+1))
+
+            [ "$a" = "$b" ] && continue
+            [ -e "$b" ] && echo "File exists: $b" && continue
+            mv "$a" "$b"
+        done
+    else
+        echo "Number of lines must stay the same"
+    fi
+    rm $index $index_edit
+}}
