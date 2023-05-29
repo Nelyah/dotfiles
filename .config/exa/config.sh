@@ -75,6 +75,7 @@ function set_colours() {
         un="${user_colour}"
         gu="${user_colour}"
         gn="${user_colour}"
+        da="38;5;251"
         ga='38;5;38'
         gm='38;5;142'
         gd='38;5;124'
