@@ -5,8 +5,9 @@ git checkout "${@}" \
 		sed -r \
 			-e 's,remotes/([^[:space:]]+),\1        ,' \
 			-e 's,origin/([^[:space:]]+),\1       ,' \
-			-e 's,^ *[+*]* *,,' | \
+			-e 's,^ *[+*]* *,,' |
         grep -v HEAD | 
+        sort -u |
         fzf | 
         awk '{print $1}'
     )"
