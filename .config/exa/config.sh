@@ -53,34 +53,35 @@
 
 function set_colours() {
 
-	local permission_colour='38;5;242'
-	local user_colour='38;5;38'
+    local permission_colour='38;5;242'
+    local user_colour='38;5;38'
 
-	local exa_colors_values=(
-		ur="${permission_colour}"
-		uw="${permission_colour}"
-		ux="${permission_colour}"
-		ue="${permission_colour}"
-		gr="${permission_colour}"
-		gw="${permission_colour}"
-		gx="${permission_colour}"
-		tr="${permission_colour}"
-		tw="${permission_colour}"
-		tx="${permission_colour}"
-		su="${permission_colour}"
-		sf="${permission_colour}"
-		xa="${permission_colour}"
-		uu="${user_colour}"
-		un="${user_colour}"
-		gu="${user_colour}"
-		gn="${user_colour}"
-		ga='38;5;38'
-		gm='38;5;142'
-		gd='38;5;124'
-		sn='38;5;105'
-		sb='38;5;129'
-	)
-	EXA_COLORS="$(tr ' ' ':' <<<"${exa_colors_values[@]}")"
+    local exa_colors_values=(
+        reset
+        ur="${permission_colour}"
+        uw="${permission_colour}"
+        ux="${permission_colour}"
+        ue="${permission_colour}"
+        gr="${permission_colour}"
+        gw="${permission_colour}"
+        gx="${permission_colour}"
+        tr="${permission_colour}"
+        tw="${permission_colour}"
+        tx="${permission_colour}"
+        su="${permission_colour}"
+        sf="${permission_colour}"
+        xa="${permission_colour}"
+        uu="${user_colour}"
+        un="${user_colour}"
+        gu="${user_colour}"
+        gn="${user_colour}"
+        ga='38;5;38'
+        gm='38;5;142'
+        gd='38;5;124'
+        sn='38;5;105'
+        sb='38;5;129'
+    )
+    EXA_COLORS="$(tr ' ' ':' <<<"${exa_colors_values[@]}")"
 }
 
 EXA_COLORS=""
