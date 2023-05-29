@@ -79,9 +79,9 @@ fi
 #}}}
 
 # Environnement variables
+source ~/.env
 source ~/.profile
 source ~/.aliases
-source ~/.env
 
 #{{{ LS_colors
 if [[ $(uname) == "Darwin" ]]; then
