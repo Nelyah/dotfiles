@@ -23,11 +23,6 @@ M.setup = function()
         pickers = {
             commands = layout_small_bottom,
             filetypes = layout_small_bottom,
-            live_grep_args = {
-                mappings = {
-                    i = { ["<c-f>"] = require("telescope.actions").to_fuzzy_refine }
-                },
-            },
         },
     })
 
@@ -61,7 +56,7 @@ M.setup = function()
         return telescope_builtin.find_files(opts_ff)
     end)
     vim.keymap.set("n", "<leader>i", function()
-        telescope_extensions.live_grep_args.live_grep_args()
+        telescope_builtin.live_grep()
     end)
     vim.keymap.set("n", "<leader>x", function()
         telescope_builtin.commands()
