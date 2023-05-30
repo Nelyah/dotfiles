@@ -108,22 +108,12 @@
     br              = branch
     rbi             = rebase -i
     rb              = rebase
-    logg            = log --decorate --graph
-    lg              = log --graph --pretty=tformat:'%Cred%h%Creset -%C(yellow)%d%Creset%s %Cgreen(%an %cr)%Creset' --abbrev-commit --date=relative
-    lga             = "!sh -c 'git log --author=\"$1\" -p $2' -"
-    lol             = log --graph --decorate --pretty=oneline --abbrev-commit
-    lola            = log --graph --decorate --pretty=oneline --abbrev-commit --all
-    tla              = "!sh -c \"git log -${1:-10} --graph --abbrev-commit --decorate=no --date=format:'%Y-%m-%d %H:%I:%S' --format=format:'%C(03)%>|(26)%h%C(reset)  %C(04)%ad%C(reset)  %C(green)%<(20,trunc)%an%C(reset)  %C(auto)%d%C(reset) %>|(1)%s%C(reset)'\""
-    tree            = log --graph --decorate --pretty=oneline --abbrev-commit --all
     lint            = "!sh -c 'git status | awk \"/modified/ {print \\$3}\" | xargs -L 1 php -l'"
     logfull         = log --pretty=fuller --graph --stat -p
     cat             = cat-file -p
     unstage         = reset HEAD
-    uncommit        = update-ref HEAD HEAD^
-    uncommithard    = reset --hard HEAD^
     undomerge       = reset --hard ORIG_HEAD
     oups            = commit -a --amend -C HEAD
-    d               = difftool
     lsm             = ls-files -m
     diff            = diff --relative
     push-br         = "!sh -c \"git push --set-upstream origin $(git branch --show-current)\""
@@ -170,15 +160,15 @@
     mouse                 = yes
     mouse-scroll          = 5
     refresh-mode          = periodic
-    refresh-interval      = 3
+    refresh-interval      = 1
     tab-size              = 4
     # show untracked files in one dir as a dir like `git status` instead of multiple files
     status-show-untracked-dirs = false
 [tig "color"]
     title-focus = cyan default
     title-blur = cyan default
-    palette-0 = color206 default bold ; This is the main graph lines
-    palette-1 = yellow default bold ; this is the merge graph lines
+    palette-0 = color24 default ; This is the main graph lines
+    palette-1 = color24 default ; this is the merge graph lines
 
 
 ;   !	Run the command in the foreground with output shown.
@@ -211,7 +201,6 @@
 
 [tig "bind"]
     generic =    E          !>sh -c "nvim ~/.tigrc"
-    generic =    S          view-stage
     generic =    g          none # disable single g
     main    =    f          +git commit --fixup %(commit)
     main    =    r          >git rebase --autosquash -i %(commit)^
@@ -228,3 +217,6 @@
     generic =    <Ctrl-f>   scroll-page-down
     generic =    <Ctrl-b>   scroll-page-up
     refs    =    D          ?+git branch -D %(branch)
+    status  =    S           +git stash
+    stash   =    P           +git stash pop %(stash)
+    stash   =    A           +git stash apply %(stash)
