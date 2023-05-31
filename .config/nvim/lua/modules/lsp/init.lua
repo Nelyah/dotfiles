@@ -10,12 +10,7 @@ plugin({
         })
     end,
 })
-plugin({
-    "neovim/nvim-lspconfig",
-    config = function()
-        require("modules.lsp.nvim-lsp").setup()
-    end,
-})
+
 plugin({
     "williamboman/mason.nvim",
     config = function()
@@ -27,5 +22,11 @@ plugin({
     config = function()
         require("mason-lspconfig").setup()
         require("modules.lsp.nvim-lsp").mason_lspconfig()
+    end,
+})
+plugin({
+    "neovim/nvim-lspconfig",
+    config = function()
+        require("modules.lsp.nvim-lsp").setup()
     end,
 })
