@@ -1,8 +1,10 @@
 # Basic Settings
 
-set previewer ~/scripts/lf/preview
+set previewer ~/.config/lf/preview.sh
+map i $LESSOPEN='| ~/.config/lf/preview.sh %s' less -R $f
+
 set relativenumber true
-set previewer pistol
+# set previewer pistol
 # set hidden true
 set drawbox true
 set ignorecase true
