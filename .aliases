@@ -35,155 +35,157 @@ alias awk3="awk '{print $3}'"
 alias awk4="awk '{print $4}'"
 
 _error_log() {
-	echo -e "$*" >&2 >/dev/null
+    echo -e "$*" >&2 >/dev/null
 }
 
 venv() {
-	# Expects the name of a python virtualenv and will try to activate it
-	# acts as a shortcut for `source ${1}/bin/activate`
+    # Expects the name of a python virtualenv and will try to activate it
+    # acts as a shortcut for `source ${1}/bin/activate`
 
-	virtual_activate="${1}/bin/activate"
+    local env_dir="${1:-.venv}"
 
-	if [ -f "$virtual_activate" ]; then
-		. "$virtual_activate"
-	elif [ ! -d "$1" ]; then
-		_error_log "Error: No such virtualenv directory: '$1'"
-		return 1
-	elif [ ! -f "$virtual_activate" ]; then
-		_error_log "Error: No 'activate' script in virtualenv directory: '${1}/bin/'"
-		_error_log "Is the folder given a virtualenv?"
-		return 1
-	else
-		_error_log "Unknown error, exiting."
-		return 1
-	fi
+    virtual_activate="${env_dir}/bin/activate"
+
+    if [ -f "$virtual_activate" ]; then
+        . "$virtual_activate"
+    elif [ ! -d "$env_dir" ]; then
+        _error_log "Error: No such virtualenv directory: '$env_dir'"
+        return 1
+    elif [ ! -f "$virtual_activate" ]; then
+        _error_log "Error: No 'activate' script in virtualenv directory: '${env_dir}/bin/'"
+        _error_log "Is the folder given a virtualenv?"
+        return 1
+    else
+        _error_log "Unknown error, exiting."
+        return 1
+    fi
 }
 
 function _command_exists() {
-	[ "$#" -lt 1 ] && return 1
-	hash "$1" &>/dev/null && return 0 || return 1
+    [ "$#" -lt 1 ] && return 1
+    hash "$1" &>/dev/null && return 0 || return 1
 }
 
 if _command_exists zk; then
-	note() {
-		local notes_dir="$HOME/cloud/utils/notes/"
-		local exclude_path=(--exclude="$HOME/cloud/utils/notes/diary")
-		if [[ "$1" == "list" ]] || [[ "$1" == "edit" ]]; then
-			action="$1"
-			shift
-			zk --working-dir "$notes_dir" "$action" "${exclude_path[@]}" "$@"
-		else
-			zk --working-dir "$notes_dir" "$@"
-		fi
-	}
+    note() {
+        local notes_dir="$HOME/cloud/utils/notes/"
+        local exclude_path=(--exclude="$HOME/cloud/utils/notes/diary")
+        if [[ "$1" == "list" ]] || [[ "$1" == "edit" ]]; then
+            action="$1"
+            shift
+            zk --working-dir "$notes_dir" "$action" "${exclude_path[@]}" "$@"
+        else
+            zk --working-dir "$notes_dir" "$@"
+        fi
+    }
 fi
 
 alias vim-cmd="vim --headless --cmd 'set noswapfile' --cmd 'set shortmess=A' --cmd 'set splitright' -u NONE"
 alias vim-cmd-head="vim --cmd 'set noswapfile' --cmd 'set shortmess=A' --cmd 'set splitright' -u NONE"
 
 if _command_exists git; then
-	alias g="git"
-	alias ga="git add"
-	alias gc="git commit"
+    alias g="git"
+    alias ga="git add"
+    alias gc="git commit"
 fi
 
 if _command_exists docker-compose; then
-	alias dc="docker-compose"
+    alias dc="docker-compose"
 fi
 
 if ! _command_exists open && _command_exists xdg-open; then
-	alias open="xdg-open"
+    alias open="xdg-open"
 fi
 
 if _command_exists nvim; then
-	alias -g vim="nvim"
-	alias nvi="nvim -u NORC"
+    alias -g vim="nvim"
+    alias nvi="nvim -u NORC"
 fi
 
 if _command_exists fdfind; then
-	alias fd="fdfind"
+    alias fd="fdfind"
 fi
 
 if _command_exists task; then
-	alias t="task"
+    alias t="task"
 fi
 
 if _command_exists fasd; then
-	eval "$(fasd --init auto)"
+    eval "$(fasd --init auto)"
 
-	alias z='fzf-fasd-goto-dir'
-	alias a='fasd -a'    # any
-	alias s='fasd -si'   # show / search / select
-	alias d='fasd_cd -d' # directory
-	alias f='fasd -f'    # file
-	alias sd='fasd -sid' # interactive directory selection
-	alias sf='fasd -sif' # interactive file selection
+    alias z='fzf-fasd-goto-dir'
+    alias a='fasd -a'    # any
+    alias s='fasd -si'   # show / search / select
+    alias d='fasd_cd -d' # directory
+    alias f='fasd -f'    # file
+    alias sd='fasd -sid' # interactive directory selection
+    alias sf='fasd -sif' # interactive file selection
 fi
 
 if _command_exists lf; then
 
-	_lf-cleanup() {
-		exec 3>&-
-		rm -f "$FIFO_UEBERZUG"
+    _lf-cleanup() {
+        exec 3>&-
+        rm -f "$FIFO_UEBERZUG"
 
-		if [ -f "$tmp" ]; then
-			dir="$(cat "$tmp")"
-			rm -f "$tmp"
-			[ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-		fi
-	}
+        if [ -f "$tmp" ]; then
+            dir="$(cat "$tmp")"
+            rm -f "$tmp"
+            [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+        fi
+    }
 
-	lf() {
-		local tmp="$(mktemp)"
-		trap _lf-cleanup EXIT
+    # lf() {
+    #     local tmp="$(mktemp)"
+    #     trap _lf-cleanup EXIT
 
-		if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-			command lf -last-dir-path="$tmp" "$@"
-		else
-			[ ! -d "$HOME/.cache/lf" ] && mkdir --parents "$HOME/.cache/lf"
-			export FIFO_UEBERZUG="$HOME/.cache/lf/ueberzug-$$"
-			mkfifo "$FIFO_UEBERZUG"
-			ueberzug layer -s -p bash <"$FIFO_UEBERZUG" &
-			exec 3>"$FIFO_UEBERZUG"
-			command lf -last-dir-path="$tmp" "$@" 3>&-
-		fi
-	}
+    #     # if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    #         command lf -last-dir-path="$tmp" "$@"
+    #     # else
+    #     #     [ ! -d "$HOME/.cache/lf" ] && mkdir --parents "$HOME/.cache/lf"
+    #     #     export FIFO_UEBERZUG="$HOME/.cache/lf/ueberzug-$$"
+    #     #     mkfifo "$FIFO_UEBERZUG"
+    #     #     ueberzug layer -s -p bash <"$FIFO_UEBERZUG" &
+    #     #     exec 3>"$FIFO_UEBERZUG"
+    #     #     command lf -last-dir-path="$tmp" "$@" 3>&-
+    #     # fi
+    # }
 fi
 
 if _command_exists tmux; then
-	# Change the current directory for a tmux session, which determines
-	# the starting dir for new windows/panes:
-	function tmux-set-cwd {
-		tmux command-prompt -I "$PWD" "attach -c %1"
-	}
+    # Change the current directory for a tmux session, which determines
+    # the starting dir for new windows/panes:
+    function tmux-set-cwd {
+        tmux command-prompt -I "$PWD" "attach -c %1"
+    }
 fi
 
 if _command_exists keyctl; then
-	alias get-bw-session='keyctl pipe "$(keyctl request user bw_session)"'
+    alias get-bw-session='keyctl pipe "$(keyctl request user bw_session)"'
 fi
 
 if [ "$TERM" != "dumb" ]; then
-	export LS_OPTIONS="--color=always --time-style=long-iso -G"
-	export LS_DIRFIRST='--group-directories-first'
+    export LS_OPTIONS="--color=always --time-style=long-iso -G"
+    export LS_DIRFIRST='--group-directories-first'
 fi
 
 if _command_exists exa; then
     [ -f "${XDG_CONFIG_HOME}/exa/config.sh" ] && . "${XDG_CONFIG_HOME}/exa/config.sh"
     COMMON_EXA_ARGS="--git"
-	alias ls="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS}"
-	alias ll="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long"
-	alias lla="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long --all"
+    alias ls="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS}"
+    alias ll="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long"
+    alias lla="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long --all"
     # oldest means newest on top
-	alias llt="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long --sort=oldest"
+    alias llt="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long --sort=oldest"
 else
-	export LESS_TERMCAP_md="${yellow}"
-	alias ls="ls --color=always"
-	alias ll="ls -lh $LS_OPTIONS $LS_DIRFIRST"
-	alias lla="ls -lha $LS_OPTIONS $LS_DIRFIRST"
-	alias llt="ls -lht $LS_OPTIONS"
-	alias lld="ls -lhd $LS_OPTIONS"
-	alias llad="ls -lhad $LS_OPTIONS"
-	alias llda="ls -lhad $LS_OPTIONS"
-	alias llta="ls -lht $LS_OPTIONS"
-	alias llat="ls -laht $LS_OPTIONS"
+    export LESS_TERMCAP_md="${yellow}"
+    alias ls="ls --color=always"
+    alias ll="ls -lh $LS_OPTIONS $LS_DIRFIRST"
+    alias lla="ls -lha $LS_OPTIONS $LS_DIRFIRST"
+    alias llt="ls -lht $LS_OPTIONS"
+    alias lld="ls -lhd $LS_OPTIONS"
+    alias llad="ls -lhad $LS_OPTIONS"
+    alias llda="ls -lhad $LS_OPTIONS"
+    alias llta="ls -lht $LS_OPTIONS"
+    alias llat="ls -laht $LS_OPTIONS"
 fi
