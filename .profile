@@ -8,6 +8,6 @@ fi
 ~/bin/export-x-info
 
 if [ -f /usr/bin/gnome-keyring-daemon ]; then 
-    /usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh > /dev/null
+    /usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh &> /dev/null
     export GNOME_KEYRING_CONTROL GNOME_KEYRING_PID GPG_AGENT_INFO SSH_AUTH_SOCK
 fi

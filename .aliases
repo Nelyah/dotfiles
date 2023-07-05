@@ -122,36 +122,6 @@ if _command_exists fasd; then
     alias sf='fasd -sif' # interactive file selection
 fi
 
-if _command_exists lf; then
-
-    _lf-cleanup() {
-        exec 3>&-
-        rm -f "$FIFO_UEBERZUG"
-
-        if [ -f "$tmp" ]; then
-            dir="$(cat "$tmp")"
-            rm -f "$tmp"
-            [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-        fi
-    }
-
-    # lf() {
-    #     local tmp="$(mktemp)"
-    #     trap _lf-cleanup EXIT
-
-    #     # if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-    #         command lf -last-dir-path="$tmp" "$@"
-    #     # else
-    #     #     [ ! -d "$HOME/.cache/lf" ] && mkdir --parents "$HOME/.cache/lf"
-    #     #     export FIFO_UEBERZUG="$HOME/.cache/lf/ueberzug-$$"
-    #     #     mkfifo "$FIFO_UEBERZUG"
-    #     #     ueberzug layer -s -p bash <"$FIFO_UEBERZUG" &
-    #     #     exec 3>"$FIFO_UEBERZUG"
-    #     #     command lf -last-dir-path="$tmp" "$@" 3>&-
-    #     # fi
-    # }
-fi
-
 if _command_exists tmux; then
     # Change the current directory for a tmux session, which determines
     # the starting dir for new windows/panes:
