@@ -13,7 +13,7 @@ while (($# > 0)); do
 done
 
 if hash exa &>/dev/null; then
-	exa --color=always --long "${args[@]}" | head -"$nb_lines"
+	exa --color=always --long --sort=modified --reverse "${args[@]}" | head -"$nb_lines"
 else
 	ls -lhtG --color=always --time-style=long-iso "${args[@]}" | head -"$nb_lines"
 fi
