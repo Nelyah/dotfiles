@@ -139,14 +139,14 @@ if [ "$TERM" != "dumb" ]; then
     export LS_DIRFIRST='--group-directories-first'
 fi
 
-if _command_exists exa; then
-    [ -f "${XDG_CONFIG_HOME}/exa/config.sh" ] && . "${XDG_CONFIG_HOME}/exa/config.sh"
-    COMMON_EXA_ARGS="--git"
-    alias ls="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS}"
-    alias ll="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long"
-    alias lla="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long --all"
+if _command_exists eza; then
+    [ -f "${XDG_CONFIG_HOME}/eza/config.sh" ] && . "${XDG_CONFIG_HOME}/eza/config.sh"
+    COMMON_EZA_ARGS="--git"
+    alias ls="eza ${LS_DIRFIRST} ${COMMON_EZA_ARGS}"
+    alias ll="eza ${LS_DIRFIRST} ${COMMON_EZA_ARGS} --long"
+    alias lla="eza ${LS_DIRFIRST} ${COMMON_EZA_ARGS} --long --all"
     # oldest means newest on top
-    alias llt="exa ${LS_DIRFIRST} ${COMMON_EXA_ARGS} --long --sort=oldest"
+    alias llt="eza ${LS_DIRFIRST} ${COMMON_EZA_ARGS} --long --sort=oldest"
 else
     export LESS_TERMCAP_md="${yellow}"
     alias ls="ls --color=always"

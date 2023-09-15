@@ -12,8 +12,8 @@ while (($# > 0)); do
 	shift
 done
 
-if hash exa &>/dev/null; then
-	exa --color=always --long --sort=modified --reverse "${args[@]}" | head -"$nb_lines"
+if hash eza &>/dev/null; then
+	eza --color=always --long --sort=modified --reverse "${args[@]}" | head -"$nb_lines"
 else
 	ls -lhtG --color=always --time-style=long-iso "${args[@]}" | head -"$nb_lines"
 fi
