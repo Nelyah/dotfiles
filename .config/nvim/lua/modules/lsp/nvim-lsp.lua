@@ -1,11 +1,18 @@
 local M = {}
 
 local on_attach = function(client, bufnr)
-    local ls_disable_formatting = { "pylsp", "clangd", "sumneko_lua" }
+    local ls_disable_formatting = { "pylsp", "pyright", "clangd", "tsserver" }
+    local keymap_ignore_ls_formats = ""
+    local first = true
     for _, name in ipairs(ls_disable_formatting) do
         if client.name == name then
             client.server_capabilities.document_formatting = false
         end
+        if not first then
+            keymap_ignore_ls_formats = keymap_ignore_ls_formats .. "and "
+        end
+        first = false
+        keymap_ignore_ls_formats = keymap_ignore_ls_formats .. 'client.name ~= "' .. name .. '" '
     end
 
     vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.definition()<CR>")
@@ -18,7 +25,13 @@ local on_attach = function(client, bufnr)
     vim.keymap.set("n", "g0", "<cmd>lua vim.lsp.buf.document_symbol()<CR>")
     vim.keymap.set("n", "gW", "<cmd>lua vim.lsp.buf.workspace_symbol()<CR>")
     vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.declaration()<CR>")
-    vim.keymap.set("n", "gF", "<cmd>lua vim.lsp.buf.format({ timeout_ms = 5000 })<CR>")
+    vim.keymap.set(
+        "n",
+        "gF",
+        "<cmd>lua vim.lsp.buf.format({ timeout_ms = 5000, filter = function(client) return "
+        .. keymap_ignore_ls_formats
+        .. " end, })<CR>"
+    )
 end
 
 function M.mason_lspconfig()
@@ -28,13 +41,23 @@ function M.mason_lspconfig()
         capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
     end
 
+    local function file_exists(name)
+        local f = io.open(name, "r")
+        if f ~= nil then
+            io.close(f)
+            return true
+        else
+            return false
+        end
+    end
+
     require("mason-lspconfig").setup_handlers({
         -- The first entry (without a key) will be the default handler
         -- and will be called for each installed server that doesn't have
         -- a dedicated handler.
         function(server_name) -- default handler (optional)
             local lsp = require("lspconfig")
-            if server_name == "sumneko_lua" then
+            if server_name == "lua_ls" then
                 lsp[server_name].setup({
                     on_attach = on_attach,
                     capabilities = capabilities,
@@ -56,6 +79,14 @@ function M.mason_lspconfig()
                             },
                         },
                     },
+                })
+                -- In case we're using MacOS, use this version of clangd because it's more compatible with other OS
+            elseif server_name == "clangd" and file_exists("/Library/Developer/CommandLineTools/usr/bin/clangd") then
+                lsp[server_name].setup({
+                    on_attach = on_attach,
+                    capabilities = capabilities,
+                    cmd = { "/Library/Developer/CommandLineTools/usr/bin/clangd" },
+                    filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "ter" },
                 })
             else
                 lsp[server_name].setup({
@@ -86,13 +117,11 @@ function M.setup()
         -- This will disable virtual text, like doing:
         -- let g:diagnostic_enable_virtual_text = 0
         virtual_text = false,
-
         -- This is similar to:
         -- let g:diagnostic_show_sign = 1
         -- To configure sign display,
         --  see: ":help vim.lsp.diagnostic.set_signs()"
         signs = true,
-
         -- This is similar to:
         -- "let g:diagnostic_insert_delay = 1"
         update_in_insert = false,
