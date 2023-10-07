@@ -16,7 +16,7 @@ plugin({
 -- {{{ Gitsigns - Git information on the sign column
 plugin({
     "lewis6991/gitsigns.nvim",
-    requires = {
+    dependencies = {
         "nvim-lua/plenary.nvim",
     },
     config = function()
@@ -47,7 +47,7 @@ plugin({
     config = function()
         require("modules.ui.lualine").setup()
     end,
-    requires = {
+    dependencies = {
         "kdheepak/tabline.nvim",
     },
 })
@@ -64,7 +64,7 @@ plugin({
             },
         })
     end,
-    requires = {
+    dependencies = {
         "nvim-lualine/lualine.nvim",
         "kyazdani42/nvim-web-devicons",
     },
@@ -76,7 +76,7 @@ plugin({
     config = function()
         require("todo-comments").setup()
     end,
-    requires = "nvim-lua/plenary.nvim",
+    dependencies = "nvim-lua/plenary.nvim",
 })
 -- }}}
 -- {{{ TagBar -- Show symbols information on side window
@@ -102,13 +102,13 @@ plugin({
     setup = function()
         vim.keymap.set("n", "<leader>n", "<cmd>NvimTreeToggle<CR>")
     end,
-    requires = { "kyazdani42/nvim-web-devicons" },
+    dependencies = { "kyazdani42/nvim-web-devicons" },
 })
 -- }}}
 -- {{{ Telescope
 plugin({
     "nvim-telescope/telescope.nvim",
-    requires = { "nvim-lua/plenary.nvim", "kyazdani42/nvim-web-devicons" },
+    dependencies = { "nvim-lua/plenary.nvim", "kyazdani42/nvim-web-devicons" },
     config = function()
         require("modules.ui.telescope").setup()
     end,
@@ -116,16 +116,16 @@ plugin({
 if vim.fn.executable("make") then
     plugin({
         "nvim-telescope/telescope-fzf-native.nvim",
-        run = "make",
+        build = "make",
         config = function()
             require("telescope").load_extension("fzf")
         end,
-        requires = { "nvim-telescope/telescope.nvim" },
+        dependencies = { "nvim-telescope/telescope.nvim" },
     })
 end
 plugin({
     "nvim-telescope/telescope-live-grep-args.nvim",
-    requires = { "nvim-telescope/telescope.nvim" },
+    dependencies = { "nvim-telescope/telescope.nvim" },
     config = function()
         require("telescope").load_extension("live_grep_args")
     end,
@@ -134,7 +134,7 @@ plugin({
 -- {{{ Markdown Preview
 plugin({
     "iamcco/markdown-preview.nvim",
-    run = function()
+    build = function()
         vim.fn["mkdp#util#install"]()
     end,
 })

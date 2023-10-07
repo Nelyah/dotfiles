@@ -2,7 +2,7 @@ local plugin = require("core.packer").register_plugin
 
 plugin({
     "nvim-treesitter/nvim-treesitter",
-    run = ":TSUpdate",
+    build = ":TSUpdate",
     config = function()
         require("nvim-treesitter.configs").setup({
             ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages

@@ -14,13 +14,13 @@ plugin({
         require("mason-lspconfig").setup()
         require("modules.lsp.nvim-lsp").mason_lspconfig()
     end,
-    requires = {
+    dependencies = {
         "williamboman/mason-lspconfig.nvim",
     },
 })
 
 plugin({
-    "/Users/cdequeker/sandbox/null-ls.nvim/",
+    "jose-elias-alvarez/null-ls.nvim",
     config = function()
         local null_ls = require("null-ls")
 

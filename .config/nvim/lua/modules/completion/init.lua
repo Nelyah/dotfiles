@@ -3,7 +3,6 @@ local plugin = require("core.packer").register_plugin
 -- {{{ LuaSnip
 plugin({
 	"L3MON4D3/LuaSnip",
-	after = { "nvim-cmp" },
 	config = function()
 		require("luasnip.loaders.from_vscode").lazy_load()
 		vim.keymap.set("i", "<c-c>", function()
@@ -14,7 +13,7 @@ plugin({
             return "<c-c>"
 		end)
 	end,
-	requires = { "rafamadriz/friendly-snippets" },
+	dependencies = { "rafamadriz/friendly-snippets", "nvim-cmp" },
 })
 -- }}}
 -- {{{ nvim-autopairs
@@ -31,7 +30,7 @@ plugin({
 	config = function()
 		require("modules.completion.nvim-cmp").setup()
 	end,
-	requires = {
+	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-buffer",
 		"hrsh7th/cmp-path",

@@ -20,7 +20,6 @@ plugin("terryma/vim-multiple-cursors")
 -- {{{ Neorg
 plugin({
     "nvim-neorg/neorg",
-    after = "nvim-treesitter",
     config = function()
         require("neorg").setup({
             load = {
@@ -35,7 +34,7 @@ plugin({
             },
         })
     end,
-    requires = { "nvim-lua/plenary.nvim", "hrsh7th/nvim-cmp" },
+    dependencies = { "nvim-lua/plenary.nvim", "hrsh7th/nvim-cmp", "nvim-treesitter" },
 })
 -- }}}
 

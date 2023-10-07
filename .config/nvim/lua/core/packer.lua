@@ -1,34 +1,23 @@
 local Pack = {}
 
-local function file_exists(name)
-    local f = io.open(name, "r")
-    if f ~= nil then
-        io.close(f)
-        return true
-    else
-        return false
-    end
-end
-
 function Pack:bootstrap()
-    local packer_install_dir = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-
-    self.pack_bootstrapped = false
-    if not file_exists(packer_install_dir .. "/lua/packer.lua") then
-        self.pack_bootstrapped = vim.fn.system({
+    local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+    if not vim.loop.fs_stat(lazypath) then
+        vim.fn.system({
             "git",
             "clone",
-            "--depth",
-            "1",
-            "https://github.com/wbthomason/packer.nvim",
-            packer_install_dir,
+            "--filter=blob:none",
+            "https://github.com/folke/lazy.nvim.git",
+            "--branch=stable", -- latest stable release
+            lazypath,
         })
     end
+    vim.opt.rtp:prepend(lazypath)
 end
 
 function Pack:new()
     self.__index = self
-    self.plugins = { "wbthomason/packer.nvim" }
+    self.plugins = {}
     local new_instance = {}
     setmetatable(new_instance, self)
 
@@ -36,20 +25,12 @@ function Pack:new()
 end
 
 function Pack:load_plugins()
-    local has_packer, packer_plugin = pcall(require, "packer")
-    if not has_packer then
+    local has_lazy, lazy_plugin = pcall(require, "lazy")
+    if not has_lazy then
         print("Restart nvim before installing plugins.")
         return
     end
-    packer_plugin.startup(function(use)
-        for _, plugin in ipairs(self.plugins) do
-            use(plugin)
-        end
-    end)
-
-    if Pack.pack_bootstrapped then
-        packer_plugin.sync()
-    end
+    lazy_plugin.setup(self.plugins)
 end
 
 -- @param opts Options for this plugin
