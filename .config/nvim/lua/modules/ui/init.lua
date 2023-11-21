@@ -74,13 +74,34 @@ plugin({
 plugin({
     "folke/todo-comments.nvim",
     config = function()
-        require("todo-comments").setup()
+        require("todo-comments").setup({
+  keywords = {
+    FIX = {
+      icon = " ", -- icon used for the sign, and in search results
+      color = "error", -- can be a hex color, or a named color (see below)
+      alt = { "FIXME", "BUG", "FIXIT", "ISSUE" }, -- a set of other keywords that all map to this FIX keywords
+      -- signs = false, -- configure signs for some keywords individually
+    },
+    -- @todo: blah
+    TODO = { icon = " ", color = "info", alt = {"todo"} },
+    HACK = { icon = " ", color = "warning", alt = {"hack"} },
+    WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX", "warning", "xxx", "warn" } },
+    PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE", "optim", "performance", "optimize", "perf" } },
+    NOTE = { icon = " ", color = "hint", alt = { "INFO", "info", "note" } },
+    TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED", "testing", "passed", "failed", "test" } },
+  },
+  highlight = {
+      -- @todo
+    pattern = {[[.*@\(KEYWORDS\)]], [[.*@(KEYWORDS):]], [[.*<(KEYWORDS)\s*:]]}, -- pattern or table of patterns, used for highlighting (vim regex)
+  },
+        })
     end,
     requires = "nvim-lua/plenary.nvim",
 })
 -- }}}
 -- {{{ TagBar -- Show symbols information on side window
-plugin({ -- Opens a tagbar on the right side
+plugin({
+         -- Opens a tagbar on the right side
     "majutsushi/tagbar",
     cmd = "TagbarToggle",
     config = function()

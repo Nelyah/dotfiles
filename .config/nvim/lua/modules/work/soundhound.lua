@@ -40,12 +40,12 @@ local register_treesitter_parser = function()
     local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
     parser_config.ter = {
         install_info = {
-            url = "git@git.soundhound.com:cdequeker/tree-sitter-ter.git", -- local path or git repo
+            url = "/home/nelyah/soundhound/tree-sitter-ter", -- local path or git repo
             files = { "src/parser.c", "src/scanner.cc" },
             -- optional entries:
             branch = "master", -- default branch in case of git repo if different from master
             generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-            requires_generate_from_grammar = true, -- if folder contains pre-generated src/parser.c
+            requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
         },
         filetype = "ter", -- if filetype does not match the parser name
     }
@@ -59,7 +59,7 @@ local setup = function()
     end
     register_treesitter_parser()
 
-    plugin("git@git.soundhound.com:cdequeker/tree-sitter-ter-queries.git")
+    plugin("/home/nelyah/soundhound/tree-sitter-ter-queries")
     plugin('git@git.soundhound.com:terrier/salmon-vim')
 
     vim.filetype.add({
