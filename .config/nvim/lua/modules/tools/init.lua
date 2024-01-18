@@ -47,8 +47,8 @@ plugin({ -- Align text based on pattern
 
 plugin("tpope/vim-commentary") -- comments based on the file type
 plugin("tpope/vim-surround")
-plugin("tpope/vim-repeat") -- Allow repeating plugin actions and more
-plugin("tpope/vim-eunuch") -- Provide basic commands (chmod, mkdir, rename, etc.)
+plugin("tpope/vim-repeat")     -- Allow repeating plugin actions and more
+plugin("tpope/vim-eunuch")     -- Provide basic commands (chmod, mkdir, rename, etc.)
 plugin({ "ryvnf/readline.vim", branch = "main" })
 
 plugin({ -- Add Table mode for writing them in Markdown
@@ -74,6 +74,20 @@ plugin({
 plugin({
     "rhysd/vim-grammarous",
     cmd = "GrammarousCheck",
+})
+
+-- Docstring automatic generation
+vim.g.doge_enable_mappings = 0 -- disable the default mappings
+plugin({
+    "kkoomen/vim-doge",
+    build = ":call doge#install()",
+    config = function()
+        vim.g.doge_doc_standard_python = "google"
+        vim.g.doge_doc_standard_cpp = "doxygen_javadoc"
+
+        vim.keymap.set({ "n", "i", "x" }, "<TAB>", "<Plug>(doge-comment-jump-forward)")
+        vim.keymap.set({ "n", "i", "x" }, "<S-TAB>", "<Plug>(doge-comment-jump-backward)")
+    end,
 })
 
 -- To be efficient in caching other plugins, impatient needs to be loaded
