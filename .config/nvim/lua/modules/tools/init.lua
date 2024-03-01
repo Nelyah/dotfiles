@@ -65,13 +65,6 @@ plugin({ -- Many conceal and folding features
 })
 
 plugin({
-    "vimwiki/vimwiki",
-    config = function()
-        require("modules.tools.vimwiki").setup()
-    end,
-})
-
-plugin({
     "rhysd/vim-grammarous",
     cmd = "GrammarousCheck",
 })
