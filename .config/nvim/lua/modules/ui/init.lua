@@ -99,7 +99,7 @@ plugin({
             },
         })
     end,
-    setup = function()
+    init = function()
         vim.keymap.set("n", "<leader>n", "<cmd>NvimTreeToggle<CR>")
     end,
     dependencies = { "kyazdani42/nvim-web-devicons" },
