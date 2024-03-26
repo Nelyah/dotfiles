@@ -106,6 +106,16 @@ plugin({
 })
 -- }}}
 -- {{{ Telescope
+if vim.fn.executable("make") then
+    plugin({
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = "make",
+        dependencies = { "nvim-telescope/telescope.nvim" },
+        config = function()
+            require("telescope").load_extension("fzf")
+        end,
+    })
+end
 plugin({
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim", "kyazdani42/nvim-web-devicons" },
@@ -113,22 +123,18 @@ plugin({
         require("modules.ui.telescope").setup()
     end,
 })
-if vim.fn.executable("make") then
-    plugin({
-        "nvim-telescope/telescope-fzf-native.nvim",
-        build = "make",
-        config = function()
-            require("telescope").load_extension("fzf")
-        end,
-        dependencies = { "nvim-telescope/telescope.nvim" },
-    })
-end
 plugin({
     "nvim-telescope/telescope-live-grep-args.nvim",
     dependencies = { "nvim-telescope/telescope.nvim" },
     config = function()
         require("telescope").load_extension("live_grep_args")
     end,
+})
+
+-- Plugin to provide a nicer interface to some things (like some code-action)
+plugin({
+    "stevearc/dressing.nvim",
+    opts = {},
 })
 -- }}}
 -- {{{ Markdown Preview
