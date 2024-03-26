@@ -1,7 +1,7 @@
 local M = {}
 
 local on_attach = function(client, bufnr)
-    local ls_disable_formatting = { "pylsp", "pyright", "clangd", "tsserver" }
+    local ls_disable_formatting = { "pylsp", "pyright", "clangd", "tsserver", "gopls" }
     local keymap_ignore_ls_formats = ""
     local first = true
     for _, name in ipairs(ls_disable_formatting) do
