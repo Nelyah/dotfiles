@@ -19,6 +19,9 @@ plugin({
     },
 })
 
+-- Plugin showing the LSP loading status at the bottom right
+plugin({ "j-hui/fidget.nvim", opts = {} })
+
 plugin({
     "jose-elias-alvarez/null-ls.nvim",
     config = function()
