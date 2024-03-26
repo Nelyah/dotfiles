@@ -7,6 +7,7 @@ M.sources = {
     null_ls.builtins.formatting.golines,
     null_ls.builtins.formatting.stylua,
     null_ls.builtins.diagnostics.shellcheck,
+    null_ls.builtins.diagnostics.jsonlint,
     null_ls.builtins.diagnostics.mypy.with({
         extra_args = function()
             local virtual = os.getenv("VIRTUAL_ENV") or os.getenv("CONDA_PREFIX") or "/usr"
