@@ -47,7 +47,6 @@ function M.setup()
             ["<C-s>"] = cmp.mapping.confirm({ select = true }),
         },
         sources = cmp.config.sources({
-            { name = "neorg" },
             { name = "nvim_lsp" },
             { name = "luasnip" },
             -- { name = 'vsnip' }, -- For vsnip users.

@@ -17,27 +17,6 @@ plugin({ -- Sane binding to navigate between vim and tmux
 
 plugin("terryma/vim-multiple-cursors")
 
--- {{{ Neorg
-plugin({
-    "nvim-neorg/neorg",
-    config = function()
-        require("neorg").setup({
-            load = {
-                ["core.defaults"] = {},
-                ["core.concealer"] = {},
-                ["core.qol.toc"] = {},
-                ["core.completion"] = {
-                    config = {
-                        engine = "nvim-cmp",
-                    },
-                },
-            },
-        })
-    end,
-    dependencies = { "nvim-lua/plenary.nvim", "hrsh7th/nvim-cmp", "nvim-treesitter" },
-})
--- }}}
-
 plugin({ -- Align text based on pattern
     "godlygeek/tabular",
     config = function()
