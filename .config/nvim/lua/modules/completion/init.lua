@@ -1,6 +1,17 @@
 local plugin = require("core.packer").register_plugin
 
 plugin({
+	"CopilotC-Nvim/CopilotChat.nvim",
+	branch = "canary",
+	dependencies = {
+		{ "github/copilot.vim" },
+		{ "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+	},
+	opts = {
+		debug = true, -- Enable debugging
+	},
+})
+plugin({
 	"github/copilot.vim",
 	config = function()
 		vim.keymap.set("i", "<C-a>", 'copilot#Accept("\\<CR>")', {
