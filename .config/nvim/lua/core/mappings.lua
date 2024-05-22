@@ -88,6 +88,8 @@ vim.keymap.set("n", "<c-down>", "<c-w>3-")
 vim.keymap.set("n", "<c-left>", "<c-w>3<")
 vim.keymap.set("n", "<c-right>", "<c-w>3>")
 
+vim.keymap.set("n", "ge", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({bufnr = 0})) end)
+
 -- {{{ Pasting without replacing register
 
 local restore_reg = nil

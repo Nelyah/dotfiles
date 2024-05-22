@@ -64,6 +64,9 @@ function M.mason_lspconfig()
                     capabilities = capabilities,
                     settings = {
                         Lua = {
+                            hint = {
+                                enable = true,
+                            },
                             runtime = {
                                 version = "LuaJIT",
                                 path = vim.split(package.path, ";"),
