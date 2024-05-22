@@ -7,7 +7,6 @@ bindkey '^x^e' edit-command-line
 #}}}
 
 export XDG_CONFIG_HOME="${HOME}/.config"
-export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=1000
 export SAVEHIST=100000
