@@ -1,0 +1,100 @@
+#!/bin/bash
+
+# Colors
+RED='\033[38;5;9m'
+GREEN='\033[38;5;40m'
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+NO_COLOR='\033[0m'
+
+count_commits() {
+    local branch="$1"
+    local base_branch="$2"
+    local ahead_behind
+
+    ahead_behind=$(git rev-list --left-right --count "$base_branch"..."$branch")
+    echo "$ahead_behind"
+}
+
+get_dashes() {
+    local count=$1
+    local dashes=""
+    for ((i=0; i<count; i++)); do
+      dashes="${dashes}-"
+    done
+    echo "$dashes"
+}
+
+
+nb_lines=20
+args=()
+refs=( "refs/heads/" "refs/remotes/" )
+while (( $# > 0 )); do
+    case "$1" in
+        --local|-l)
+            refs=( "refs/heads/" )
+            shift
+            ;;
+        *)
+            if grep -E "^-?[0-9]+$" <<< "$1" &> /dev/null; then
+                nb_lines="$( tr -d '-' <<< "$1")"
+            else
+                args+=( "$1" )
+            fi
+            shift
+        ;;
+    esac
+done
+
+main_branch=$(git rev-parse HEAD)
+
+format_string="%(objectname:short)@%(refname:short)@%(committerdate:relative)"
+IFS=$'\n'
+
+_branch_data=$(git for-each-ref --sort=-authordate --format="$format_string" "${refs[@]}" --no-merged)
+for a in "${args[@]}"; do
+    _branch_data=$(echo "$_branch_data" | grep -E "$a")
+done
+
+_branch_data=$(echo "$_branch_data" | head -n "$nb_lines")
+
+max_branch_length=$(echo "$_branch_data" | cut -d '@' -f2 | wc -L)
+
+
+width1=5
+width2=6
+width3=$((max_branch_length+2))
+width4=20
+width5=40
+
+_printf_header_format="${GREEN}%-${width1}s ${RED}%-${width2}s ${BLUE}%-${width3}s ${YELLOW}%-${width4}s ${NO_COLOR}%-${width5}s\n"
+# ignore shellcheck warning about printf format
+# shellcheck disable=SC2059
+printf "$_printf_header_format" "Ahead" "Behind" "Branch" "Last Commit"  " "
+
+# Separator line
+# ignore shellcheck warning about printf format
+# shellcheck disable=SC2059
+printf "$_printf_header_format" "$(get_dashes $width1)" "$(get_dashes $width2)" "$(get_dashes $width3)" "$(get_dashes $width4)"
+
+
+
+for branchdata in $_branch_data; do
+    sha=$(echo "$branchdata" | cut -d '@' -f1)
+    branch=$(echo "$branchdata" | cut -d '@' -f2)
+    time=$(echo "$branchdata" | cut -d '@' -f3)
+    if [ "$branch" != "$main_branch" ]; then
+        # Get branch description
+        description=$(git config branch."$branch".description)
+
+        # Count commits ahead and behind
+        ahead_behind=$(count_commits "$sha" "$main_branch")
+        ahead=$(echo "$ahead_behind" | cut -f2)
+        behind=$(echo "$ahead_behind" | cut -f1)
+
+        # Display branch info
+        # ignore shellcheck warning about printf format
+        # shellcheck disable=SC2059
+        printf "$_printf_header_format" "$ahead" "$behind" "$branch" "$time" "$description"
+    fi
+done
