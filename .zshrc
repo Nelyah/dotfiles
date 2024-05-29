@@ -77,6 +77,15 @@ if [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
 fi
 #}}}
 
+# Server aliases
+if [ -f ~/.homeserver ]; then
+    source ~/.homeserver
+else
+    # Work commands
+    [ -f "${HOME}/.work" ] && source "${HOME}/.work"
+fi
+
+
 # Environnement variables
 source ~/.env
 source ~/.profile
@@ -90,14 +99,6 @@ else
 fi
 #}}}
 
-
-# Server aliases
-if [ -f ~/.homeserver ]; then
-    source ~/.homeserver
-else
-    # Work commands
-    [ -f "${HOME}/.work" ] && source "${HOME}/.work"
-fi
 
 
 

@@ -1,7 +1,7 @@
 [[ "$XDG_CURRENT_DESKTOP" == "KDE" ]] || export QT_QPA_PLATFORMTHEME="qt5ct"
 
 
-if [[ "$(uname)" != "Darwin" ]]; then
+if [[ "$(uname)" != "Darwin" ]] && hash setxkbmap &> /dev/null; then
     setxkbmap -layout us -variant intl -option caps:escape
 fi
 
