@@ -151,12 +151,15 @@
 [submodule]
 	fetchJobs = 12
 
+[check]
+    allow-dirty = false
+
 [tig]
     line-graphics         = auto
     main-view             = line-number:no,interval=5 id:yes date:default author:full commit-title:yes,graph,refs,overflow=no
     main-view-date        = custom
     ignore-case           = smart-case
-    main-view-date-format = \"%Y-%m-%d %H:%M\"
+    main-view-date-format = "\"%Y-%m-%d %H:%M\""
     mouse                 = yes
     mouse-scroll          = 5
     refresh-mode          = periodic
