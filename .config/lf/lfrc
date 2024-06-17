@@ -65,3 +65,11 @@ cmd bulk-rename ${{
     fi
     rm $index $index_edit
 }}
+
+cmd unpack ${{
+    aunpack $fx
+}}
+
+cmd pack ${{
+    apack $1 $fx &> /dev/null
+}}
