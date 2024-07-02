@@ -21,14 +21,3 @@ plugin({
 
 -- Plugin showing the LSP loading status at the bottom right
 plugin({ "j-hui/fidget.nvim", opts = {} })
-
-plugin({
-    "jose-elias-alvarez/null-ls.nvim",
-    config = function()
-        local null_ls = require("null-ls")
-
-        null_ls.setup({
-            sources = require("modules.lsp.null-ls").sources,
-        })
-    end,
-})
