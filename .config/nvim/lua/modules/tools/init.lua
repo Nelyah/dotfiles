@@ -102,7 +102,14 @@ plugin({ -- Autoformat
 		formatters_by_ft = {
 			lua = { "stylua" },
 			-- Conform can also run multiple formatters sequentially
-			python = { "isort", "black" },
+			python = function(bufnr)
+				if require("conform").get_formatter_info("ruff_format", bufnr).available then
+					return { "ruff_format" }
+				else
+					return { "isort", "black" }
+				end
+			end,
+
 			shell = { "shfmt" },
 			--
 			-- You can use a sub-list to tell conform to run *until* a formatter
@@ -128,10 +135,12 @@ plugin({ -- Linting
 			sh = { "shellcheck" },
 		}
 
-		local virtual = os.getenv("VIRTUAL_ENV") or os.getenv("CONDA_PREFIX") or "/usr"
-		local mypy_args = lint.linters.mypy.args
-		vim.list_extend(mypy_args, { "--python-executable", virtual .. "/bin/python3" })
-		lint.linters.mypy.args = mypy_args
+		if os.getenv("VIRTUAL_ENV") then
+			vim.list_extend(
+				lint.linters.mypy.args,
+				{ "--python-executable", os.getenv("VIRTUAL_ENV") .. "/bin/python3" }
+			)
+		end
 
 		local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 		vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
