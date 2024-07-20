@@ -8,6 +8,11 @@ local function lualine_file_location()
 end
 
 local function lualine_file_readonly()
+    -- if buffer is a terminal
+    if vim.bo.buftype == "terminal" then
+        return "%#InfoMsg#" .. "[TERMINAL]"
+    end
+
     if vim.fn.filereadable(vim.fn.expand("%")) == 0 and #vim.fn.expand("%") > 0 then
         return "%#ErrorMsg#" .. "[NOT READABLE]"
     elseif vim.bo.readonly then
@@ -66,12 +71,16 @@ function M.setup()
                 { "mode", separator = { left = "", right = "" }, right_padding = 3, left_padding = 3 },
             },
             lualine_b = {
-                "branch",
+                {
+                    "branch",
+                    separator = { left = "", right = "" },
+                },
                 {
                     "diff",
                     color_added = "#77b300",
                     color_modified = "#e67300",
                     color_removed = "#ff1a1a",
+                    separator = { left = "", right = "" },
                 },
             },
             lualine_c = {
@@ -80,11 +89,13 @@ function M.setup()
                     file_status = false,
                     left_padding = 2,
                     right_padding = 2,
-                    separator = { left = "", right = "" },
+                    separator = {  right = "" },
                 },
                 lualine_file_readonly,
             },
             lualine_x = {
+                "diagnostics",
+                "searchcount",
                 "encoding",
                 {
                     "filetype",
