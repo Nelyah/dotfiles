@@ -1,3 +1,5 @@
+vim.loader.enable()
+
 require("core")
 
 local pack = require("core.packer")

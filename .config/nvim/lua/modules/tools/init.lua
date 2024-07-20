@@ -62,31 +62,9 @@ plugin({
 	end,
 })
 
--- To be efficient in caching other plugins, impatient needs to be loaded
--- before them. It also needs to add some configuration options to the main
--- scope.
--- If impatient is installed, this piece of code will execute before any plugin is loaded
-local has_impatient, _ = pcall(require, "impatient")
-if has_impatient then
-	_G.__luacache_config = {
-		chunks = {
-			enable = true,
-			path = vim.fn.stdpath("cache") .. "/luacache_chunks",
-		},
-		modpaths = {
-			enable = true,
-			path = vim.fn.stdpath("cache") .. "/luacache_modpaths",
-		},
-	}
-	require("impatient").enable_profile()
-end
-plugin({
-	"lewis6991/impatient.nvim",
-})
-
 plugin({ -- Autoformat
 	"stevearc/conform.nvim",
-	lazy = false,
+	event = "VeryLazy",
 	keys = {
 		{
 			"gF",
