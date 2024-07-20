@@ -96,15 +96,6 @@ plugin({
 	dependencies = "nvim-lua/plenary.nvim",
 })
 -- }}}
--- {{{ TagBar -- Show symbols information on side window
-plugin({ -- Opens a tagbar on the right side
-	"majutsushi/tagbar",
-	cmd = "TagbarToggle",
-	config = function()
-		vim.keymap.set("n", "<F8>", "<cmd>TagbarToggle<CR>")
-	end,
-})
--- }}}
 -- {{{ NvimTree -- Show files on side window
 plugin({
 	"kyazdani42/nvim-tree.lua",

@@ -134,3 +134,11 @@ plugin({ -- Linting
 		})
 	end,
 })
+
+-- Show symbol information on the side bar, currently powered by LSP only
+plugin({
+	"hedyhli/outline.nvim",
+	lazy = true,
+	cmd = { "Outline", "OutlineOpen" },
+	opts = {},
+})
