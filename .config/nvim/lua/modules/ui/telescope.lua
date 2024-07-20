@@ -1,5 +1,19 @@
 local M = {}
 
+local function find_command()
+	if vim.fn.executable("rg") == 1 then
+		return { "rg", "--files", "--color", "never", "-g", "!.git" }
+	elseif vim.fn.executable("fd") == 1 then
+		return { "fd", "--type", "f", "--color", "never", "-E", ".git" }
+	elseif vim.fn.executable("fdfind") == 1 then
+		return { "fdfind", "--type", "f", "--color", "never", "-E", ".git" }
+	elseif vim.fn.executable("find") == 1 then
+		return { "find", ".", "-type", "f" }
+	elseif vim.fn.executable("where") == 1 then
+		return { "where", "/r", ".", "*" }
+	end
+end
+
 M.setup = function()
 	local layout_small_bottom = {
 		layout_strategy = "vertical",
@@ -23,6 +37,10 @@ M.setup = function()
 		pickers = {
 			commands = layout_small_bottom,
 			filetypes = layout_small_bottom,
+			find_files = {
+				find_command = find_command,
+				hidden = true,
+			},
 		},
 	})
 end
@@ -56,7 +74,7 @@ M.init = function()
 		return require("telescope.builtin").find_files(opts_ff)
 	end)
 	vim.keymap.set("n", "<leader>i", function()
-		require("telescope.builtin").live_grep()
+		require("telescope").extensions.live_grep_args.live_grep_args()
 	end)
 	vim.keymap.set("n", "<leader>x", function()
 		require("telescope.builtin").commands()
