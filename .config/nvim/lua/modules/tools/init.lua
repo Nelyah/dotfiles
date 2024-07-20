@@ -12,6 +12,9 @@ plugin({ -- Easily search and move around the buffer
 plugin({ -- Sane binding to navigate between vim and tmux
 	"christoomey/vim-tmux-navigator",
 	event = "VeryLazy",
+    init = function ()
+        vim.g.tmux_navigator_no_mappings = 1
+    end,
 	config = function()
 		require("modules.tools.vim-tmux-navigator").setup()
 	end,
