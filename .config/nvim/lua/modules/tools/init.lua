@@ -2,7 +2,8 @@ local plugin = require("core.packer").register_plugin
 
 plugin({ -- Easily search and move around the buffer
 	"easymotion/vim-easymotion",
-	config = function()
+	event = "VeryLazy",
+	init = function()
 		vim.keymap.set("n", "/", "<Plug>(easymotion-sn)", { remap = true })
 		vim.keymap.set("o", "/", "<Plug>(easymotion-tn)", { remap = true })
 	end,
@@ -10,25 +11,28 @@ plugin({ -- Easily search and move around the buffer
 
 plugin({ -- Sane binding to navigate between vim and tmux
 	"christoomey/vim-tmux-navigator",
+	event = "VeryLazy",
 	config = function()
 		require("modules.tools.vim-tmux-navigator").setup()
 	end,
 })
 
-plugin("terryma/vim-multiple-cursors")
+plugin({ "terryma/vim-multiple-cursors", event = "VeryLazy" })
 
 plugin({ -- Align text based on pattern
 	"godlygeek/tabular",
+	event = "VeryLazy",
 	config = function()
 		vim.keymap.set({ "n", "v" }, "<Leader>T=", "<cmd>Tabularize /=<CR>")
 	end,
 })
-
-plugin("tpope/vim-commentary") -- comments based on the file type
-plugin("tpope/vim-surround")
-plugin("tpope/vim-repeat") -- Allow repeating plugin actions and more
+--
+-- comments based on the file type
+plugin({ "tpope/vim-commentary", event = "VeryLazy" })
+plugin({ "tpope/vim-surround", event = "VeryLazy" })
+plugin({ "tpope/vim-repeat", event = "VeryLazy" }) -- Allow repeating plugin actions and more
 plugin("tpope/vim-eunuch") -- Provide basic commands (chmod, mkdir, rename, etc.)
-plugin({ "ryvnf/readline.vim", branch = "main" })
+plugin({ "ryvnf/readline.vim", branch = "main", event = "VeryLazy" })
 
 plugin({ -- Add Table mode for writing them in Markdown
 	"dhruvasagar/vim-table-mode",
@@ -52,6 +56,7 @@ plugin({
 vim.g.doge_enable_mappings = 0 -- disable the default mappings
 plugin({
 	"kkoomen/vim-doge",
+	cmd = "DogeGenerate",
 	build = ":call doge#install()",
 	config = function()
 		vim.g.doge_doc_standard_python = "google"
