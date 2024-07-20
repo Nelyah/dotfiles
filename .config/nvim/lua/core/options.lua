@@ -144,3 +144,8 @@ vim.diagnostic.config({
 	},
 })
 vim.diagnostic.enable()
+
+-- Set the python3 host program to the one found in the system
+-- This is useful because it stops neovim from loading autocmd stuff in .vimscript
+-- which are very very slow to load (> 1.5s)
+vim.g.python3_host_prog = vim.fn.exepath("python3")
