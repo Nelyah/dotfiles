@@ -5,7 +5,6 @@ plugin({
 	event = { "VeryLazy" },
 	build = ":TSUpdate",
 	version = false, -- last release is way too old and doesn't work on Windows
-	lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
 	---@type TSConfig
 	---@diagnostic disable-next-line: missing-fields
 	opts = {
@@ -97,5 +96,6 @@ plugin({
 	---@param opts TSConfig
 	config = function(_, opts)
 		require("nvim-treesitter.configs").setup(opts)
+        require("modules.work").treesitter_setup()
 	end,
 })
