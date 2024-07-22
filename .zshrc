@@ -13,6 +13,18 @@ export SAVEHIST=100000
 
 setopt appendhistory hist_ignore_dups inc_append_history extended_history hist_ignore_all_dups hist_ignore_space share_history
 
+# Server aliases
+if [ -f ~/.homeserver ]; then
+    source ~/.homeserver
+else
+    # Work commands
+    [ -f "${HOME}/.work" ] && source "${HOME}/.work"
+fi
+
+# Environnement variables
+source ~/.env
+source ~/.profile
+source ~/.aliases
 
 if type nvim &> /dev/null; then
     export EDITOR=nvim
@@ -77,19 +89,6 @@ if [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
 fi
 #}}}
 
-# Server aliases
-if [ -f ~/.homeserver ]; then
-    source ~/.homeserver
-else
-    # Work commands
-    [ -f "${HOME}/.work" ] && source "${HOME}/.work"
-fi
-
-
-# Environnement variables
-source ~/.env
-source ~/.profile
-source ~/.aliases
 
 #{{{ LS_colors
 if [[ $(uname) == "Darwin" ]]; then
