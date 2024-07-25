@@ -97,7 +97,7 @@ plugin({ -- Autoformat
 			end,
 
 			shell = { "shfmt" },
-			--
+
 			-- You can use a sub-list to tell conform to run *until* a formatter
 			-- is found.
 			javascript = { { "prettierd", "prettier" } },
@@ -114,12 +114,34 @@ plugin({ -- Linting
 	event = { "BufReadPre", "BufNewFile" },
 	config = function()
 		local lint = require("lint")
-		lint.linters_by_ft = {
+
+		lint.base_linters_by_ft = {
 			markdown = { "markdownlint" },
 			python = { "ruff", "mypy" },
 			json = { "jsonlint" },
 			sh = { "shellcheck" },
 		}
+
+        -- Only load available linters and provide a utility command
+        -- to install them
+		local base_linters_by_ft = lint.base_linters_by_ft
+        local missing_linters = {}
+        lint.linters_by_ft = {}
+        for filetype, linters in pairs(base_linters_by_ft) do
+            local new_linters = {}
+            for _, linter in ipairs(linters) do
+                if vim.fn.executable(linter) == 1 then
+                    table.insert(new_linters, linter)
+                else
+                    table.insert(missing_linters, linter)
+                end
+            end
+            lint.linters_by_ft[filetype] = new_linters
+        end
+        vim.api.nvim_create_user_command("InstallLinters", function ()
+            vim.cmd("MasonInstall " .. table.concat(missing_linters, " "))
+            lint.linters_by_ft = base_linters_by_ft
+        end, {})
 
 		if os.getenv("VIRTUAL_ENV") then
 			vim.list_extend(
