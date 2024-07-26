@@ -38,7 +38,8 @@ fi
 echo ""
 if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
 then
-    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+    mkdir -p ~/.local/share/tmux/plugins
+    git clone https://github.com/tmux-plugins/tpm ~/.local/share/tmux/plugins
 fi
 
 # wget https://github.com/sindresorhus/pure/blob/master/pure.zsh
