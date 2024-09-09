@@ -12,9 +12,9 @@ plugin({ -- Easily search and move around the buffer
 plugin({ -- Sane binding to navigate between vim and tmux
 	"christoomey/vim-tmux-navigator",
 	event = "VeryLazy",
-    init = function ()
-        vim.g.tmux_navigator_no_mappings = 1
-    end,
+	init = function()
+		vim.g.tmux_navigator_no_mappings = 1
+	end,
 	config = function()
 		require("modules.tools.vim-tmux-navigator").setup()
 	end,
@@ -117,32 +117,33 @@ plugin({ -- Linting
 
 		lint.base_linters_by_ft = {
 			markdown = { "markdownlint" },
-			python = { "ruff", "mypy" },
+			python = { "mypy", "ruff" },
 			json = { "jsonlint" },
 			sh = { "shellcheck" },
 		}
 
-        -- Only load available linters and provide a utility command
-        -- to install them
+		-- Only load available linters and provide a utility command
+		-- to install them
 		local base_linters_by_ft = lint.base_linters_by_ft
-        local missing_linters = {}
-        lint.linters_by_ft = {}
-        for filetype, linters in pairs(base_linters_by_ft) do
-            local new_linters = {}
-            for _, linter in ipairs(linters) do
-                if vim.fn.executable(linter) == 1 then
-                    table.insert(new_linters, linter)
-                else
-                    table.insert(missing_linters, linter)
-                end
-            end
-            lint.linters_by_ft[filetype] = new_linters
-        end
-        vim.api.nvim_create_user_command("InstallLinters", function ()
-            vim.cmd("MasonInstall " .. table.concat(missing_linters, " "))
-            lint.linters_by_ft = base_linters_by_ft
-        end, {})
+		local missing_linters = {}
+		lint.linters_by_ft = {}
+		for filetype, linters in pairs(base_linters_by_ft) do
+			local new_linters = {}
+			for _, linter in ipairs(linters) do
+				if vim.fn.executable(linter) == 1 then
+					table.insert(new_linters, linter)
+				else
+					table.insert(missing_linters, linter)
+				end
+			end
+			lint.linters_by_ft[filetype] = new_linters
+		end
+		vim.api.nvim_create_user_command("InstallLinters", function()
+			vim.cmd("MasonInstall " .. table.concat(missing_linters, " "))
+			lint.linters_by_ft = base_linters_by_ft
+		end, {})
 
+		vim.list_extend(lint.linters.ruff.args, { "-v" })
 		if os.getenv("VIRTUAL_ENV") then
 			vim.list_extend(
 				lint.linters.mypy.args,
@@ -166,4 +167,12 @@ plugin({
 	lazy = true,
 	cmd = { "Outline", "OutlineOpen" },
 	opts = {},
+})
+
+-- Not loading as Lazy because it doesn't work
+plugin({
+	"nmac427/guess-indent.nvim",
+	config = function()
+		require("guess-indent").setup({})
+	end,
 })
