@@ -27,13 +27,23 @@ get_dashes() {
 
 
 nb_lines=20
+remote="origin"
 args=()
 refs=( "refs/heads/" "refs/remotes/" )
+not_merged=""
 while (( $# > 0 )); do
     case "$1" in
+        --not-merged|-n)
+            not_merged="--not-merged"
+            shift
+            ;;
         --local|-l)
             refs=( "refs/heads/" )
             shift
+            ;;
+        --remote|-r)
+            remote="$2"
+            shift 2
             ;;
         *)
             if grep -E "^-?[0-9]+$" <<< "$1" &> /dev/null; then
@@ -46,12 +56,12 @@ while (( $# > 0 )); do
     esac
 done
 
-main_branch=$(git rev-parse HEAD)
+main_branch=$(git rev-parse "${remote}/HEAD")
 
 format_string="%(objectname:short)@%(refname:short)@%(committerdate:relative)"
 IFS=$'\n'
 
-_branch_data=$(git for-each-ref --sort=-authordate --format="$format_string" "${refs[@]}" --no-merged)
+_branch_data=$(git for-each-ref --sort=-authordate --format="$format_string" "${refs[@]}" $not_merged)
 for a in "${args[@]}"; do
     _branch_data=$(echo "$_branch_data" | grep -E "$a")
 done
