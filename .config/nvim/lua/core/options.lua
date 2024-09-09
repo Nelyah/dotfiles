@@ -85,8 +85,17 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 --
 --  Tab spec
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
+vim.o.smartindent = true
+vim.o.tabstop = 4
+vim.o.shiftwidth = 0 -- follow tabstop
+vim.keymap.set("n", "<leader>e2", function()
+	vim.o.shiftwidth = 2
+	vim.o.tabstop = 2
+end, { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>e4", function()
+	vim.o.shiftwidth = 4
+	vim.o.tabstop = 4
+end, { noremap = true, silent = true })
 vim.opt.expandtab = true
 vim.opt.backspace = { "indent", "eol", "start" }
 --
@@ -149,3 +158,7 @@ vim.diagnostic.enable()
 -- This is useful because it stops neovim from loading autocmd stuff in .vimscript
 -- which are very very slow to load (> 1.5s)
 vim.g.python3_host_prog = vim.fn.exepath("python3")
+
+-- When loading system python settings, this prevents the system files
+-- to enforce python styling
+vim.g.python_recommended_style = 0
