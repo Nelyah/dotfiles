@@ -19,7 +19,7 @@ plugin({
 	"tpope/vim-fugitive",
 	cmd = "Git",
 	config = function()
-		vim.keymap.set("n", "<Leader>gs", "<cmd>vertical botright Git status<CR>")
+		-- vim.keymap.set("n", "<Leader>gs", "<cmd>vertical botright Git status<CR>")
 	end,
 })
 -- }}}
@@ -31,7 +31,62 @@ plugin({
 		"nvim-lua/plenary.nvim",
 	},
 	config = function()
-		require("gitsigns").setup()
+		require("gitsigns").setup({
+			on_attach = function(bufnr)
+				local gitsigns = require("gitsigns")
+
+				local function map(mode, l, r, opts)
+					opts = opts or {}
+					opts.buffer = bufnr
+					vim.keymap.set(mode, l, r, opts)
+				end
+
+				-- Navigation
+				map("n", "]c", function()
+					if vim.wo.diff then
+						vim.cmd.normal({ "]c", bang = true })
+					else
+						gitsigns.nav_hunk("next")
+					end
+				end)
+
+				map("n", "[c", function()
+					if vim.wo.diff then
+						vim.cmd.normal({ "[c", bang = true })
+					else
+						gitsigns.nav_hunk("prev")
+					end
+				end)
+
+				local gitsign_key_prefix = "<leader>g"
+
+				-- Actions
+				map("n", gitsign_key_prefix .. "s", gitsigns.stage_hunk)
+				map("n", gitsign_key_prefix .. "r", gitsigns.reset_hunk)
+				map("v", gitsign_key_prefix .. "s", function()
+					gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+				end)
+				map("v", gitsign_key_prefix .. "r", function()
+					gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+				end)
+				map("n", gitsign_key_prefix .. "S", gitsigns.stage_buffer)
+				map("n", gitsign_key_prefix .. "u", gitsigns.undo_stage_hunk)
+				map("n", gitsign_key_prefix .. "R", gitsigns.reset_buffer)
+				map("n", gitsign_key_prefix .. "p", gitsigns.preview_hunk)
+				map("n", gitsign_key_prefix .. "b", function()
+					gitsigns.blame_line({ full = true })
+				end)
+				map("n", gitsign_key_prefix .. "b", gitsigns.toggle_current_line_blame)
+				map("n", gitsign_key_prefix .. "d", gitsigns.diffthis)
+				map("n", gitsign_key_prefix .. "D", function()
+					gitsigns.diffthis("~")
+				end)
+				map("n", gitsign_key_prefix .. "d", gitsigns.toggle_deleted)
+
+				-- Text object
+				map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
+			end,
+		})
 	end,
 })
 -- }}}
