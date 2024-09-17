@@ -13,7 +13,7 @@ plugin({
 
 plugin({
 	"williamboman/mason.nvim",
-	cmd = {"Mason", "InstallLinters"},
+	event = "VeryLazy",
 	config = function()
 		require("mason").setup({
 			-- Add installed binaries at the end of the PATH
