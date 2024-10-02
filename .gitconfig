@@ -118,10 +118,6 @@
     diff            = diff --relative
     push-br         = "!sh -c \"git push --set-upstream origin $(git branch --show-current)\""
     fetch-rbm       = fetch origin master:master
-[branch "master"]
-    remote = origin
-    merge  = refs/heads/master
-    rebase = true
 [core]
     excludesfile    = ~/.globalgitignore
     eol             = lf
@@ -146,8 +142,6 @@
 [log]
     decorate = full
     date = format:"%Y-%m-%d %H:%M"
-[remote "origin"]
-	push = HEAD
 [submodule]
 	fetchJobs = 12
 
