@@ -26,19 +26,17 @@ source ~/.env
 source ~/.profile
 source ~/.aliases
 
-if type nvim &> /dev/null; then
-    export EDITOR=nvim
-elif type vim &> /dev/null; then
-    export EDITOR=vim
-else
-    export EDITOR=vi
-fi
-
 bindkey "\e[3~" delete-char
 
 zmodload zsh/zle
 autoload -U add-zsh-hook
 
+
+autoload -Uz compinit
+compinit
+
+
+#{{{ Bindings
 _git_tl () {
     echo ""
     git tl
@@ -54,6 +52,7 @@ _git_status () {
 }
 zle -N widget-git-status _git_status
 bindkey '\C-k' widget-git-status
+#}}}
 
 #{{{ Zplug
 export ZPLUG_HOME="${XDG_CONFIG_HOME}/zplug"
@@ -89,7 +88,6 @@ if [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
 fi
 #}}}
 
-
 #{{{ LS_colors
 if [[ $(uname) == "Darwin" ]]; then
     eval `gdircolors ~/.dircolors`
@@ -97,9 +95,6 @@ else
     eval `dircolors ~/.dircolors`
 fi
 #}}}
-
-
-
 
 #{{{ VCS
 
@@ -479,3 +474,4 @@ function op() {
 }
 
 #}}}
+
