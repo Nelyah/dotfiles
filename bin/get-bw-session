@@ -1,6 +1,6 @@
 #! /bin/bash
 
-if [[ $(uname) == "Darwin" ]];
+if [[ $(uname) == "Darwin" ]]; then
     security find-generic-password -s "bitwarden-session-token" -w
 else
     keyctl pipe "$(keyctl request user bw_session)"
