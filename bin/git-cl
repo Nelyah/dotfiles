@@ -1,0 +1,14 @@
+#!/bin/bash
+
+selected_branch=$(git bl --local | tail -n +3 | fzf --prompt="Select a branch: " --height=30% --ansi --header="$(git bl --local | head -2)")
+
+# Check if a branch was selected
+if [ -n "$selected_branch" ]; then
+  # Remove leading and trailing whitespace
+  selected_branch=$(awk '{print $3}' <<< "$selected_branch")
+
+  # Checkout the selected branch
+  git checkout "$selected_branch"
+else
+  echo "No branch selected."
+fi
