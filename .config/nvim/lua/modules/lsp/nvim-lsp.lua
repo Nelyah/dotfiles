@@ -66,13 +66,34 @@ function M.mason_lspconfig()
 							},
 							diagnostics = { globals = { "vim" } },
 							workspace = {
-								library = vim.api.nvim_get_runtime_file("", true),
+								library = {
+									vim.api.nvim_get_runtime_file("", true),
+									"${3rd}/luv/library",
+								},
 								checkThirdParty = false,
 								maxPreload = 100000,
 								preloadFileSize = 1000,
 							},
 							telemetry = {
 								enable = false,
+							},
+						},
+					},
+				})
+			elseif server_name == "pylsp" then
+				lsp[server_name].setup({
+					on_attach = on_attach,
+					settings = {
+						pylsp = {
+							-- Those linters are already handled by ruff
+							configurationSources = {},
+							plugins = {
+								pycodestyle = { enabled = false },
+								pydocstyle = { enabled = false },
+								pylint = { enabled = false },
+								flake8 = { enabled = false },
+								yapf = { enabled = false },
+								isort = { enabled = false },
 							},
 						},
 					},
