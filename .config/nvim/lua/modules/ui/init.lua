@@ -229,6 +229,27 @@ plugin({
 	opts = {},
 })
 -- }}}
+-- {{{ Fzf-Lua
+plugin({
+	"ibhagwan/fzf-lua",
+	-- optional for icon support
+	dependencies = { "nvim-tree/nvim-web-devicons" },
+	config = function()
+		-- calling `setup` is optional for customization
+		require("fzf-lua").setup({})
+
+		vim.keymap.set("n", "<leader>o", function()
+			require("fzf-lua").files({
+				["header"] = false,
+				["cwd_prompt"] = false,
+				fzf_opts = {
+					["--layout"] = "default",
+				},
+			})
+		end)
+	end,
+})
+-- }}}
 -- {{{ Markdown Preview
 plugin({
 	"iamcco/markdown-preview.nvim",

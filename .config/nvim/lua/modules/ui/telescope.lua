@@ -44,11 +44,10 @@ M.setup = function()
 		},
 		extensions = {
 			fzf = {
-				fuzzy = true, -- false will only do exact matching
-				override_generic_sorter = true, -- override the generic sorter
-				override_file_sorter = true, -- override the file sorter
+				fuzzy = true,
+				override_generic_sorter = true,
+				override_file_sorter = true,
 				case_mode = "smart_case", -- or "ignore_case" or "respect_case"
-				-- the default case_mode is "smart_case"
 			},
 		},
 	})
@@ -56,33 +55,6 @@ M.setup = function()
 end
 
 M.init = function()
-	vim.keymap.set("n", "<leader>o", function()
-		-- Telescope doesn't yet support selecting multiple files
-		-- see https://github.com/nvim-telescope/telescope.nvim/issues/1048#issuecomment-1140280174
-		local opts_ff = {
-			attach_mappings = function(_, _)
-				local actions = require("telescope.actions")
-				actions.select_default:replace(function(prompt_bufnr)
-					local state = require("telescope.actions.state")
-					local picker = state.get_current_picker(prompt_bufnr)
-					local multi = picker:get_multi_selection()
-					local single = picker:get_selection()
-					local str = ""
-					if #multi > 0 then
-						for _, j in pairs(multi) do
-							str = str .. "edit " .. j[1] .. " | "
-						end
-					end
-					str = str .. "edit " .. single[1]
-					-- To avoid populating qf or doing ":edit! file", close the prompt first
-					actions.close(prompt_bufnr)
-					vim.api.nvim_command(str)
-				end)
-				return true
-			end,
-		}
-		return require("telescope.builtin").find_files(opts_ff)
-	end)
 	vim.keymap.set("n", "<leader>i", function()
 		require("telescope").extensions.live_grep_args.live_grep_args()
 	end)
