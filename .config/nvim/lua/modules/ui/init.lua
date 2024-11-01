@@ -238,6 +238,14 @@ plugin({
 		-- calling `setup` is optional for customization
 		require("fzf-lua").setup({})
 
+		vim.keymap.set("n", "<leader>i", function()
+			require("fzf-lua").live_grep_native({
+				["cwd_prompt"] = false,
+				fzf_opts = {
+					["--layout"] = "default",
+				},
+			})
+		end)
 		vim.keymap.set("n", "<leader>o", function()
 			require("fzf-lua").files({
 				["header"] = false,

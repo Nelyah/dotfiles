@@ -55,9 +55,6 @@ M.setup = function()
 end
 
 M.init = function()
-	vim.keymap.set("n", "<leader>i", function()
-		require("telescope").extensions.live_grep_args.live_grep_args()
-	end)
 	vim.keymap.set("n", "<leader>x", function()
 		require("telescope.builtin").commands()
 	end)

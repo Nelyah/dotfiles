@@ -1,7 +1,6 @@
 local fn = vim.fn
 
 vim.cmd([[au TermOpen * setlocal nonumber norelativenumber]])
-vim.cmd([[au TermOpen * normal i]])
 
 vim.cmd([[ au BufNewFile,BufRead CMakeLists.txt set filetype=cmake ]])
 
