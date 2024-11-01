@@ -1,0 +1,17 @@
+#! /bin/bash
+
+set -euo pipefail
+
+rg_cmd="$(which -a rg | grep -v "$(readlink -f "$0")" | head -n 1)"
+
+if [ -z "$rg_cmd" ]; then
+    echo >&2 "command not found: rg"
+    exit 127
+fi
+
+if [ -t 1 ] && command -v delta &> /dev/null; then
+    "$rg_cmd" --json "$@" | DELTA_FEATURES='+ripgrep' delta
+    exit $?
+fi
+
+"$rg_cmd" "$@"

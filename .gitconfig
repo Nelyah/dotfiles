@@ -180,6 +180,9 @@
     syntax-theme = "OneHalfDark"
     side-by-side = false
 
+[delta "ripgrep"]
+    plus-emph-style = black "#717a05"
+
 [merge]
     conflictstyle = diff3
 
