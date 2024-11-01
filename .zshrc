@@ -252,8 +252,8 @@ function _report-start-time() {
   if [ $ZSH_START_TIME ]; then
     local DELTA=$(($SECONDS - $ZSH_START_TIME))
     local DAYS=$((~~($DELTA / 86400)))
-    local HOURS=$((~~(($DELTA - $DAYS * 86400) / 3600)))
-    local MINUTES=$((~~(($DELTA - $DAYS * 86400 - $HOURS * 3600) / 60)))
+    local HOURS=$((~~( ($DELTA - $DAYS * 86400) / 3600)))
+    local MINUTES=$((~~( ($DELTA - $DAYS * 86400 - $HOURS * 3600) / 60)))
     local SECS=$(($DELTA - $DAYS * 86400 - $HOURS * 3600 - $MINUTES * 60))
 
     if [ $((~~SECS)) -lt 3 ]; then
@@ -472,6 +472,4 @@ function op() {
 
   ${=open_cmd} "$@" &>/dev/null
 }
-
 #}}}
-
