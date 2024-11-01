@@ -103,7 +103,20 @@ plugin({
 	"navarasu/onedark.nvim",
 	config = function()
 		require("modules.treesitter") -- needed for this theme
-		require("onedark").setup()
+		require("onedark").setup({
+			style = "warmer",
+			colors = {
+				bg0 = "#222222",
+			},
+			lualine = {
+				transparent = true, -- lualine center bar transparency
+			},
+			diagnostics = {
+				darker = true, -- darker colors for diagnostic
+				undercurl = false, -- use undercurl instead of underline for diagnostics
+				background = true, -- use background color for virtual text
+			},
+		})
 		vim.cmd([[colorscheme onedark]])
 		vim.cmd([[highlight IncSearch guibg=#135564 guifg=white]])
 		vim.cmd([[highlight Search guibg=#135564 guifg=white]])

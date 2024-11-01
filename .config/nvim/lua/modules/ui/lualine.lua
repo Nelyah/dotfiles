@@ -37,7 +37,7 @@ function M.setup()
         teal             = '#7389AE',
         navy             = '#345283',
         yellow           = '#E8DB7D',
-        defaul_bg        = '#282c34',
+        default_bg       = '#222222',
         bright_bg        = '#474E5C',
         darker_bright_bg = '#2C313A'
     }
@@ -46,7 +46,7 @@ function M.setup()
         normal = {
             a = { fg = colors.black, bg = colors.pink },
             b = { fg = colors.white, bg = colors.grey },
-            c = { fg = colors.white, bg = colors.darker_bright_bg },
+            c = { fg = colors.white },
         },
 
         insert = { a = { fg = colors.black, bg = colors.teal } },
@@ -131,7 +131,7 @@ function M.setup()
                 {
                     "buffers",
                     buffers_color = {
-                        active = { fg = colors.pink, bg = "#383c44" }, -- color for active buffer
+                        active = { fg = colors.pink, bg = "#333333" }, -- color for active buffer
                         inactive = { fg = colors.white }, -- color for inactive buffer
                     },
                     separator = "",
