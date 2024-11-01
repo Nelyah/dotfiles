@@ -15,6 +15,11 @@ local on_attach = function(client, bufnr)
 		keymap_ignore_ls_formats = keymap_ignore_ls_formats .. 'client.name ~= "' .. name .. '" '
 	end
 
+	-- https://neovim.io/doc/user/diagnostic.html
+	vim.diagnostic.config({
+		underline = false,
+	})
+
 	vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.definition()<CR>")
 	vim.keymap.set("n", "gh", "<cmd>lua vim.lsp.buf.hover()<CR>")
 	vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
