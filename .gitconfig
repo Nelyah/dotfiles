@@ -117,6 +117,8 @@
     oups            = commit -a --amend -C HEAD
     lsm             = ls-files -m
     diff            = diff --relative
+    d               = diff --relative
+    ds              = -c delta.features=side-by-side diff --relative
     push-br         = "!sh -c \"git push --set-upstream origin $(git branch --show-current)\""
     fetch-rbm       = fetch origin master:master
 
@@ -133,6 +135,10 @@
 [delta]
     navigate = true    # use n and N to move between diff sections
     line-numbers = true
+    features = "nelyah_theme"
+
+[delta "side-by-side"]
+    side-by-side = true
     features = "nelyah_theme"
 
 [delta "nelyah_theme"]
