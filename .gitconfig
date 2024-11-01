@@ -119,10 +119,70 @@
     diff            = diff --relative
     push-br         = "!sh -c \"git push --set-upstream origin $(git branch --show-current)\""
     fetch-rbm       = fetch origin master:master
+
 [core]
     excludesfile    = ~/.globalgitignore
     eol             = lf
-    pager = diff-so-fancy | less --tabs=4 -RFX
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+
+
+[delta]
+    navigate = true    # use n and N to move between diff sections
+    line-numbers = true
+    features = "nelyah_theme"
+
+[delta "nelyah_theme"]
+    map-styles = bold purple => syntax "#330033", bold cyan => syntax "#00264d"
+
+    minus-emph-style = "#cccccc" "#923a3a"
+    minus-non-emph-style = bold auto "#333300"
+    minus-style = "#cccccc" "#491d1d"
+    plus-emph-style = "#eeeeee" "#245b24"
+    plus-non-emph-style = bold auto "#333300"
+    plus-style = bold auto "#1d491d"
+
+    keep-plus-minus-markers = false
+    hunk-header-style = omit
+
+    line-numbers-left-format = " {nm:>3} │"
+    line-numbers-left-style = red
+    line-numbers-right-format = " {np:>3} │"
+    line-numbers-right-style = green
+    line-numbers-minus-style = red italic
+    line-numbers-plus-style = green italic
+    line-numbers-zero-style = "#434C5E" italic
+    dark = true
+
+    file-style = "#8893aa" bold
+    file-decoration-style = "#8893aa" ul
+    file-added-label = [+]
+    file-copied-label = [==]
+    file-modified-label = [*]
+    file-removed-label = [-]
+    file-renamed-label = [->]
+
+    zero-style = syntax
+    blame-code-style = syntax
+    blame-format = "{author:<18} ({commit:>9}) {timestamp:^16}"
+    blame-palette = "#2E3440" "#3B4252" "#434C5E" "#4C566A"
+    merge-conflict-begin-symbol = ~
+    merge-conflict-end-symbol = ~
+    merge-conflict-ours-diff-header-style = "#F1FA8C" bold
+    merge-conflict-ours-diff-header-decoration-style = "#434C5E" box
+    merge-conflict-theirs-diff-header-style = "#F1FA8C" bold
+    merge-conflict-theirs-diff-header-decoration-style = "#434C5E" box
+
+    true-color = always
+    syntax-theme = "OneHalfDark"
+    side-by-side = false
+
+[merge]
+    conflictstyle = diff3
+
 [mergetool]
     keepBackup = true
 [http]
@@ -135,6 +195,7 @@
     required = true
 [diff]
     tool   = vimdiff
+    colorMoved = default
 [difftool]
     prompt = false
 [tig "color"]
