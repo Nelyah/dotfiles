@@ -182,24 +182,13 @@ plugin({
 	end,
 	config = function()
 		require("modules.ui.telescope").setup()
-		local ok, err = pcall(require("telescope").load_extension, "fzf")
-		if not ok then
-			local lib = plugin.dir .. "/build/libfzf.so"
-			if not vim.uv.fs_stat(lib) then
-				print("`telescope-fzf-native.nvim` not built. Rebuilding...")
-				require("lazy").build({ plugins = { plugin }, show = false }):wait(function()
-					print("Rebuilding `telescope-fzf-native.nvim` done.\nPlease restart Neovim.")
-				end)
-			else
-				print("Failed to load `telescope-fzf-native.nvim`:\n" .. err)
-			end
-		end
 	end,
 	dependencies = {
 		{
 			"nvim-telescope/telescope-fzf-native.nvim",
-			build = vim.fn.executable("make") and "make"
-				or "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
+			build = vim.fn.executable("cmake")
+					and "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build"
+				or "make",
 			enabled = vim.fn.executable("make") or vim.fn.executable("cmake"),
 		},
 	},
