@@ -138,7 +138,7 @@ function +vi-hg-message() {
 function +vi-git-untracked() {
   emulate -L zsh
   if [[ -n $(git ls-files --exclude-standard --others 2> /dev/null) ]]; then
-    hook_com[unstaged]+="%F{blue}●%f"
+    hook_com[unstaged]+="${light_blue}●%f"
   fi
 }
 
@@ -180,6 +180,7 @@ pink="%F{212}"
 yellow="%F{214}"
 orange="%F{202}"
 light_red="%F{9}"
+light_blue="%F{75}"
 t="%F{0}"
 
 RPROMPT_BASE="\${vcs_info_msg_0_}"
@@ -223,12 +224,12 @@ function () {
     # Note use a non-breaking space at the end of the prompt because we can use it as
     # a find pattern to jump back in tmux.
     local NBSP=' '
-    export PS1="%F{blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}"'$(custom_path)'" %F{red}%(?..!)%b%f${pink}%B${SUFFIX}%b%f${NBSP}"
+    export PS1="${light_blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}"'$(custom_path)'" %F{red}%(?..!)%b%f${pink}%B${SUFFIX}%b%f${NBSP}"
     export ZLE_RPROMPT_INDENT=0
   else
     # Don't bother with ZLE_RPROMPT_INDENT here, because it ends up eating the
     # space after PS1.
-    export PS1="%F{blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}"'$(custom_path)'" %F{red}%(?..!)%b%f${pink}%B${SUFFIX}%b%f "
+    export PS1="${light_blue}${SSH_TTY:+%n@%m}%f%B${SSH_TTY:+:}%b${yellow}"'$(custom_path)'" %F{red}%(?..!)%b%f${pink}%B${SUFFIX}%b%f "
   fi
 }
 
@@ -306,6 +307,10 @@ export RPROMPT="$RPROMPT $(_virtual_env_info)"
 [ -f ~/.config/fzf/key-bindings.zsh ] && source ~/.config/fzf/key-bindings.zsh
 [ -f ~/.config/fzf/completion.zsh ] && source ~/.config/fzf/completion.zsh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+if hash fzf &> /dev/null; then
+    source <(fzf --zsh)
+fi
 
 
 function fzf-fasd-goto-dir() {
