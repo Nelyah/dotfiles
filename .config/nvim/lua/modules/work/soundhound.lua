@@ -77,7 +77,7 @@ end
 
 M.setup = function()
 	-- plugin({ "git@git.soundhound.com:cdequeker/tree-sitter-ter-queries.git", event = "VeryLazy" })
-	plugin({ "git@git.soundhound.com:terrier/salmon-vim", event = "VeryLazy" })
+	-- plugin({ "git@git.soundhound.com:terrier/salmon-vim", event = "VeryLazy" })
 
 	vim.filetype.add({
 		extension = { ter = "ter" },
