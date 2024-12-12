@@ -56,7 +56,7 @@
                         ]
                     },
                     {
-                        "description": "Make it possible to write ö with right alt",
+                        "description": "Make it possible to write ö with alt",
                         "manipulators": [
                             {
                                 "from": {
@@ -99,6 +99,15 @@
                                 "type": "basic"
                             },
                             {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.googlecode\\.iterm2$",
+                                            "^com\\.nvidia\\.gfnpc\\.mall$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
                                 "from": {
                                     "key_code": "d",
                                     "modifiers": {
@@ -121,7 +130,7 @@
                         ]
                     },
                     {
-                        "description": "Make it possible to write ä with right alt",
+                        "description": "Make it possible to write ä with alt",
                         "manipulators": [
                             {
                                 "from": {
@@ -144,6 +153,14 @@
                                 "type": "basic"
                             },
                             {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.nvidia\\.gfnpc\\.mall$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
                                 "from": {
                                     "key_code": "s",
                                     "modifiers": {
