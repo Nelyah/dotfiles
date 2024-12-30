@@ -1,0 +1,17 @@
+font-family = "Hack Nerd Font Mono"
+font-size = 13
+
+# Necessary for tmux to be able to pick it up
+# Otherwise it will pick characters like å, etc...
+macos-option-as-alt = true
+
+# By default, there is some integration with the OS which
+# puts the cursor as a bar. I disable that for the cursor
+# to set the value I want
+shell-integration-features = no-cursor
+cursor-style = block
+cursor-style-blink = false
+
+background = 222222
+palette = 1=#dc4e2f
+palette = 9=#f07975

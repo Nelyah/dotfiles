@@ -20,6 +20,7 @@ TERM xterm
 TERM xterm-color
 TERM xterm-256color
 TERM xterm-24bit
+TERM xterm-ghostty
 TERM xterm-kitty
 TERM tmux-256color
 TERM screen-256color
