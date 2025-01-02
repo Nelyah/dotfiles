@@ -12,6 +12,13 @@ shell-integration-features = no-cursor
 cursor-style = block
 cursor-style-blink = false
 
-background = 222222
+background = #222222
+foreground = #dbdbdb
+
 palette = 1=#dc4e2f
+palette = 2=#57bf37
+palette = 4=#8ebff9
+palette = 6=#58c2c5
 palette = 9=#f07975
+palette = 12=#a7aaec
+
