@@ -103,7 +103,8 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.googlecode\\.iterm2$",
-                                            "^com\\.nvidia\\.gfnpc\\.mall$"
+                                            "^com\\.nvidia\\.gfnpc\\.mall$",
+                                            "^com\\.mitchellh\\.ghostty$"
                                         ],
                                         "type": "frontmost_application_unless"
                                     }
