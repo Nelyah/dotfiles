@@ -12,6 +12,18 @@ plugin({
 		"DiffviewLog",
 	},
 	"sindrets/diffview.nvim",
+	init = function()
+		vim.keymap.set('n', '<leader>gt', function()
+			if next(require('diffview.lib').views) == nil then
+				print("open")
+				vim.cmd('DiffviewOpen')
+			else
+				print("close")
+				vim.cmd('DiffviewClose')
+			end
+		end)
+	end,
+
 })
 -- }}}
 -- {{{ Vim Fugitive - Git interface
@@ -200,7 +212,8 @@ plugin({
 		{
 			"nvim-telescope/telescope-fzf-native.nvim",
 			build = vim.fn.executable("cmake")
-					and "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build"
+				and
+				"cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build"
 				or "make",
 			enabled = vim.fn.executable("make") or vim.fn.executable("cmake"),
 		},
