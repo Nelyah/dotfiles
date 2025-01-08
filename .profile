@@ -21,6 +21,11 @@ function __macos_profile() {
     if [ -f "$_brew_bin" ]; then
         eval "$("$_brew_bin" shellenv)"
     fi
+
+    # Sometimes MacOS gets confused as to which SDK folder to use.
+    # This makes sure that this session has the right path for the SDK
+    # This makes sure it finds the libraries required etc.
+    export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 }
 
 if [[ "$(uname)" != "Darwin" ]]; then
