@@ -12,8 +12,49 @@ vim.keymap.set("n", "<up>", "<cmd>cprevious<CR>")
 -- Filetype, requires FT command defined for FzfLua
 vim.keymap.set("n", "<Leader>m", "<cmd>FT<CR>")
 
+local function close_all_other_windows()
+  -- Check if the current window is a floating window
+  local current_win = vim.api.nvim_get_current_win()
+  local win_config = vim.api.nvim_win_get_config(current_win)
+  if not win_config.relative or win_config.relative == "" then
+    vim.cmd("only")
+    return
+  end
+
+  -- Get the buffer number of the current floating window
+  local float_buf = vim.api.nvim_win_get_buf(current_win)
+  -- Ensure the buffer is listed
+  vim.api.nvim_buf_set_option(float_buf, 'buflisted', true)
+
+  -- Get the parent window (the window that is not floating)
+  local parent_win = nil
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local config = vim.api.nvim_win_get_config(win)
+    if not config.relative or config.relative == "" then
+      parent_win = win
+      break
+    end
+  end
+
+  if not parent_win then
+    print("No parent window found. That is a bug.")
+    return
+  end
+
+  -- Switch the parent window to use the buffer from the floating window
+  vim.api.nvim_win_set_buf(parent_win, float_buf)
+
+  -- Close all other windows
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if win ~= parent_win then
+      vim.api.nvim_win_close(win, true)
+    end
+  end
+end
+
+
 vim.keymap.set("n", "<Leader>k", "<cmd>q<CR>")
-vim.keymap.set("n", "<Leader>1", "<cmd>only<CR>")
+vim.keymap.set("n", "<Leader>1", close_all_other_windows)
 vim.keymap.set("n", "<Leader>2", "<cmd>split<CR>")
 vim.keymap.set("n", "<Leader>3", "<cmd>vsplit<CR>")
 

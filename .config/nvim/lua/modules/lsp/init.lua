@@ -35,3 +35,20 @@ plugin({
 
 -- Plugin showing the LSP loading status at the bottom right
 plugin({ "j-hui/fidget.nvim", opts = {}, event = "VeryLazy" })
+
+
+-- {{{ Goto-preview, allow floating window preview of LSP things
+plugin({
+	"rmagatti/goto-preview",
+	event = "BufEnter",
+	init = function()
+		vim.keymap.set("n", "gs", require("goto-preview").goto_preview_declaration)
+		vim.keymap.set("n", "gS", require("goto-preview").goto_preview_definition)
+		vim.keymap.set("n", "gX", require("goto-preview").close_all_win)
+	end,
+	opts = {
+		height = 30,
+	},
+	config = true, -- necessary as per https://github.com/rmagatti/goto-preview/issues/88
+})
+-- }}}
