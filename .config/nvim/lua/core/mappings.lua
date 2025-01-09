@@ -21,10 +21,13 @@ local function close_all_other_windows()
     return
   end
 
-  -- Get the buffer number of the current floating window
   local float_buf = vim.api.nvim_win_get_buf(current_win)
-  -- Ensure the buffer is listed
+  -- Ensure the buffer is listed. This ensure that the buffer stays
+  -- open even if we switch to another buffer. (Not the case by default
+  -- if we had switched to a temporary buffer)
   vim.api.nvim_buf_set_option(float_buf, 'buflisted', true)
+
+  local cursor_pos = vim.api.nvim_win_get_cursor(current_win)
 
   -- Get the parent window (the window that is not floating)
   local parent_win = nil
@@ -43,6 +46,9 @@ local function close_all_other_windows()
 
   -- Switch the parent window to use the buffer from the floating window
   vim.api.nvim_win_set_buf(parent_win, float_buf)
+
+  -- Restore the cursor position in the parent window
+  vim.api.nvim_win_set_cursor(parent_win, cursor_pos)
 
   -- Close all other windows
   for _, win in ipairs(vim.api.nvim_list_wins()) do
