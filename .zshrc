@@ -98,6 +98,14 @@ fi
 
 #{{{ VCS
 
+# PS1 colours
+pink="%F{212}"
+yellow="%F{214}"
+orange="%F{202}"
+light_red="%F{9}"
+light_blue="%F{75}"
+t="%F{0}"
+
 # http://zsh.sourceforge.net/Doc/Release/User-Contributions.html
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git hg
@@ -175,13 +183,6 @@ fi
 
 #{{{ PS1
 
-# PS1 colours
-pink="%F{212}"
-yellow="%F{214}"
-orange="%F{202}"
-light_red="%F{9}"
-light_blue="%F{75}"
-t="%F{0}"
 
 RPROMPT_BASE="\${vcs_info_msg_0_}"
 setopt prompt_subst
