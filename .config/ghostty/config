@@ -5,6 +5,8 @@ font-size = 13
 # Otherwise it will pick characters like å, etc...
 macos-option-as-alt = true
 
+mouse-scroll-multiplier = 0.6
+
 # By default, there is some integration with the OS which
 # puts the cursor as a bar. I disable that for the cursor
 # to set the value I want
@@ -17,8 +19,18 @@ foreground = #dbdbdb
 
 palette = 1=#dc4e2f
 palette = 2=#57bf37
+palette = 3=#c6c43d
 palette = 4=#8ebff9
-palette = 6=#58c2c5
+palette = 5=#b93ec1
+palette = 6=#53c2c5
+palette = 7=#c7c7c7
+palette = 8=#676767
 palette = 9=#f07975
-palette = 12=#a7aaec
+palette = 10=#7de36a
+palette = 11=#fefb7e
+palette = 12=#6971f6
+palette = 13=#f07ef8
+palette = 14=#8ef9fd
+palette = 15=#feffff
 
+minimum-contrast = 1
