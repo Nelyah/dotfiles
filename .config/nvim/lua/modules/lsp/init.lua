@@ -40,6 +40,9 @@ plugin({ "j-hui/fidget.nvim", opts = {}, event = "VeryLazy" })
 -- {{{ Goto-preview, allow floating window preview of LSP things
 plugin({
 	"rmagatti/goto-preview",
+	dependencies = {
+		"rmagatti/logger.nvim" ,
+	},
 	event = "BufEnter",
 	init = function()
 		vim.keymap.set("n", "gs", require("goto-preview").goto_preview_declaration)
