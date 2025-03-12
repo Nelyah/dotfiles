@@ -1,0 +1,39 @@
+## address of the sync server
+sync_address = "https://atuin.nelyah.eu"
+
+# Invert the interactive UI to have the search at the top (matches original cursor position)
+invert = true
+
+## Defaults to true. If enabled, upon hitting enter Atuin will immediately execute the command. Press tab to return to the shell and edit.
+# This applies for new installs. Old installs will keep the old behaviour unless configured otherwise.
+enter_accept = false
+
+[keys]
+# Default prefix is 'a' (which turns into ctrl-a, which overrides readline binding)
+prefix = 'b'
+
+[sync]
+# Enable sync v2 by default
+# This ensures that sync v2 is enabled for new installs only
+# In a later release it will become the default across the board
+records = true
+
+[daemon]
+## Enables using the daemon to sync. Requires the daemon to be running in the background. Start it with `atuin daemon`
+enabled = true
+
+[theme]
+## Color theme to use for rendering in the terminal.
+## There are some built-in themes, including the base theme ("default"),
+## "autumn" and "marine". You can add your own themes to the "./themes" subdirectory of your
+## Atuin config (or ATUIN_THEME_DIR, if provided) as TOML files whose keys should be one or
+## more of AlertInfo, AlertWarn, AlertError, Annotation, Base, Guidance, Important, and
+## the string values as lowercase entries from this list:
+##    https://ogeon.github.io/docs/palette/master/palette/named/index.html
+## If you provide a custom theme file, it should be  called "NAME.toml" and the theme below
+## should be the stem, i.e. `theme = "NAME"` for your chosen NAME.
+name = "default"
+
+## Whether the theme manager should output normal or extra information to help fix themes.
+## Boolean, true or false. If unset, left up to the theme manager.
+# debug = true
