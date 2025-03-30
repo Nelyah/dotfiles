@@ -192,6 +192,14 @@
 [merge]
     conflictstyle = diff3
 
+[rebase]
+    autostash = true
+    #
+    # When rebasing a branch, this then also updates the other refs that were
+    # referencing the branch we updated.
+    # I don't like it because I will sometimes create a branch specifically to keep
+    # the old revision
+	# updateRefs = true
 [mergetool]
     keepBackup = true
 [http]
@@ -202,9 +210,21 @@
     clean    = git media clean %f
     smudge   = git media smudge %f
     required = true
+[pull]
+    rebase = true
+[commit]
+    # Shows the diff we're commiting when writing the commit message
+    verbose = true
+[fetch]
+    prune = true
+    pruneTags = true
+    # Fetches all remotes
+    all = true
 [diff]
     tool   = vimdiff
     colorMoved = default
+    # 'histogram' is better at tracking some changes like moving sections of code
+    algorithm = histogram
 [difftool]
     prompt = false
 [tig "color"]
@@ -213,9 +233,21 @@
 [log]
     decorate = full
     date = format:"%Y-%m-%d %H:%M"
+[push]
+    autoSetupRemote = true
+    # Makes sure that the tags I made locally are pushed to the server when I push
+    followTags = true
+[rerere]
+    # Those will reapply a conflict resolution if we keep getting the same conflict
+    # in a same rebase
+	enabled = true
+	autoupdate = true
 [submodule]
 	fetchJobs = 12
 
+[tag]
+    # Makes sure the tags aren't sorted alphanumerically, but respects version order
+	sort = version:refname
 [check]
     allow-dirty = false
 
