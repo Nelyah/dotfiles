@@ -72,7 +72,7 @@ if [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
     zplug "lib/compfix", from:"oh-my-zsh"
     zplug "lib/completion", from:"oh-my-zsh"
     zplug "lib/git", from:"oh-my-zsh"
-    zplug "plugins/taskwarrior", from:"oh-my-zsh"
+    zplug "Nelyah/bee", use:'completion'
 
 
     # Install plugins if there are plugins that have not been installed
