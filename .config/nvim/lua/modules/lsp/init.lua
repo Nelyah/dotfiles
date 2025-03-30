@@ -47,7 +47,7 @@ plugin({
 	init = function()
 		vim.keymap.set("n", "gs", require("goto-preview").goto_preview_declaration)
 		vim.keymap.set("n", "gS", require("goto-preview").goto_preview_definition)
-		vim.keymap.set("n", "gX", require("goto-preview").close_all_win)
+		vim.keymap.set("n", "gx", require("goto-preview").close_all_win)
 	end,
 	opts = {
 		height = 30,
