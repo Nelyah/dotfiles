@@ -289,7 +289,7 @@ add-zsh-hook precmd _report-start-time
 
 # }}}
 
-#{{{ Virtual environment
+#{{{ Right prompt - Virtual environment
 function _virtual_env_info() {
     if [ $VIRTUAL_ENV ]; then
         export RPROMPT="$RPROMPT%F{1}$(basename $VIRTUAL_ENV)%f"
@@ -305,43 +305,25 @@ export RPROMPT="$RPROMPT $(_virtual_env_info)"
 
 #{{{ fzf
 
-[ -f ~/.config/fzf/key-bindings.zsh ] && source ~/.config/fzf/key-bindings.zsh
-[ -f ~/.config/fzf/completion.zsh ] && source ~/.config/fzf/completion.zsh
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 if hash fzf &> /dev/null; then
     source <(fzf --zsh)
+
+    export FZF_DEFAULT_OPTS="--reverse"
+    if hash rg &> /dev/null; then
+        export FZF_CTRL_T_COMMAND="rg --files --hidden 2> /dev/null"
+        export FZF_DEFAULT_COMMAND="rg --files --hidden"
+    fi
+    if hash fd &> /dev/null; then
+        export FZF_ALT_C_COMMAND="fd --hidden -t d -t l 2> /dev/null"
+    fi
+
+    zle     -N   fzf-file-widget
+    bindkey '^F' fzf-file-widget
+    zle     -N    fzf-cd-widget
+    bindkey '^T' fzf-cd-widget
+    zle     -N   fzf-history-widget
+    bindkey '^R' fzf-history-widget
 fi
-
-
-function fzf-fasd-goto-dir() {
-    local dir
-    local query
-    [ -n "$@" ] && query="--query='$@'" || query=""
-    setopt localoptions noglobsubst noposixbuiltins pipefail 2> /dev/null
-    dir=$(fasd -Rdl |\
-        sed "s:$HOME:~:" |\
-        FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index $query --reverse --no-sort +m" $(__fzfcmd) |\
-        sed "s:~:$HOME:")
-    pushd "$dir"
-    ret=$?
-    # zle reset-prompt
-    return $ret
-}
-
-export FZF_DEFAULT_OPTS="--reverse"
-
-
-export FZF_CTRL_T_COMMAND="rg --files --hidden 2> /dev/null"
-export FZF_ALT_C_COMMAND="fd --hidden -t d -t l 2> /dev/null"
-export FZF_DEFAULT_COMMAND="rg --files --hidden"
-
-zle     -N   fzf-file-widget
-bindkey '^F' fzf-file-widget
-zle     -N    fzf-cd-widget
-bindkey '^T' fzf-cd-widget
-zle     -N   fzf-history-widget
-bindkey '^R' fzf-history-widget
 #}}}
 
 #{{{ Functions
