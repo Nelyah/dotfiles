@@ -90,7 +90,7 @@ if _command_exists git; then
 fi
 
 if _command_exists docker-compose; then
-    alias dc="docker-compose"
+    alias dc="docker compose"
 fi
 
 if ! _command_exists open && _command_exists xdg-open; then
