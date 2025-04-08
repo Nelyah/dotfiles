@@ -2,66 +2,26 @@
 
 [[ $1 == -yy ]] && ALL_YES=1 || ALL_YES=
 
-#############
-#  XModmap  #
-#############
-
 # Clearing the caps lock key
-if uname -o|grep Linux &> /dev/null; then
-    xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
-fi
-
-#########
-#  FZF  #
-#########
-
-[[ -n $ALL_YES ]] || read -p "Setup fzf? [yN] " -n 1 -r
-echo ""
-if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
-then
-    if type fzf &> /dev/null; then
-        mkdir -p $HOME/.config/fzf
-        for shell in bash zsh; do
-            ln -sf /usr/share/fzf/key-bindings.${shell} $HOME/.config/fzf/
-            ln -sf /usr/share/fzf/completion.${shell} $HOME/.config/fzf/
-        done
-    else
-        echo "fzf is not installed."
+if uname -o | grep Linux &>/dev/null; then
+    if hash xmodmap &>/dev/null; then
+        xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
     fi
 fi
 
-#########################
-#  Tmux plugin manager  #
-#########################
-
 [[ -n $ALL_YES ]] || read -p "Setup Tmux plugin manager? [yN] " -n 1 -r
 echo ""
-if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]
-then
+if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
     mkdir -p ~/.local/share/tmux/plugins
     git clone https://github.com/tmux-plugins/tpm ~/.local/share/tmux/plugins
 fi
 
-# wget https://github.com/sindresorhus/pure/blob/master/pure.zsh
-# wget https://github.com/sindresorhus/pure/blob/master/async.zsh
-
-
-###################
-#  diff-so-fancy  #
-###################
-
-echo ""
-echo "========================"
-echo "Installing diff-so-fancy"
-wget -O $HOME/bin/diff-so-fancy https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy && \
-    chmod 744 $HOME/bin/diff-so-fancy
-
 # Change to zsh default shell
-echo ""
-echo "=============="
-echo "Installing zsh"
-if [ -e /usr/bin/zsh ]; then
-   chsh -s /usr/bin/zsh
-    # Install oh-my-zsh
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if hash zsh &> /dev/null; then
+[[ -n $ALL_YES ]] || read -p "Set zsh as default shell? [yN] " -n 1 -r
+if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
+    chsh -s "$(which zsh)"
+fi
+else
+    echo "zsh is not installed, not asking to set as default shell."
 fi
