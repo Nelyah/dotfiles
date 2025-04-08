@@ -106,7 +106,6 @@ if _command_exists fdfind; then
     alias fd="fdfind"
 fi
 
-
 if _command_exists bee; then
     alias b="bee"
 elif _command_exists task; then
