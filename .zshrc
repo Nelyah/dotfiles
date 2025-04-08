@@ -479,3 +479,7 @@ function op() {
   ${=open_cmd} "$@" &>/dev/null
 }
 #}}}
+
+if hash atuin &> /dev/null; then
+    eval "$(atuin init zsh)"
+fi

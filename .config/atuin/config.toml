@@ -19,8 +19,10 @@ prefix = 'b'
 records = true
 
 [daemon]
-## Enables using the daemon to sync. Requires the daemon to be running in the background. Start it with `atuin daemon`
-enabled = true
+# Enables using the daemon to sync. Requires the daemon to be running in the background. Start it with `atuin daemon`
+# There's not easy way to have one thing running the daemon in the background for all platform, so I'll leave that
+# out until it's supported
+enabled = false
 
 [theme]
 ## Color theme to use for rendering in the terminal.
