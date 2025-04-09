@@ -133,6 +133,8 @@ plugin({
 		vim.cmd([[highlight IncSearch guibg=#135564 guifg=white]])
 		vim.cmd([[highlight Search guibg=#135564 guifg=white]])
 		vim.cmd([[highlight Folded guibg=default guifg=grey]])
+		vim.cmd([[highlight DiagnosticVirtualTextError guibg=#2C2525 guifg=#9e4747]])
+		vim.cmd([[highlight DiagnosticVirtualTextWarn guibg=#2b2822 guifg=#a2782a]])
 	end,
 })
 -- }}}

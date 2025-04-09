@@ -144,19 +144,56 @@ function M.setup()
 	-- Check for event after that many ms
 	vim.opt.updatetime = 700
 
+	local diagnositics_virtual_text_config = {
+		prefix = "●",
+	}
+	vim.diagnostic.config {
+		severity_sort = true,
+		virtual_text = diagnositics_virtual_text_config,
+	}
+
 	-- Event listener for when we're holding the cursor. This event is called
 	-- for every 700ms (value of updatetime). If it's true, then show the
 	-- diagnostics in a popup window
+	--
+	-- This: 
+	-- When NOT on Diagnostic
+	-- 		Shows virtual text
+	-- 		Disables the virtual_lines
+	--	When ON a diagnostic
+	--		Activates after a timeout (700ms)
+	--			Disables virtual text
+	--			Enables virtual_lines
+	local function has_diagnostic_on_current_line()
+		local current_line = vim.api.nvim_win_get_cursor(0)[1] - 1 -- Get current line (0-based index)
+		local diagnostics = vim.diagnostic.get(0, { lnum = current_line })
+		return #diagnostics > 0
+	end
+	local diagnostic_hover_group = vim.api.nvim_create_augroup("diagnostic-hover", { clear = true })
+
 	vim.api.nvim_create_autocmd("CursorHold", {
-		group = vim.api.nvim_create_augroup("diagnostic-hover", { clear = true }),
+		group = diagnostic_hover_group,
 		pattern = "*",
 		callback = function()
-			vim.diagnostic.open_float({ scope = "line", focusable = false })
+			vim.diagnostic.config({
+				virtual_lines = has_diagnostic_on_current_line() and { current_line = true } or false,
+				virtual_text = not has_diagnostic_on_current_line() and
+					diagnositics_virtual_text_config or false
+			})
 		end,
 	})
-
-	vim.g.diagnostic_auto_popup_while_jump = 1
-	vim.g.diagnostic_enable_virtual_text = 0
+	vim.api.nvim_create_autocmd("CursorMoved", {
+		group = diagnostic_hover_group,
+		pattern = "*",
+		callback = function()
+			if not has_diagnostic_on_current_line() then
+				vim.diagnostic.config({
+					virtual_text = diagnositics_virtual_text_config,
+					virtual_lines = false
+				})
+			end
+		end,
+	})
 end
 
 return M
