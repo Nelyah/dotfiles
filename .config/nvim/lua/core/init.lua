@@ -1,6 +1,7 @@
 require("core.options")
 require("core.mappings")
 require("core.autocmd")
+require('core.conflict_markers_highlight')
 
 local pack = require("core.packer")
 
