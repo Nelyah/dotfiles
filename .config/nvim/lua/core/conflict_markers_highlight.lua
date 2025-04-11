@@ -3,19 +3,30 @@
 -- too slow (eg. file is multiple GB)
 local max_file_lines = 1000000
 
+local function update_first_last_lines()
+	local first_line = vim.fn.line("w0") - 500
+	local last_line  = vim.fn.line("w$") + 500
+
+	return first_line > 0 and first_line or 0,
+		last_line < vim.api.nvim_buf_line_count(0) and last_line or -1
+end
+
+
 local function setup()
-	local highlight_conflict_current_hi = "ConflictMarkerCurrentHi"
-	local highlight_conflict_current = "ConflictMarkerCurrent"
-	local highlight_conflict_parent_hi = "ConflictMarkerParentHi"
-	local highlight_conflict_parent = "ConflictMarkerParent"
+	local first_line, last_line          = update_first_last_lines()
+
+	local highlight_conflict_current_hi  = "ConflictMarkerCurrentHi"
+	local highlight_conflict_current     = "ConflictMarkerCurrent"
+	local highlight_conflict_parent_hi   = "ConflictMarkerParentHi"
+	local highlight_conflict_parent      = "ConflictMarkerParent"
 	local highlight_conflict_incoming_hi = "ConflictMarkerIncomingHi"
-	local highlight_conflict_incoming = "ConflictMarkerIncoming"
+	local highlight_conflict_incoming    = "ConflictMarkerIncoming"
 
 	-- Define highlight groups for conflict markers
-	local white = "#dddddd"
-	local current_changes_bg = "#522d2d"
-	local parent_changes_bg = "#272727"
-	local incoming_changes_bg = "#353e32"
+	local white                          = "#dddddd"
+	local current_changes_bg             = "#522d2d"
+	local parent_changes_bg              = "#272727"
+	local incoming_changes_bg            = "#353e32"
 
 	vim.api.nvim_set_hl(0, highlight_conflict_current_hi, { fg = white, bg = current_changes_bg, bold = true })
 	vim.api.nvim_set_hl(0, highlight_conflict_current, { bg = current_changes_bg })
@@ -43,9 +54,7 @@ local function setup()
 
 		-- Clear previous extmarks in the namespace
 		vim.api.nvim_buf_clear_namespace(bufnr, 0, 0, -1)
-		local lines                     = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-		local first_line                = vim.fn.line("w0")
-		local last_line                 = vim.fn.line("w$")
+		local lines                     = vim.api.nvim_buf_get_lines(bufnr, first_line, last_line, false)
 		local conflict_hl_name          = nil
 		local has_started, has_ended    = false, false
 
@@ -55,10 +64,8 @@ local function setup()
 		local marker_end_incoming_regex = "^" .. end_incoming_change_marker
 
 		for i, line in ipairs(lines) do
-			if i < first_line - 500 or i > last_line + 500 then
-				goto continue
-			end
-
+			-- 1 starts at 1, but we want 0 based
+			local current_line_index = i + first_line - 1
 			if line:match(current_change_regex) then
 				if not has_ended then
 					-- If the previous conflict did not close properly, clear extmarks and use a new namespace.
@@ -80,8 +87,8 @@ local function setup()
 			-- This is a line that should be highlighted because it's inside conflict markers
 			if conflict_hl_name then
 				-- Use extmarks with 'hl_eol' true so the highlight extends across the entire line.
-				vim.api.nvim_buf_set_extmark(bufnr, conflict_ns, i - 1, 0, {
-					end_line = i,
+				vim.api.nvim_buf_set_extmark(bufnr, conflict_ns, current_line_index, 0, {
+					end_line = current_line_index + 1,
 					hl_group = conflict_hl_name,
 					hl_eol = true,
 				})
@@ -114,13 +121,19 @@ local function setup()
 	end
 	-- Automatically update conflict marker highlights on buffer read and text changes.
 	vim.api.nvim_create_augroup("NelyahGitConflictMarkers", { clear = true })
-	vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged", "InsertLeave" }, {
+	vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged", "InsertLeave", "CursorMoved", "CursorMovedI" }, {
 		group = "NelyahGitConflictMarkers",
 		callback = function(args)
 			if vim.api.nvim_buf_line_count(args.buf) > max_file_lines then
 				return
 			end
-			highlight_conflict_markers(args.buf)
+
+			local new_first_line = vim.fn.line("w0") - 500
+			local new_last_line = vim.fn.line("w$") + 500
+			if new_first_line < first_line or new_last_line > last_line then
+				first_line, last_line = update_first_last_lines()
+				highlight_conflict_markers(args.buf)
+			end
 		end,
 	})
 end
