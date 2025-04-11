@@ -1,0 +1,99 @@
+#! /bin/bash
+
+set -euo pipefail
+
+if [[ "$(whoami)" != "root" ]]; then
+    echo "This script must be run as root!" >&2
+    exit 1
+fi
+
+echo "Installing FRP..."
+
+latest_version=$(curl -s https://api.github.com/repos/fatedier/frp/releases  | jq -r '.[0].tag_name' | sed 's/^.//')
+echo Latest version is $latest_version
+
+
+workspace="$(mktemp -d)"
+
+pushd "$workspace" &> /dev/null
+
+wget --quiet "https://github.com/fatedier/frp/releases/download/v${latest_version}/frp_${latest_version}_linux_amd64.tar.gz"
+tar xzf frp_${latest_version}_linux_amd64.tar.gz
+
+if [ -f "/etc/systemd/system/frps" ]; then
+    systemctl stop frps
+fi
+if [ -f "/etc/systemd/system/frpc" ]; then
+    systemctl stop frpc
+fi
+
+cp frp_${latest_version}_linux_amd64/frp{s,c} /usr/local/bin/
+
+popd &> /dev/null
+rm -rf "${workspace}"
+
+echo "frps and frpc have been installed."
+
+cat > /etc/systemd/system/frps.service << EOF
+[Unit]
+Description=Start up FRP Server (tunnelling)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/frps --bind-port 7000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat > /etc/systemd/system/frpc.service << EOF
+[Unit]
+Description=Start up FRP Client (tunnelling)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/frpc -c /etc/frp/frpc.toml
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+systemctl daemon-reload
+
+cat << EOF
+The systemd unit for the client can be run
+
+You can now start the client daemon!
+    systemctl enable --now frpc
+
+Before starting the client, please provide the wanted configuration to
+    /etc/frp/frpc.toml
+
+Here is a configuration example that should correctly connect to the server and forward HTTP and HTTPS:
+
+serverAddr = "MY_SERVER_IPv4" <-------- Replace this with the server IP
+serverPort = 7000
+
+[[proxies]]
+name = "forward-https"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 443
+remotePort = 443
+
+[[proxies]]
+name = "forward-http"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 80
+remotePort = 80
+EOF
