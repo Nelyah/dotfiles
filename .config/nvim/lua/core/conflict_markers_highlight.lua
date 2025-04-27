@@ -40,6 +40,7 @@ local function setup()
 	local parent_change_marker         = "|||||||"
 	local start_incoming_change_marker = "======="
 	local end_incoming_change_marker   = ">>>>>>>"
+	local conflict_hl_name_prefix      = "conflict_markers_"
 
 	-- Function to scan the buffer and add extmark highlights for conflict markers
 	local function highlight_conflict_markers(bufnr)
@@ -50,10 +51,15 @@ local function setup()
 		-- I can colour things and then at the end erase all it the end marker isn't there (without
 		-- affecting other conflicts)
 		local conflict_count = 1
-		local conflict_ns = vim.api.nvim_create_namespace("conflict_markers_" .. conflict_count)
+		local conflict_ns = vim.api.nvim_create_namespace(conflict_hl_name_prefix .. conflict_count)
 
 		-- Clear previous extmarks in the namespace
-		vim.api.nvim_buf_clear_namespace(bufnr, 0, 0, -1)
+		for id, name in pairs(vim.api.nvim_get_namespaces()) do
+			if type(name) == "string" and name:match("^" .. conflict_hl_name_prefix) then
+				vim.api.nvim_buf_clear_namespace(bufnr, id, 0, -1)
+			end
+		end
+		-- vim.api.nvim_buf_clear_namespace(bufnr, conflict_ns, 0, -1)
 		local lines                     = vim.api.nvim_buf_get_lines(bufnr, first_line, last_line, false)
 		local conflict_hl_name          = nil
 		local has_started, has_ended    = false, false
@@ -71,7 +77,7 @@ local function setup()
 					-- If the previous conflict did not close properly, clear extmarks and use a new namespace.
 					vim.api.nvim_buf_clear_namespace(bufnr, conflict_ns, 0, -1)
 					conflict_count = conflict_count + 1
-					conflict_ns = vim.api.nvim_create_namespace("conflict_markers_" .. conflict_count)
+					conflict_ns = vim.api.nvim_create_namespace(conflict_hl_name_prefix .. conflict_count)
 				end
 				conflict_hl_name = highlight_conflict_current_hi
 				has_started = true
@@ -107,11 +113,9 @@ local function setup()
 					conflict_hl_name = nil
 					has_started, has_ended = false, false
 					conflict_count = conflict_count + 1
-					conflict_ns = vim.api.nvim_create_namespace("conflict_markers_" .. conflict_count)
+					conflict_ns = vim.api.nvim_create_namespace(conflict_hl_name_prefix .. conflict_count)
 				end
 			end
-
-			::continue::
 		end
 
 		-- If the last conflict is not closed properly, clear its extmarks.
