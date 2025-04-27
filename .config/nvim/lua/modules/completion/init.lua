@@ -36,23 +36,6 @@ plugin({
 		debug = true, -- Enable debugging
 	},
 })
--- {{{ LuaSnip
-plugin({
-	"L3MON4D3/LuaSnip",
-	lazy = true,
-	config = function()
-		require("luasnip.loaders.from_vscode").lazy_load()
-		vim.keymap.set("i", "<c-c>", function()
-			if require("luasnip").expand_or_jumpable() == true then
-				require("luasnip").expand_or_jump()
-				return
-			end
-			return "<c-c>"
-		end)
-	end,
-	dependencies = { "rafamadriz/friendly-snippets", "nvim-cmp" },
-})
--- }}}
 -- {{{ nvim-autopairs
 plugin({
 	"windwp/nvim-autopairs",
@@ -62,19 +45,50 @@ plugin({
 	end,
 })
 -- }}}
--- {{{ Nvim Cmp - Provide autocompletion
+-- {{{ Blink.cmp - Provide autocompletion
 plugin({
-	"hrsh7th/nvim-cmp",
-	event = "InsertEnter",
-	config = function()
-		require("modules.completion.nvim-cmp").setup()
-	end,
-	dependencies = {
-		"hrsh7th/cmp-nvim-lsp",
-		"hrsh7th/cmp-buffer",
-		"hrsh7th/cmp-path",
-		"hrsh7th/cmp-cmdline",
-		"saadparwaiz1/cmp_luasnip",
+	'saghen/blink.cmp',
+	dependencies = { 'rafamadriz/friendly-snippets' },
+
+	-- use a release tag to download pre-built binaries
+	version = '1.*',
+	---
+	---@module 'blink.cmp'
+	---@type blink.cmp.Config
+	opts = {
+		-- See :h blink-cmp-config-keymap for defining your own keymap
+		keymap = {
+			preset = 'default',
+			["<C-s>"] = { "select_and_accept", "fallback" },
+		},
+		cmdline = {
+			keymap = {
+				preset = 'cmdline',
+				["<C-e>"] = {},
+			},
+		},
+
+
+		appearance = {
+			use_nvim_cmp_as_default = true,
+		},
+
+		signature = { enabled = true },
+		completion = { documentation = { auto_show = true } },
+
+		-- Default list of enabled providers defined so that you can extend it
+		-- elsewhere in your config, without redefining it, due to `opts_extend`
+		sources = {
+			default = { 'lsp', 'path', 'snippets', 'buffer' },
+		},
+
+		-- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
+		-- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
+		-- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
+		--
+		-- See the fuzzy documentation for more information
+		fuzzy = { implementation = "prefer_rust" }
 	},
+	opts_extend = { "sources.default" }
 })
 -- }}}

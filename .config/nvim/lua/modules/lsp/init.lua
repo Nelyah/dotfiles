@@ -36,7 +36,6 @@ plugin({
 -- Plugin showing the LSP loading status at the bottom right
 plugin({ "j-hui/fidget.nvim", opts = {}, event = "VeryLazy" })
 
-
 -- {{{ Goto-preview, allow floating window preview of LSP things
 plugin({
 	"rmagatti/goto-preview",

@@ -5,8 +5,8 @@ require("core")
 local pack = require("core.packer")
 
 require("modules").load({
-	"completion",
 	"lsp",
+	"completion",
 	"tools",
 	"treesitter",
 	"ui",

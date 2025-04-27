@@ -34,9 +34,9 @@ end
 
 function M.mason_lspconfig()
 	local capabilities = vim.lsp.protocol.make_client_capabilities()
-	local has_cmp_nvim_lsp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+	local has_cmp_nvim_lsp, cmp_nvim_lsp = pcall(require, "blink.cmp")
 	if has_cmp_nvim_lsp then
-		capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
+		capabilities = cmp_nvim_lsp.get_lsp_capabilities(capabilities)
 	end
 
 	local function file_exists(name)
