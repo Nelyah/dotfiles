@@ -1,14 +1,5 @@
 local plugin = require("core.packer").register_plugin
 
-plugin({ -- Easily search and move around the buffer
-	"easymotion/vim-easymotion",
-	event = "VeryLazy",
-	init = function()
-		vim.keymap.set("n", "/", "<Plug>(easymotion-sn)", { remap = true })
-		vim.keymap.set("o", "/", "<Plug>(easymotion-tn)", { remap = true })
-	end,
-})
-
 plugin({ -- Sane binding to navigate between vim and tmux
 	"christoomey/vim-tmux-navigator",
 	event = "VeryLazy",
@@ -47,26 +38,6 @@ plugin({ -- Many conceal and folding features
 	ft = { "markdown", "pandoc", "vimwiki.markdown" },
 	config = function()
 		vim.g.vim_markdown_folding_disabled = 1
-	end,
-})
-
-plugin({
-	"rhysd/vim-grammarous",
-	cmd = "GrammarousCheck",
-})
-
--- Docstring automatic generation
-vim.g.doge_enable_mappings = 0 -- disable the default mappings
-plugin({
-	"kkoomen/vim-doge",
-	cmd = "DogeGenerate",
-	build = ":call doge#install()",
-	config = function()
-		vim.g.doge_doc_standard_python = "google"
-		vim.g.doge_doc_standard_cpp = "doxygen_javadoc"
-
-		vim.keymap.set({ "n", "i", "x" }, "<TAB>", "<Plug>(doge-comment-jump-forward)")
-		vim.keymap.set({ "n", "i", "x" }, "<S-TAB>", "<Plug>(doge-comment-jump-backward)")
 	end,
 })
 
@@ -189,7 +160,7 @@ plugin({
 	config = true,
 })
 
--- {{{ Oil.nvim - Plugin able to edit a folder as a buffer (rename, new file, move, delete, ...)
+-- Oil.nvim - Plugin able to edit a folder as a buffer (rename, new file, move, delete, ...)
 plugin({
 	'stevearc/oil.nvim',
 	event = { "Syntax" },
@@ -197,4 +168,3 @@ plugin({
 	-- Optional dependencies
 	dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
 })
--- }}}

@@ -13,29 +13,41 @@ plugin({
 		vim.g.copilot_enabled = false
 	end,
 })
+
 plugin({
-	"CopilotC-Nvim/CopilotChat.nvim",
-	branch = "canary",
-	cmd = "CopilotChatOpen",
-	lazy = true,
-	init = function()
-		vim.keymap.set("n", "<leader>cc", function()
-			if vim.g.copilot_chat_enabled == nil or vim.g.copilot_chat_enabled == false then
-				vim.g.copilot_chat_enabled = true
-				vim.cmd("CopilotChatOpen")
-			else
-				vim.g.copilot_chat_enabled = false
-				vim.cmd("CopilotChatClose")
-			end
-		end)
-	end,
+	"olimorris/codecompanion.nvim",
+	opts = {},
 	dependencies = {
-		{ "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+		{ "nvim-lua/plenary.nvim", branch = "master" },
+		"nvim-treesitter/nvim-treesitter",
 	},
-	opts = {
-		debug = true, -- Enable debugging
-	},
+	config = function()
+		require("codecompanion").setup({
+			strategies = {
+				chat = {
+					adapter = {
+						name = "copilot",
+						model = "gpt-5",
+					},
+				},
+				inline = {
+					adapter = {
+						name = "copilot",
+						model = "gpt-5",
+					},
+				},
+			},
+		})
+		vim.keymap.set("v", "<leader>ca", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
+		vim.keymap.set(
+			{ "n", "v" },
+			"<leader>cc",
+			"<cmd>CodeCompanionChat Toggle<cr>",
+			{ noremap = true, silent = true }
+		)
+	end,
 })
+
 -- {{{ nvim-autopairs
 plugin({
 	"windwp/nvim-autopairs",
@@ -47,27 +59,26 @@ plugin({
 -- }}}
 -- {{{ Blink.cmp - Provide autocompletion
 plugin({
-	'saghen/blink.cmp',
-	dependencies = { 'rafamadriz/friendly-snippets' },
+	"saghen/blink.cmp",
+	dependencies = { "rafamadriz/friendly-snippets" },
 
 	-- use a release tag to download pre-built binaries
-	version = '1.*',
+	version = "1.*",
 	---
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
 	opts = {
 		-- See :h blink-cmp-config-keymap for defining your own keymap
 		keymap = {
-			preset = 'default',
+			preset = "default",
 			["<C-s>"] = { "select_and_accept", "fallback" },
 		},
 		cmdline = {
 			keymap = {
-				preset = 'cmdline',
+				preset = "cmdline",
 				["<C-e>"] = {},
 			},
 		},
-
 
 		appearance = {
 			use_nvim_cmp_as_default = true,
@@ -79,7 +90,10 @@ plugin({
 		-- Default list of enabled providers defined so that you can extend it
 		-- elsewhere in your config, without redefining it, due to `opts_extend`
 		sources = {
-			default = { 'lsp', 'path', 'snippets', 'buffer' },
+			default = { "lsp", "path", "snippets", "buffer" },
+			per_filetype = {
+				codecompanion = { "codecompanion" },
+			},
 		},
 
 		-- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
@@ -87,8 +101,8 @@ plugin({
 		-- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
 		--
 		-- See the fuzzy documentation for more information
-		fuzzy = { implementation = "prefer_rust" }
+		fuzzy = { implementation = "prefer_rust" },
 	},
-	opts_extend = { "sources.default" }
+	opts_extend = { "sources.default" },
 })
 -- }}}
