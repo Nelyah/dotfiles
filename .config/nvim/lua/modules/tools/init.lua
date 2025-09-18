@@ -25,7 +25,7 @@ plugin({ -- Align text based on pattern
 plugin({ "tpope/vim-commentary", event = "VeryLazy" })
 plugin({ "tpope/vim-surround", event = "VeryLazy" })
 plugin({ "tpope/vim-repeat", event = "VeryLazy" }) -- Allow repeating plugin actions and more
-plugin("tpope/vim-eunuch")                         -- Provide basic commands (chmod, mkdir, rename, etc.)
+plugin("tpope/vim-eunuch") -- Provide basic commands (chmod, mkdir, rename, etc.)
 plugin({ "ryvnf/readline.vim", branch = "main", event = "VeryLazy" })
 
 plugin({ -- Add Table mode for writing them in Markdown
@@ -157,12 +157,20 @@ plugin({
 		-- Only one of these is needed.
 		"nvim-telescope/telescope.nvim", -- optional
 	},
-	config = true,
+	config = function()
+		require("neogit").setup({
+			mappings = {
+				status = {
+					["K"] = false,
+				},
+			},
+		})
+	end,
 })
 
 -- Oil.nvim - Plugin able to edit a folder as a buffer (rename, new file, move, delete, ...)
 plugin({
-	'stevearc/oil.nvim',
+	"stevearc/oil.nvim",
 	event = { "Syntax" },
 	opts = {},
 	-- Optional dependencies
