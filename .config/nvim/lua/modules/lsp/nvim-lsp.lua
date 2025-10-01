@@ -15,24 +15,9 @@ local on_attach = function(client, bufnr)
 		keymap_ignore_ls_formats = keymap_ignore_ls_formats .. 'client.name ~= "' .. name .. '" '
 	end
 
-	-- https://neovim.io/doc/user/diagnostic.html
-	vim.diagnostic.config({
-		underline = false,
-	})
-
-	vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.definition()<CR>")
-	vim.keymap.set("n", "gh", "<cmd>lua vim.lsp.buf.hover()<CR>")
-	vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
-	vim.keymap.set("n", "1gD", "<cmd>lua vim.lsp.buf.type_definition()<CR>")
-	vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
-	vim.keymap.set("n", "gR", "<cmd>lua vim.lsp.buf.rename()<CR>")
-	vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action)
-	vim.keymap.set("n", "g0", "<cmd>lua vim.lsp.buf.document_symbol()<CR>")
-	vim.keymap.set("n", "gW", "<cmd>lua vim.lsp.buf.workspace_symbol()<CR>")
-	vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.declaration()<CR>")
 end
 
-function M.mason_lspconfig()
+function M.lspconfig()
 	local capabilities = vim.lsp.protocol.make_client_capabilities()
 	local has_cmp_nvim_lsp, cmp_nvim_lsp = pcall(require, "blink.cmp")
 	if has_cmp_nvim_lsp then
@@ -49,67 +34,68 @@ function M.mason_lspconfig()
 		end
 	end
 
-	require("mason-lspconfig").setup_handlers({
-		-- The first entry (without a key) will be the default handler
-		-- and will be called for each installed server that doesn't have
-		-- a dedicated handler.
-		function(server_name) -- default handler (optional)
-			local lsp = require("lspconfig")
-			if server_name == "lua_ls" then
-				lsp[server_name].setup({
-					on_attach = on_attach,
-					capabilities = capabilities,
-					settings = {
-						Lua = {
-							hint = {
-								enable = true,
-							},
-							runtime = {
-								version = "LuaJIT",
-								path = vim.split(package.path, ";"),
-							},
-							diagnostics = { globals = { "vim" } },
-							workspace = {
-								library = {
-									vim.api.nvim_get_runtime_file("", true),
-									"${3rd}/luv/library",
-								},
-								checkThirdParty = false,
-								maxPreload = 100000,
-								preloadFileSize = 1000,
-							},
-							telemetry = {
-								enable = false,
-							},
-						},
+	-- local lsp = require("lspconfig")
+	vim.lsp.config("lua_ls", {
+		on_attach = on_attach,
+		capabilities = capabilities,
+		settings = {
+			Lua = {
+				hint = {
+					enable = true,
+				},
+				runtime = {
+					version = "LuaJIT",
+					path = vim.split(package.path, ";"),
+				},
+				diagnostics = { globals = { "vim" } },
+				workspace = {
+					library = {
+						vim.api.nvim_get_runtime_file("", true),
+						"${3rd}/luv/library",
 					},
-				})
-			elseif server_name == "pylsp" then
-				lsp[server_name].setup({
-					on_attach = on_attach,
-					settings = {
-						pylsp = {
-							-- Those linters are already handled by ruff
-							configurationSources = {},
-							plugins = {
-								pycodestyle = { enabled = false },
-								pydocstyle = { enabled = false },
-								pylint = { enabled = false },
-								flake8 = { enabled = false },
-								yapf = { enabled = false },
-								isort = { enabled = false },
-							},
-						},
-					},
-				})
-			else
-				lsp[server_name].setup({
-					on_attach = on_attach,
-					capabilities = capabilities,
-				})
-			end
-		end,
+					checkThirdParty = false,
+					maxPreload = 100000,
+					preloadFileSize = 1000,
+				},
+				telemetry = {
+					enable = false,
+				},
+			},
+		},
 	})
+	vim.lsp.config("pylsp", {
+		on_attach = on_attach,
+		settings = {
+			pylsp = {
+				-- Those linters are already handled by ruff
+				configurationSources = {},
+				plugins = {
+					pycodestyle = { enabled = false },
+					pydocstyle = { enabled = false },
+					pylint = { enabled = false },
+					flake8 = { enabled = false },
+					yapf = { enabled = false },
+					isort = { enabled = false },
+				},
+			},
+		},
+	})
+
+	-- https://neovim.io/doc/user/diagnostic.html
+	vim.diagnostic.config({
+		underline = false,
+	})
+
+	vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.definition()<CR>")
+	vim.keymap.set("n", "gh", "<cmd>lua vim.lsp.buf.hover()<CR>")
+	vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
+	vim.keymap.set("n", "1gD", "<cmd>lua vim.lsp.buf.type_definition()<CR>")
+	vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
+	vim.keymap.set("n", "gR", "<cmd>lua vim.lsp.buf.rename()<CR>")
+	vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action)
+	vim.keymap.set("n", "g0", "<cmd>lua vim.lsp.buf.document_symbol()<CR>")
+	vim.keymap.set("n", "gW", "<cmd>lua vim.lsp.buf.workspace_symbol()<CR>")
+	vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.declaration()<CR>")
 end
 
 function M.setup()
@@ -147,16 +133,16 @@ function M.setup()
 	local diagnositics_virtual_text_config = {
 		prefix = "●",
 	}
-	vim.diagnostic.config {
+	vim.diagnostic.config({
 		severity_sort = true,
 		virtual_text = diagnositics_virtual_text_config,
-	}
+	})
 
 	-- Event listener for when we're holding the cursor. This event is called
 	-- for every 700ms (value of updatetime). If it's true, then show the
 	-- diagnostics in a popup window
 	--
-	-- This: 
+	-- This:
 	-- When NOT on Diagnostic
 	-- 		Shows virtual text
 	-- 		Disables the virtual_lines
@@ -177,8 +163,7 @@ function M.setup()
 		callback = function()
 			vim.diagnostic.config({
 				virtual_lines = has_diagnostic_on_current_line() and { current_line = true } or false,
-				virtual_text = not has_diagnostic_on_current_line() and
-					diagnositics_virtual_text_config or false
+				virtual_text = not has_diagnostic_on_current_line() and diagnositics_virtual_text_config or false,
 			})
 		end,
 	})
@@ -189,7 +174,7 @@ function M.setup()
 			if not has_diagnostic_on_current_line() then
 				vim.diagnostic.config({
 					virtual_text = diagnositics_virtual_text_config,
-					virtual_lines = false
+					virtual_lines = false,
 				})
 			end
 		end,
