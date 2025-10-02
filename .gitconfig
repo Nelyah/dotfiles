@@ -130,8 +130,6 @@
 [interactive]
     diffFilter = delta --color-only
 
-
-
 [delta]
     navigate = true    # use n and N to move between diff sections
     line-numbers = true
@@ -144,15 +142,16 @@
 [delta "nelyah_theme"]
     map-styles = bold purple => syntax "#330033", bold cyan => syntax "#00264d"
 
-    minus-emph-style = "#cccccc" "#923a3a"
-    minus-non-emph-style = bold auto "#333300"
+    minus-emph-style = auto "#923a3a"
+    minus-non-emph-style = syntax "#333300"
     minus-style = "#cccccc" "#491d1d"
     plus-emph-style = "#eeeeee" "#245b24"
-    plus-non-emph-style = bold auto "#333300"
-    plus-style = bold auto "#1d491d"
+    plus-non-emph-style = bold syntax "#333300"
+    plus-style = bold syntax "#1d491d"
 
     keep-plus-minus-markers = false
-    hunk-header-style = omit
+    hunk-header-decoration-style = omit
+    hunk-header-style = syntax auto
 
     line-numbers-left-format = " {nm:>3} │"
     line-numbers-left-style = red
