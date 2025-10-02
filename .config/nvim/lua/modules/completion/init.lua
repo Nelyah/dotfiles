@@ -77,10 +77,16 @@ plugin({
 					},
 				},
 			},
+			memory = {
+				opts = {
+					chat = {
+						enabled = true,
+					},
+				},
+			},
 		})
 		vim.keymap.set("v", "<leader>cc", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
-		vim.keymap.set("n", "<leader>cc", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true }
-		)
+		vim.keymap.set("n", "<leader>cc", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true })
 	end,
 })
 
