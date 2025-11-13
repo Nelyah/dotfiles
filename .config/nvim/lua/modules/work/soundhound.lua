@@ -60,7 +60,7 @@ M.treesitter_setup = function()
 	if not has_treesitter then
 		return
 	end
-	require("nvim-treesitter.parsers").get_parser_configs().ter = {
+	require("nvim-treesitter.parsers").ter = {
 		install_info = {
 			-- url = "git@git.soundhound.com:cdequeker/tree-sitter-ter.git", -- local path or git repo
 			url = "/Users/cdequeker/dev/tree-sitter-ter", -- local path or git repo

@@ -4,6 +4,7 @@ plugin({
 	"nvim-treesitter/nvim-treesitter",
 	event = { "VeryLazy" },
 	build = ":TSUpdate",
+	branch = "main",
 	version = false, -- last release is way too old and doesn't work on Windows
 	---@type TSConfig
 	---@diagnostic disable-next-line: missing-fields
@@ -95,7 +96,7 @@ plugin({
 	},
 	---@param opts TSConfig
 	config = function(_, opts)
-		require("nvim-treesitter.configs").setup(opts)
+		require("nvim-treesitter").setup(opts)
         require("modules.work").treesitter_setup()
 	end,
 })
