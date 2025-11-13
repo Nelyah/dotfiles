@@ -41,7 +41,7 @@ plugin({
 				chat = {
 					adapter = {
 						name = "copilot",
-						model = "gpt-5",
+						model = "gpt-5-codex",
 					},
 					roles = {
 						llm = function(adapter)
@@ -68,12 +68,12 @@ plugin({
 				},
 				agent = {
 					adapter = 'copilot',
-					model = "gpt-5",
+					model = "gpt-5-codex",
 				},
 				inline = {
 					adapter = {
 						name = "copilot",
-						model = "gpt-5",
+						model = "gpt-5-codex",
 					},
 				},
 			},
