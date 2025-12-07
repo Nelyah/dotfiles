@@ -215,7 +215,7 @@ plugin({
 			"nvim-telescope/telescope-fzf-native.nvim",
 			build = vim.fn.executable("cmake")
 				and
-				"cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build"
+				"cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
 				or "make",
 			enabled = vim.fn.executable("make") or vim.fn.executable("cmake"),
 		},
