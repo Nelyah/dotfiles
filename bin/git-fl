@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 DARK_GRAY="$(tput setaf 0)"
 RED="$(tput setaf 1)"

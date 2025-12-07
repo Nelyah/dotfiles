@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 # Script for installing tmux and dependencies.
 # tmux will be installed in ${HOME}/.local by default.

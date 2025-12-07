@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 echo $1 | \
 sed -r -e 's/^([^m]+)m([^s]+)s$/\1 \2/' -e 's/,/./' | \

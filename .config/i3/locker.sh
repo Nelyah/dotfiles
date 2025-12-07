@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 exec xautolock -detectsleep
     -time 15 -locker "i3lock -c 000000 -n && sleep 1" \

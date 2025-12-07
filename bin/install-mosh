@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 # 2017-06 (paulirish): updated for latest sources
 # and incorporated fixes from my comments here: https://gist.github.com/xiaom/8264691#gistcomment-1648455

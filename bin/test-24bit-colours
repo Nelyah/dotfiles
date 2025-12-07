@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 # 2020-03-25: taken from https://raw.githubusercontent.com/JohnMorales/dotfiles/master/colors/24-bit-color.sh
 

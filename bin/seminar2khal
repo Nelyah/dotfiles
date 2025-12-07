@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 blank=0
 while read line; do

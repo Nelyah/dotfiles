@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 get_project_argument () {
     grep -qE "(-and|and-)" <<< "$1" && echo "proj:$1" || echo "proj == $1"

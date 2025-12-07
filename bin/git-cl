@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 selected_branch=$(git bl --local | tail -n +3 | fzf --prompt="Select a branch: " --height=30% --ansi --header="$(git bl --local | head -2)")
 

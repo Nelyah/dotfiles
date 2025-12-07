@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 # Found at https://aaronweb.net/blog/2014/11/migrating-mail-between-imap-servers-using-mbsync/
 

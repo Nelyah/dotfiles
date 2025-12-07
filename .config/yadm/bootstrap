@@ -1,27 +1,27 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 [[ $1 == -yy ]] && ALL_YES=1 || ALL_YES=
 
 # Clearing the caps lock key
-if uname -o | grep Linux &>/dev/null; then
-    if hash xmodmap &>/dev/null; then
-        xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
-    fi
-fi
+# if uname -o | grep Linux &>/dev/null; then
+#     if hash xmodmap &>/dev/null; then
+#         xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+#     fi
+# fi
 
 [[ -n $ALL_YES ]] || read -p "Setup Tmux plugin manager? [yN] " -n 1 -r
 echo ""
 if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
     mkdir -p ~/.local/share/tmux/plugins
-    git clone https://github.com/tmux-plugins/tpm ~/.local/share/tmux/plugins
+    git clone https://github.com/tmux-plugins/tpm ~/.local/share/tmux/plugins/tpm
 fi
 
 # Change to zsh default shell
-if hash zsh &> /dev/null; then
-[[ -n $ALL_YES ]] || read -p "Set zsh as default shell? [yN] " -n 1 -r
-if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
-    chsh -s "$(which zsh)"
-fi
-else
-    echo "zsh is not installed, not asking to set as default shell."
-fi
+# if hash zsh &> /dev/null; then
+# [[ -n $ALL_YES ]] || read -p "Set zsh as default shell? [yN] " -n 1 -r
+# if [[ -n $ALL_YES ]] || [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
+#     chsh -s "$(which zsh)"
+# fi
+# else
+#     echo "zsh is not installed, not asking to set as default shell."
+# fi

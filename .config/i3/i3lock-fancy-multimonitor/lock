@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 # All options are here: http://www.imagemagick.org/Usage/blur/#blur_args
 BLURTYPE="0x4"
 #BLURTYPE="0x2"

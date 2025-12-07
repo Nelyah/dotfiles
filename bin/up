@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 LIMIT=$1
 P=$PWD

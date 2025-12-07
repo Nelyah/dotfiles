@@ -1,4 +1,4 @@
-#!  /bin/bash
+#! /usr/bin/env bash
 
 ask_password() {
   mpw=$(rofi -dmenu -p "Master Password" -password -lines 0) || exit $?

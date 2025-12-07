@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 # Export the dbus session address on startup so it can be used by cron
 touch $HOME/.Xdbus
 chmod 600 $HOME/.Xdbus

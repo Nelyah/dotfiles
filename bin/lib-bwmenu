@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 # Helper functions
 
 # Extract item or items matching .name, including deduplication
