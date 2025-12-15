@@ -4,10 +4,14 @@ plugin({
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
 	config = function()
-		require("modules.lsp.nvim-lsp").setup()
+		local lsp = require("modules.lsp.nvim-lsp")
+		lsp.setup()
+		lsp.lspconfig()
+		lsp.enable()
 	end,
 	dependencies = {
 		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
 	},
 })
 
@@ -15,14 +19,26 @@ plugin({
 	"williamboman/mason.nvim",
 	config = function()
 		require("mason").setup({
-			automatic_enable = true,
 			-- Add installed binaries at the end of the PATH
 			-- This is important for binaries that are otherwise available locally
 			-- and which versions would be preferred
 			PATH = "append",
 		})
-		require("mason-lspconfig").setup()
-		require("modules.lsp.nvim-lsp").lspconfig()
+
+		require("mason-lspconfig").setup({
+			-- Install these automatically if missing.
+			ensure_installed = {
+				"clang-format",
+				"clangd",
+				"jq",
+				"jsonlint",
+				"lua_ls",
+				"pyright",
+				"rust_analyzer",
+			},
+			-- We enable LSP after our `vim.lsp.config(...)` overrides are applied.
+			automatic_enable = false,
+		})
 	end,
 	dependencies = {
 		"williamboman/mason-lspconfig.nvim",

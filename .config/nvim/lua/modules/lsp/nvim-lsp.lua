@@ -2,19 +2,13 @@ local M = {}
 
 local on_attach = function(client, bufnr)
 	local ls_disable_formatting = { "pylsp", "pyright", "clangd", "tsserver", "gopls" }
-	local keymap_ignore_ls_formats = ""
-	local first = true
 	for _, name in ipairs(ls_disable_formatting) do
 		if client.name == name then
-			client.server_capabilities.document_formatting = false
+			client.server_capabilities.documentFormattingProvider = false
+			client.server_capabilities.documentRangeFormattingProvider = false
+			break
 		end
-		if not first then
-			keymap_ignore_ls_formats = keymap_ignore_ls_formats .. "and "
-		end
-		first = false
-		keymap_ignore_ls_formats = keymap_ignore_ls_formats .. 'client.name ~= "' .. name .. '" '
 	end
-
 end
 
 function M.lspconfig()
@@ -24,15 +18,32 @@ function M.lspconfig()
 		capabilities = cmp_nvim_lsp.get_lsp_capabilities(capabilities)
 	end
 
-	local function file_exists(name)
-		local f = io.open(name, "r")
-		if f ~= nil then
-			io.close(f)
-			return true
-		else
-			return false
-		end
+	if vim.fn.executable("nixd") == 1 then
+		vim.lsp.config("nixd", {
+			cmd = { "nixd" },
+			on_attach = on_attach,
+			capabilities = capabilities,
+			settings = {
+				nixd = {
+					nixpkgs = {
+						expr = "import <nixpkgs> { }",
+					},
+					formatting = {
+						command = { "alejandra" }, -- or nixfmt or nixpkgs-fmt
+					},
+					-- options = {
+					--   nixos = {
+					--       expr = '(builtins.getFlake "/PATH/TO/FLAKE").nixosConfigurations.CONFIGNAME.options',
+					--   },
+					--   home_manager = {
+					--       expr = '(builtins.getFlake "/PATH/TO/FLAKE").homeConfigurations.CONFIGNAME.options',
+					--   },
+					--}
+				}
+			}
+		})
 	end
+
 
 	-- local lsp = require("lspconfig")
 	vim.lsp.config("lua_ls", {
@@ -65,6 +76,7 @@ function M.lspconfig()
 	})
 	vim.lsp.config("pylsp", {
 		on_attach = on_attach,
+		capabilities = capabilities,
 		settings = {
 			pylsp = {
 				-- Those linters are already handled by ruff
@@ -82,20 +94,22 @@ function M.lspconfig()
 	})
 
 	-- https://neovim.io/doc/user/diagnostic.html
-	vim.diagnostic.config({
-		underline = false,
+	vim.api.nvim_create_autocmd("LspAttach", {
+		group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
+		callback = function(args)
+			local bufnr = args.buf
+			vim.keymap.set("n", "gD", vim.lsp.buf.definition, { buffer = bufnr })
+			vim.keymap.set("n", "gh", vim.lsp.buf.hover, { buffer = bufnr })
+			vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { buffer = bufnr })
+			vim.keymap.set("n", "1gD", vim.lsp.buf.type_definition, { buffer = bufnr })
+			vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr })
+			vim.keymap.set("n", "gR", vim.lsp.buf.rename, { buffer = bufnr })
+			vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action, { buffer = bufnr })
+			vim.keymap.set("n", "g0", vim.lsp.buf.document_symbol, { buffer = bufnr })
+			vim.keymap.set("n", "gW", vim.lsp.buf.workspace_symbol, { buffer = bufnr })
+			vim.keymap.set("n", "gd", vim.lsp.buf.declaration, { buffer = bufnr })
+		end,
 	})
-
-	vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.definition()<CR>")
-	vim.keymap.set("n", "gh", "<cmd>lua vim.lsp.buf.hover()<CR>")
-	vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
-	vim.keymap.set("n", "1gD", "<cmd>lua vim.lsp.buf.type_definition()<CR>")
-	vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
-	vim.keymap.set("n", "gR", "<cmd>lua vim.lsp.buf.rename()<CR>")
-	vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action)
-	vim.keymap.set("n", "g0", "<cmd>lua vim.lsp.buf.document_symbol()<CR>")
-	vim.keymap.set("n", "gW", "<cmd>lua vim.lsp.buf.workspace_symbol()<CR>")
-	vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.declaration()<CR>")
 end
 
 function M.setup()
@@ -113,19 +127,6 @@ function M.setup()
 
 	vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border })
 	vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border })
-	vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-		-- This will disable virtual text, like doing:
-		-- let g:diagnostic_enable_virtual_text = 0
-		virtual_text = false,
-		-- This is similar to:
-		-- let g:diagnostic_show_sign = 1
-		-- To configure sign display,
-		--  see: ":help vim.lsp.diagnostic.set_signs()"
-		signs = true,
-		-- This is similar to:
-		-- "let g:diagnostic_insert_delay = 1"
-		update_in_insert = false,
-	})
 
 	-- Check for event after that many ms
 	vim.opt.updatetime = 700
@@ -136,6 +137,9 @@ function M.setup()
 	vim.diagnostic.config({
 		severity_sort = true,
 		virtual_text = diagnositics_virtual_text_config,
+		underline = false,
+		update_in_insert = false,
+		float = { border = border },
 	})
 
 	-- Event listener for when we're holding the cursor. This event is called
@@ -179,6 +183,34 @@ function M.setup()
 			end
 		end,
 	})
+end
+
+function M.enable()
+	local to_enable = {}
+
+	local has_mason_lspconfig, mason_lspconfig = pcall(require, "mason-lspconfig")
+	if has_mason_lspconfig then
+		local installed = mason_lspconfig.get_installed_servers()
+		if type(installed) == "table" then
+			vim.list_extend(to_enable, installed)
+		end
+	end
+
+	-- Always try these, even if they're not installed via Mason.
+	vim.list_extend(to_enable, { "lua_ls", "pylsp", "nixd" })
+
+	local seen = {}
+	local unique = {}
+	for _, name in ipairs(to_enable) do
+		if type(name) == "string" and name ~= "" and not seen[name] then
+			seen[name] = true
+			table.insert(unique, name)
+		end
+	end
+
+	if #unique > 0 then
+		vim.lsp.enable(unique)
+	end
 end
 
 return M
