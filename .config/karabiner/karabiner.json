@@ -1,8 +1,22 @@
 {
+    "global": { "show_in_menu_bar": false },
     "profiles": [
         {
             "complex_modifications": {
                 "rules": [
+                    {
+                        "description": "Paste today's date (ISO) with ⌘⇧D",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "d",
+                                    "modifiers": { "mandatory": ["left_command", "left_shift"] }
+                                },
+                                "to": [{ "shell_command": "/bin/bash -lc 'day=$(date +%d); case $day in 1|21|31) s=\"st\" ;; 2|22) s=\"nd\" ;; 3|23) s=\"rd\" ;; *) s=\"th\" ;; esac; printf \"%s %s%s, %s\" \"$(date +%B)\" \"$day\" \"$s\" \"$(date +%Y)\" | pbcopy; sleep 0.15; osascript -e \"tell application \\\"System Events\\\" to keystroke \\\"v\\\" using command down\"'" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
                     {
                         "description": "Make it possible to write é with right alt",
                         "enabled": false,
