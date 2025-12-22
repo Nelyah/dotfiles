@@ -28,6 +28,9 @@ function M.lspconfig()
 					nixpkgs = {
 						expr = "import <nixpkgs> { }",
 					},
+					nixpkgs_unstable = {
+						expr = "import <nixpkgs-unstable> { }",
+					},
 					formatting = {
 						command = { "alejandra" }, -- or nixfmt or nixpkgs-fmt
 					},
@@ -45,7 +48,11 @@ function M.lspconfig()
 	end
 
 
-	-- local lsp = require("lspconfig")
+	vim.lsp.config("*", {
+		capabilities = capabilities,
+	})
+
+
 	vim.lsp.config("lua_ls", {
 		on_attach = on_attach,
 		capabilities = capabilities,
@@ -70,24 +77,6 @@ function M.lspconfig()
 				},
 				telemetry = {
 					enable = false,
-				},
-			},
-		},
-	})
-	vim.lsp.config("pylsp", {
-		on_attach = on_attach,
-		capabilities = capabilities,
-		settings = {
-			pylsp = {
-				-- Those linters are already handled by ruff
-				configurationSources = {},
-				plugins = {
-					pycodestyle = { enabled = false },
-					pydocstyle = { enabled = false },
-					pylint = { enabled = false },
-					flake8 = { enabled = false },
-					yapf = { enabled = false },
-					isort = { enabled = false },
 				},
 			},
 		},
@@ -197,7 +186,7 @@ function M.enable()
 	end
 
 	-- Always try these, even if they're not installed via Mason.
-	vim.list_extend(to_enable, { "lua_ls", "pylsp", "nixd" })
+	vim.list_extend(to_enable, { "lua_ls", "pyright", "nixd" })
 
 	local seen = {}
 	local unique = {}

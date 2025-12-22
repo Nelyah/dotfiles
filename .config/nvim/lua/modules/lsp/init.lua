@@ -28,10 +28,7 @@ plugin({
 		require("mason-lspconfig").setup({
 			-- Install these automatically if missing.
 			ensure_installed = {
-				"clang-format",
 				"clangd",
-				"jq",
-				"jsonlint",
 				"lua_ls",
 				"pyright",
 				"rust_analyzer",
