@@ -1,6 +1,17 @@
 font-family = "Hack Nerd Font Mono"
 font-size = 13
 
+macos-icon = chalkboard
+
+window-padding-balance = true
+
+window-padding-x = 2
+
+confirm-close-surface = false
+
+link-url = true
+link-previews = true
+
 # Necessary for tmux to be able to pick it up
 # Otherwise it will pick characters like å, etc...
 macos-option-as-alt = true
