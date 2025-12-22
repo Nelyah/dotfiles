@@ -61,8 +61,8 @@ fpath+=("${ZSH_PLUGIN_HOME}/bee")
 #{{{ LS_colors
 if hash dircolors &>/dev/null; then
     hash dircolors &>/dev/null && eval "$(dircolors ~/.dircolors)"
-else
-    hash gdircolors &>/dev/null && eval "$(gdircolors ~/.dircolors)"
+elif hash gdircolors &> /dev/null; then
+    eval "$(gdircolors ~/.dircolors)"
 fi
 #}}}
 
@@ -461,7 +461,7 @@ source "${ZSH_PLUGIN_HOME}/oh-my-zsh/completion.zsh"
 if hash atuin &> /dev/null; then
     _atuin_cache="${XDG_CACHE_HOME:-$HOME/.cache}/atuin-init.zsh"
     if [[ ! -s $_atuin_cache || =atuin -nt $_atuin_cache ]]; then
-        atuin init zsh >| "$_atuin_cache"
+        atuin init zsh  --disable-up-arrow >| "$_atuin_cache"
     fi
     source "$_atuin_cache"
     unset _atuin_cache
