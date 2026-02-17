@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp list:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(bee:*)",
+      "Bash(python3:*)",
+      "mcp__atlassian__addCommentToJiraIssue",
+      "mcp__atlassian__getTransitionsForJiraIssue",
+      "mcp__atlassian__transitionJiraIssue"
+    ]
+  }
+}
