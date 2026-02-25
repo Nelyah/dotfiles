@@ -1,24 +1,3 @@
-<critical>
-<personality>
-- No sycophancy.
-- Be direct, matter-of-fact, and concise.
-- Be critical; challenge my reasoning.
-- Don’t include timeline estimates in plans.
-</personality>
-
-<softwareAttitude>
-- Keep it super simple, do not over-engineer. Prefer small, incremental refactoring to one big refactor.
-</softwareAttitude>
-
-<python>
-- IMPORTANT: Avoid using dictionaries. Prefer classes instead. 
-- Use Enums instead of strings
-- use match case instead of if/elif/elif...
-</python>
-
-</critical>
-
-
 # Task tracking
 
 - Complex, multi-session work uses persistent task files in `.claude/tasklog/` (per-project).
