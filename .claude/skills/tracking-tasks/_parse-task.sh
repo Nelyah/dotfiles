@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
-# Shared frontmatter parser for TASK.md files.
-# Outputs: name|summary|status
-# Usage: source this file, then call parse_task_frontmatter <file>
+# Shared helpers for task scripts.
+# Usage: source this file, then call the functions.
+
+# Portable in-place sed (macOS needs -i '', GNU/Linux needs -i).
+sed_inplace() {
+    if sed --version 2>/dev/null | grep -q GNU; then
+        sed -i "$@"
+    else
+        sed -i '' "$@"
+    fi
+}
+
+# Parse TASK.md frontmatter → name|summary|status
 
 parse_task_frontmatter() {
     local taskfile="$1"

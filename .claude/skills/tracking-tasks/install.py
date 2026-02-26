@@ -29,6 +29,7 @@ def header(msg: str) -> None:
 
 class HookEvent(Enum):
     USER_PROMPT_SUBMIT = "UserPromptSubmit"
+    POST_TOOL_USE = "PostToolUse"
     PRE_COMPACT = "PreCompact"
     STOP = "Stop"
 
@@ -170,6 +171,12 @@ class Installer:
                 10,
             ),
             HookRegistration(
+                HookEvent.POST_TOOL_USE,
+                "bash ~/.claude/hooks/post-tool-task.sh",
+                "post-tool-task",
+                5,
+            ),
+            HookRegistration(
                 HookEvent.PRE_COMPACT,
                 "bash ~/.claude/hooks/pre-compact-task.sh",
                 "pre-compact-task",
@@ -203,7 +210,7 @@ class Installer:
         # 2. Copy hook templates → ~/.claude/hooks/
         header("Installing hook scripts")
         hook_src = TEMPLATE_DIR / "hooks"
-        for name in ("user-prompt-task.sh", "pre-compact-task.sh", "stop-task.sh"):
+        for name in ("user-prompt-task.sh", "post-tool-task.sh", "pre-compact-task.sh", "stop-task.sh"):
             self.install_file(hook_src / name, HOOKS_DIR / name, executable=True)
 
         # 3. Merge hook registrations into settings.json
@@ -223,6 +230,7 @@ class Installer:
         print()
         print("  Files installed:")
         print(f"    {HOOKS_DIR}/user-prompt-task.sh")
+        print(f"    {HOOKS_DIR}/post-tool-task.sh")
         print(f"    {HOOKS_DIR}/pre-compact-task.sh")
         print(f"    {HOOKS_DIR}/stop-task.sh")
         print()
@@ -236,7 +244,7 @@ class Installer:
 
         # 1. Remove hook files
         header("Removing hook files")
-        for name in ("user-prompt-task.sh", "pre-compact-task.sh", "stop-task.sh"):
+        for name in ("user-prompt-task.sh", "post-tool-task.sh", "pre-compact-task.sh", "stop-task.sh"):
             path = HOOKS_DIR / name
             if path.exists():
                 path.unlink()
@@ -280,6 +288,7 @@ def main() -> None:
         epilog=(
             "Components:\n"
             "  ~/.claude/hooks/user-prompt-task.sh    UserPromptSubmit hook\n"
+            "  ~/.claude/hooks/post-tool-task.sh      PostToolUse hook (periodic reminder)\n"
             "  ~/.claude/hooks/pre-compact-task.sh    PreCompact hook\n"
             "  ~/.claude/hooks/stop-task.sh           Stop hook\n"
             "  ~/.claude/skills/tracking-tasks/       Skill files\n"

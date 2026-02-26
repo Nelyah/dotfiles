@@ -23,6 +23,6 @@ if [[ ! -f "$TASK_MD" ]]; then
     exit 1
 fi
 
-sed -i '' 's/^status: .*/status: done/' "$TASK_MD"
+sed_inplace 's/^status: .*/status: done/' "$TASK_MD"
 echo -n > "$ACTIVE_FILE"
 echo "Task '$NAME' marked as done. Active task cleared."

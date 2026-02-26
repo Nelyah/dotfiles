@@ -23,6 +23,6 @@ if [[ ! -f "$TASK_MD" ]]; then
     exit 1
 fi
 
-sed -i '' 's/^status: .*/status: paused/' "$TASK_MD"
+sed_inplace 's/^status: .*/status: paused/' "$TASK_MD"
 echo -n > "$ACTIVE_FILE"
 echo "Task '$NAME' paused. Active task cleared."

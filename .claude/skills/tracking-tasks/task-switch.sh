@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$HOME/.claude/skills/tracking-tasks/_parse-task.sh"
+
 NAME="${1:?Usage: task-switch.sh <task-name> [project-dir]}"
 PROJECT_DIR="${2:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
 TASKLOG="$PROJECT_DIR/.claude/tasklog"
@@ -13,6 +15,6 @@ if [[ ! -f "$TASK_MD" ]]; then
 fi
 
 # Set new task status to in-progress
-sed -i '' 's/^status: .*/status: in-progress/' "$TASK_MD"
+sed_inplace 's/^status: .*/status: in-progress/' "$TASK_MD"
 echo -n "$NAME" > "$ACTIVE_FILE"
 echo "Switched to task: $NAME"

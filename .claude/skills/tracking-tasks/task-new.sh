@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$HOME/.claude/skills/tracking-tasks/_parse-task.sh"
+
 NAME="${1:?Usage: task-new.sh <task-name> [project-dir]}"
 PROJECT_DIR="${2:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
 TASKLOG="$PROJECT_DIR/.claude/tasklog"
@@ -68,9 +70,9 @@ project: __PROJECT_DIR__
 TASKEOF
 
 # Replace placeholders
-sed -i '' "s|__NAME__|$NAME|g" "$TASK_DIR/TASK.md"
-sed -i '' "s|__PROJECT_DIR__|$PROJECT_DIR|g" "$TASK_DIR/TASK.md"
-sed -i '' "s|__DATE__|$(date +%Y-%m-%d)|g" "$TASK_DIR/TASK.md"
+sed_inplace "s|__NAME__|$NAME|g" "$TASK_DIR/TASK.md"
+sed_inplace "s|__PROJECT_DIR__|$PROJECT_DIR|g" "$TASK_DIR/TASK.md"
+sed_inplace "s|__DATE__|$(date +%Y-%m-%d)|g" "$TASK_DIR/TASK.md"
 
 # Set as active task
 echo -n "$NAME" > "$TASKLOG/.active"

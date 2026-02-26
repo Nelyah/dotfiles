@@ -25,6 +25,7 @@
 - When starting work, check if an existing task matches (task summaries are shown via hook).
 - Propose creating a task when planning something that spans multiple sessions. Ask the user first.
 - If a task is active, update its TASK.md before stopping.
+- A periodic reminder fires every ~30 tool calls during autonomous work. Update TASK.md when prompted.
 - Create tasks: `bash ~/.claude/skills/tracking-tasks/task-new.sh <name> [project-dir]`
 - List tasks: `bash ~/.claude/skills/tracking-tasks/task-list.sh [project-dir]`
 - Finish task: `bash ~/.claude/skills/tracking-tasks/task-finish.sh [name] [project-dir]`
