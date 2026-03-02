@@ -4,10 +4,6 @@ set -euo pipefail
 
 command -v jq >/dev/null || exit 0
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SKILL_DIR="${SCRIPT_DIR%/hooks}"
-SKILL_DIR="${SKILL_DIR%/templates}"
-# Resolve _parse-task.sh: try skill dir first, fall back to sibling of hooks dir
 PARSE_SCRIPT="$HOME/.claude/skills/tracking-tasks/_parse-task.sh"
 source "$PARSE_SCRIPT"
 
@@ -24,13 +20,15 @@ done < <(find "$TASKLOG" -maxdepth 2 -name "TASK.md" -print0 2>/dev/null | sort 
 
 [[ ${#summaries[@]} -eq 0 ]] && exit 0
 
-active=""
-[[ -f "$TASKLOG/.active" ]] && active=$(<"$TASKLOG/.active")
+read_active_list "$TASKLOG/.active"
 
 ctx="Tasks in .claude/tasklog/:"
 for s in "${summaries[@]}"; do
     ctx+=$'\n'"  $s"
 done
-[[ -n "$active" ]] && ctx+=$'\n'"Active task: $active (read its TASK.md for full context)"
+if [[ ${#_active[@]} -gt 0 ]]; then
+    ctx+=$'\n'"Active tasks (read their TASK.md for full context):"
+    for _a in "${_active[@]}"; do ctx+=$'\n'"  $_a"; done
+fi
 
 jq -n --arg c "$ctx" '{"additionalContext": $c}'

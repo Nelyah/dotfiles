@@ -74,8 +74,8 @@ sed_inplace "s|__NAME__|$NAME|g" "$TASK_DIR/TASK.md"
 sed_inplace "s|__PROJECT_DIR__|$PROJECT_DIR|g" "$TASK_DIR/TASK.md"
 sed_inplace "s|__DATE__|$(date +%Y-%m-%d)|g" "$TASK_DIR/TASK.md"
 
-# Set as active task
-echo -n "$NAME" > "$TASKLOG/.active"
+# Add to active tasks
+add_to_active "$NAME" "$TASKLOG/.active"
 
 echo "Created task: $TASK_DIR"
-echo "Active task set to: $NAME"
+echo "Added to active tasks: $NAME"

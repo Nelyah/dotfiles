@@ -31,3 +31,29 @@ parse_task_frontmatter() {
     done < "$taskfile"
     printf '%s|%s|%s' "$name" "$summary" "$status"
 }
+
+# Add a task name to the active list (no-op if already present).
+add_to_active() {
+    local name="$1" active_file="$2"
+    touch "$active_file"
+    grep -qxF "$name" "$active_file" 2>/dev/null || echo "$name" >> "$active_file"
+}
+
+# Remove a task name from the active list.
+remove_from_active() {
+    local name="$1" active_file="$2"
+    [[ -f "$active_file" ]] || return 0
+    grep -vxF "$name" "$active_file" > "${active_file}.tmp" 2>/dev/null || true
+    mv "${active_file}.tmp" "$active_file"
+}
+
+# Populate global _active array with non-empty lines from active file.
+# Compatible with bash 3.2+ (macOS) and bash 4+ (Linux).
+read_active_list() {
+    local file="$1" line
+    _active=()
+    [[ -f "$file" ]] || return 0
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && _active+=("$line")
+    done < "$file"
+}

@@ -9,12 +9,14 @@ TASKLOG="$PROJECT_DIR/.claude/tasklog"
 ACTIVE_FILE="$TASKLOG/.active"
 
 [[ -f "$ACTIVE_FILE" ]] || exit 0
-active=$(<"$ACTIVE_FILE")
-[[ -n "$active" ]] || exit 0
+source "$HOME/.claude/skills/tracking-tasks/_parse-task.sh"
+read_active_list "$ACTIVE_FILE"
+[[ ${#_active[@]} -gt 0 ]] || exit 0
 
-cat <<MSG
-IMPORTANT: Context compaction is about to happen.
-Active task: $active
-Update .claude/tasklog/$active/TASK.md NOW — record current progress, decisions made, and next steps.
-Anything not saved to TASK.md will be lost after compaction.
-MSG
+echo "IMPORTANT: Context compaction is about to happen."
+echo "Active tasks:"
+for _a in "${_active[@]}"; do
+    echo "  $_a — update .claude/tasklog/$_a/TASK.md"
+done
+echo "Record current progress, decisions made, and next steps in each TASK.md."
+echo "Anything not saved will be lost after compaction."

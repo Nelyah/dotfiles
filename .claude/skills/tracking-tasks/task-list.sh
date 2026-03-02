@@ -11,8 +11,7 @@ if [[ ! -d "$TASKLOG" ]]; then
     exit 0
 fi
 
-active=""
-[[ -f "$TASKLOG/.active" ]] && active=$(<"$TASKLOG/.active")
+read_active_list "$TASKLOG/.active"
 
 found=false
 while IFS= read -r -d '' taskfile; do
@@ -20,7 +19,7 @@ while IFS= read -r -d '' taskfile; do
 
     if [[ -n "$name" ]]; then
         marker=""
-        [[ "$name" == "$active" ]] && marker=" ← active"
+        for _a in "${_active[@]}"; do [[ "$name" == "$_a" ]] && marker=" ← active" && break; done
         printf "%-30s [%-11s] %s%s\n" "$name" "$status" "$summary" "$marker"
         found=true
     fi

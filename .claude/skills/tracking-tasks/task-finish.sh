@@ -9,7 +9,14 @@ ACTIVE_FILE="$TASKLOG/.active"
 
 NAME="${1:-}"
 if [[ -z "$NAME" && -f "$ACTIVE_FILE" ]]; then
-    NAME=$(<"$ACTIVE_FILE")
+    read_active_list "$ACTIVE_FILE"
+    if [[ ${#_active[@]} -eq 1 ]]; then
+        NAME="${_active[0]}"
+    elif [[ ${#_active[@]} -gt 1 ]]; then
+        echo "Multiple active tasks — specify one:" >&2
+        printf '  %s\n' "${_active[@]}" >&2
+        exit 1
+    fi
 fi
 if [[ -z "$NAME" ]]; then
     echo "Usage: task-finish.sh [task-name] [project-dir]" >&2
@@ -24,5 +31,5 @@ if [[ ! -f "$TASK_MD" ]]; then
 fi
 
 sed_inplace 's/^status: .*/status: done/' "$TASK_MD"
-echo -n > "$ACTIVE_FILE"
-echo "Task '$NAME' marked as done. Active task cleared."
+remove_from_active "$NAME" "$ACTIVE_FILE"
+echo "Task '$NAME' marked as done."
