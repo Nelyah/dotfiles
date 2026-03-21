@@ -11,34 +11,14 @@ plugin({ -- Sane binding to navigate between vim and tmux
 	end,
 })
 
-plugin({ "terryma/vim-multiple-cursors", event = "VeryLazy" })
+plugin({ "mg979/vim-visual-multi", event = "VeryLazy" })
 
-plugin({ -- Align text based on pattern
-	"godlygeek/tabular",
-	event = "VeryLazy",
-	config = function()
-		vim.keymap.set({ "n", "v" }, "<Leader>T=", "<cmd>Tabularize /=<CR>")
-	end,
-})
---
--- comments based on the file type
-plugin({ "tpope/vim-commentary", event = "VeryLazy" })
 plugin({ "tpope/vim-surround", event = "VeryLazy" })
 plugin({ "tpope/vim-repeat", event = "VeryLazy" }) -- Allow repeating plugin actions and more
-plugin("tpope/vim-eunuch") -- Provide basic commands (chmod, mkdir, rename, etc.)
-plugin({ "ryvnf/readline.vim", branch = "main", event = "VeryLazy" })
 
 plugin({ -- Add Table mode for writing them in Markdown
 	"dhruvasagar/vim-table-mode",
 	ft = { "markdown", "pandoc", "vimwiki.markdown" },
-})
-
-plugin({ -- Many conceal and folding features
-	"plasticboy/vim-markdown",
-	ft = { "markdown", "pandoc", "vimwiki.markdown" },
-	config = function()
-		vim.g.vim_markdown_folding_disabled = 1
-	end,
 })
 
 plugin({ -- Autoformat
@@ -153,9 +133,6 @@ plugin({
 	dependencies = {
 		"nvim-lua/plenary.nvim", -- required
 		"sindrets/diffview.nvim", -- optional - Diff integration
-
-		-- Only one of these is needed.
-		"nvim-telescope/telescope.nvim", -- optional
 	},
 	config = function()
 		require("neogit").setup({

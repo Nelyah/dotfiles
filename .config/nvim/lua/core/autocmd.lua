@@ -107,3 +107,119 @@ end)
 vim.keymap.set("i", "<c-a>", function()
     vim.cmd([[normal! 0i]])
 end)
+
+-- {{{ Command-line readline bindings (replaces readline.vim)
+vim.keymap.set("c", "<C-a>", "<Home>")
+vim.keymap.set("c", "<C-e>", "<End>")
+vim.keymap.set("c", "<C-f>", "<Right>")
+vim.keymap.set("c", "<C-b>", "<Left>")
+vim.keymap.set("c", "<M-f>", "<S-Right>")
+vim.keymap.set("c", "<M-b>", "<S-Left>")
+vim.keymap.set("c", "<C-d>", "<Del>")
+
+local kill_ring = ""
+
+vim.keymap.set("c", "<C-k>", function()
+    local line = vim.fn.getcmdline()
+    local pos = vim.fn.getcmdpos()
+    kill_ring = line:sub(pos)
+    vim.fn.setcmdline(line:sub(1, pos - 1), pos)
+end)
+
+vim.keymap.set("c", "<C-u>", function()
+    local line = vim.fn.getcmdline()
+    local pos = vim.fn.getcmdpos()
+    kill_ring = line:sub(1, pos - 1)
+    vim.fn.setcmdline(line:sub(pos), 1)
+end)
+
+vim.keymap.set("c", "<C-y>", function()
+    local line = vim.fn.getcmdline()
+    local pos = vim.fn.getcmdpos()
+    local new = line:sub(1, pos - 1) .. kill_ring .. line:sub(pos)
+    vim.fn.setcmdline(new, pos + #kill_ring)
+end)
+-- }}}
+
+-- {{{ Align text on pattern (replaces tabular)
+local function align_on(pattern)
+    local s, e = vim.fn.line("'<"), vim.fn.line("'>")
+    local lines = vim.api.nvim_buf_get_lines(0, s - 1, e, false)
+    local max = 0
+    for _, l in ipairs(lines) do
+        local p = l:find(pattern)
+        if p and p > max then max = p end
+    end
+    local out = {}
+    for _, l in ipairs(lines) do
+        local p = l:find(pattern)
+        if p then
+            table.insert(out, l:sub(1, p - 1) .. string.rep(" ", max - p) .. l:sub(p))
+        else
+            table.insert(out, l)
+        end
+    end
+    vim.api.nvim_buf_set_lines(0, s - 1, e, false, out)
+end
+vim.keymap.set("v", "<Leader>T=", function() align_on("=") end)
+-- }}}
+
+-- {{{ File commands (replaces vim-eunuch)
+vim.api.nvim_create_autocmd("BufWritePost", {
+    callback = function()
+        local first_line = vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] or ""
+        if first_line:match("^#!%s*%S") then
+            local file = vim.fn.expand("%:p")
+            local stat = vim.uv.fs_stat(file)
+            if stat and bit.band(stat.mode, 0x49) == 0 then
+                vim.fn.system({ "chmod", "+x", file })
+            end
+        end
+    end,
+})
+
+vim.api.nvim_create_user_command("Rename", function(opts)
+    local old = vim.fn.expand("%:p")
+    local dir = vim.fn.expand("%:p:h")
+    local new = dir .. "/" .. opts.args
+    vim.fn.rename(old, new)
+    vim.cmd("edit " .. vim.fn.fnameescape(new))
+    vim.cmd("bdelete! #")
+end, { nargs = 1, complete = "file" })
+
+vim.api.nvim_create_user_command("Delete", function()
+    local path = vim.fn.expand("%:p")
+    vim.cmd("bdelete!")
+    vim.fn.delete(path)
+end, {})
+
+vim.api.nvim_create_user_command("Move", function(opts)
+    local old = vim.fn.expand("%:p")
+    local new = opts.args
+    local dir = vim.fn.fnamemodify(new, ":h")
+    vim.fn.mkdir(dir, "p")
+    vim.fn.rename(old, new)
+    vim.cmd("edit " .. vim.fn.fnameescape(new))
+    vim.cmd("bdelete! #")
+end, { nargs = 1, complete = "file" })
+
+vim.api.nvim_create_user_command("Mkdir", function(opts)
+    vim.fn.mkdir(opts.args, "p")
+end, { nargs = 1, complete = "dir" })
+
+vim.api.nvim_create_user_command("Chmod", function(opts)
+    vim.fn.system({ "chmod", opts.args, vim.fn.expand("%:p") })
+end, { nargs = 1 })
+-- }}}
+
+-- {{{ Git commands (replaces vim-fugitive)
+vim.api.nvim_create_user_command("Git", function(opts)
+    local cmd = "git " .. opts.args
+    cmd = cmd:gsub("%%", vim.fn.expand("%%:p"))
+    vim.cmd("!" .. cmd)
+end, { nargs = "+", complete = "file" })
+
+vim.api.nvim_create_user_command("Blame", function()
+    require("gitsigns").blame()
+end, {})
+-- }}}

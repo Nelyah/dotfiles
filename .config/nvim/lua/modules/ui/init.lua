@@ -26,15 +26,6 @@ plugin({
 
 })
 -- }}}
--- {{{ Vim Fugitive - Git interface
-plugin({
-	"tpope/vim-fugitive",
-	cmd = "Git",
-	config = function()
-		-- vim.keymap.set("n", "<Leader>gs", "<cmd>vertical botright Git status<CR>")
-	end,
-})
--- }}}
 -- {{{ Gitsigns - Git information on the sign column
 plugin({
 	"lewis6991/gitsigns.nvim",
@@ -104,7 +95,7 @@ plugin({
 -- }}}
 -- {{{ Nvim colorizer - Colour highlighter
 plugin({
-	"norcalli/nvim-colorizer.lua",
+	"NvChad/nvim-colorizer.lua",
 	config = function()
 		require("colorizer").setup()
 	end,
@@ -145,31 +136,6 @@ plugin({
 	config = function()
 		require("modules.ui.lualine").setup()
 	end,
-	dependencies = {
-		"kdheepak/tabline.nvim",
-	},
-})
-plugin({
-	"kdheepak/tabline.nvim",
-	lazy = true,
-})
--- }}}
--- {{{ Tabline - Better buffers and tabs. Only used for tabs in lualine
-plugin({
-	"kdheepak/tabline.nvim",
-	config = function()
-		require("tabline").setup({
-			enable = false, -- Set up by lualine
-			options = {
-				component_separators = { "", "" },
-				section_separators = { "", "" },
-			},
-		})
-	end,
-	dependencies = {
-		"nvim-lualine/lualine.nvim",
-		"kyazdani42/nvim-web-devicons",
-	},
 })
 -- }}}
 -- {{{ Todo Comments -- Highlight them and make them searchable
@@ -184,7 +150,7 @@ plugin({
 -- }}}
 -- {{{ NvimTree -- Show files on side window
 plugin({
-	"kyazdani42/nvim-tree.lua",
+	"nvim-tree/nvim-tree.lua",
 	cmd = "NvimTreeToggle",
 	config = function()
 		require("nvim-tree").setup({
@@ -196,80 +162,56 @@ plugin({
 	init = function()
 		vim.keymap.set("n", "<leader>n", "<cmd>NvimTreeToggle<CR>")
 	end,
-	dependencies = { "kyazdani42/nvim-web-devicons" },
+	dependencies = { "nvim-tree/nvim-web-devicons" },
 })
 -- }}}
--- {{{ Telescope
-plugin({
-	"nvim-telescope/telescope.nvim",
-	lazy = true,
-	version = false, -- telescope did only one release, so use HEAD for now
-	init = function()
-		require("modules.ui.telescope").init()
-	end,
-	config = function()
-		require("modules.ui.telescope").setup()
-	end,
-	dependencies = {
-		{
-			"nvim-telescope/telescope-fzf-native.nvim",
-			build = vim.fn.executable("cmake")
-				and
-				"cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
-				or "make",
-			enabled = vim.fn.executable("make") or vim.fn.executable("cmake"),
-		},
-	},
-})
+-- {{{ Dependencies
 plugin({
 	"nvim-lua/plenary.nvim",
 	lazy = true,
 })
 plugin({
-	"kyazdani42/nvim-web-devicons",
+	"nvim-tree/nvim-web-devicons",
 	lazy = true,
-})
-plugin({
-	"nvim-telescope/telescope-live-grep-args.nvim",
-	lazy = true,
-	config = function()
-		require("telescope").load_extension("live_grep_args")
-	end,
-})
-
--- Plugin to provide a nicer interface to some things (like some code-action)
-plugin({
-	"stevearc/dressing.nvim",
-	event = "VeryLazy",
-	opts = {},
 })
 -- }}}
 -- {{{ Fzf-Lua
 plugin({
 	"ibhagwan/fzf-lua",
-	-- optional for icon support
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()
-		-- calling `setup` is optional for customization
-		require("fzf-lua").setup({})
+		local fzf = require("fzf-lua")
+		fzf.setup({})
+		fzf.register_ui_select()
+
+		local fzf_opts = {
+			["cwd_prompt"] = false,
+			fzf_opts = {
+				["--layout"] = "default",
+			},
+		}
 
 		vim.keymap.set("n", "<leader>i", function()
-			require("fzf-lua").live_grep_native({
-				["cwd_prompt"] = false,
-				fzf_opts = {
-					["--layout"] = "default",
-				},
-			})
+			fzf.live_grep_native(fzf_opts)
 		end)
 		vim.keymap.set("n", "<leader>o", function()
-			require("fzf-lua").files({
-				["header"] = false,
-				["cwd_prompt"] = false,
-				fzf_opts = {
-					["--layout"] = "default",
-				},
-			})
+			fzf.files(vim.tbl_extend("force", fzf_opts, { ["header"] = false }))
 		end)
+		vim.keymap.set("n", ",", function()
+			fzf.buffers()
+		end)
+		vim.keymap.set("n", "<leader>x", function()
+			fzf.commands()
+		end)
+		vim.keymap.set("n", "<leader>s", function()
+			fzf.lgrep_curbuf()
+		end)
+		vim.keymap.set("n", "<c-x>h", function()
+			fzf.help_tags()
+		end)
+		vim.api.nvim_create_user_command("FT", function()
+			fzf.filetypes()
+		end, {})
 	end,
 })
 -- }}}
@@ -289,11 +231,9 @@ plugin({
 -- }}}
 -- {{{ Markdown
 plugin({
-    'MeanderingProgrammer/render-markdown.nvim',
-	ft = { "markdown", "codecompanion" },
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
-    opts = {},
+	'MeanderingProgrammer/render-markdown.nvim',
+	ft = { "markdown" },
+	dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+	opts = {},
 })
 -- }}}

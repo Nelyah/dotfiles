@@ -23,7 +23,6 @@ local function lualine_file_readonly()
 end
 
 function M.setup()
-
     -- stylua: ignore
     local colors = {
         blue             = '#80a0ff',
@@ -89,7 +88,7 @@ function M.setup()
                     file_status = false,
                     left_padding = 2,
                     right_padding = 2,
-                    separator = {  right = "" },
+                    separator = { right = "" },
                 },
                 lualine_file_readonly,
             },
@@ -132,12 +131,21 @@ function M.setup()
                     "buffers",
                     buffers_color = {
                         active = { fg = colors.pink, bg = "#333333" }, -- color for active buffer
-                        inactive = { fg = colors.white }, -- color for inactive buffer
+                        inactive = { fg = colors.white },              -- color for inactive buffer
                     },
                     separator = "",
                 },
             },
-            lualine_x = { require("tabline").tabline_tabs },
+            lualine_x = {
+                {
+                    "tabs",
+                    cond = function() return vim.fn.tabpagenr("$") > 1 end,
+                    tabs_color = {
+                        active = { fg = colors.default_bg, bg = colors.pink },
+                        inactive = { fg = colors.white },
+                    },
+                },
+            },
             lualine_y = {},
             lualine_z = {},
         },
