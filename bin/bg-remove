@@ -1,0 +1,98 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = ["Pillow"]
+# ///
+
+import argparse
+from collections import Counter, deque
+from pathlib import Path
+from PIL import Image
+
+
+def detect_bg_color(pixels, w: int, h: int) -> tuple[int, int, int]:
+    corners = [
+        pixels[0, 0],
+        pixels[w - 1, 0],
+        pixels[0, h - 1],
+        pixels[w - 1, h - 1],
+    ]
+    rgb_corners = [(r, g, b) for r, g, b, _a in corners]
+    most_common = Counter(rgb_corners).most_common(1)[0][0]
+    return most_common
+
+
+def remove_outside_background(path: Path, threshold: int = 40) -> Path:
+    img = Image.open(path).convert("RGBA")
+    w, h = img.size
+    pixels = img.load()
+
+    bg = detect_bg_color(pixels, w, h)
+    threshold_sq = threshold ** 2
+
+    def is_near_bg(r, g, b, a):
+        return (
+            (r - bg[0]) ** 2 + (g - bg[1]) ** 2 + (b - bg[2]) ** 2 < threshold_sq
+            and a > 200
+        )
+
+    visited = set()
+    queue = deque()
+
+    for x in range(w):
+        for y in (0, h - 1):
+            if is_near_bg(*pixels[x, y]) and (x, y) not in visited:
+                queue.append((x, y))
+                visited.add((x, y))
+    for y in range(h):
+        for x in (0, w - 1):
+            if is_near_bg(*pixels[x, y]) and (x, y) not in visited:
+                queue.append((x, y))
+                visited.add((x, y))
+
+    while queue:
+        cx, cy = queue.popleft()
+        pixels[cx, cy] = (0, 0, 0, 0)
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            nx, ny = cx + dx, cy + dy
+            if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in visited:
+                if is_near_bg(*pixels[nx, ny]):
+                    visited.add((nx, ny))
+                    queue.append((nx, ny))
+
+    out_path = path.with_stem(path.stem + "_nobg").with_suffix(".png")
+    img.save(out_path)
+    return out_path
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Remove the solid-colored background outside an image's subject using edge flood-fill. "
+        "The background color is auto-detected from the corner pixels. "
+        "Only background connected to the image edges is removed — internal areas of the same color are preserved.",
+    )
+    parser.add_argument("images", nargs="+", type=Path, metavar="IMAGE", help="image file(s) to process")
+    parser.add_argument(
+        "-t",
+        "--threshold",
+        type=int,
+        default=40,
+        help="color distance tolerance from the detected background color (0-255, default: 40)",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        default=None,
+        help="output path (only valid with a single input image; default: <input>_nobg.png)",
+    )
+    args = parser.parse_args()
+
+    if args.output and len(args.images) > 1:
+        parser.error("--output can only be used with a single input image")
+
+    for path in args.images:
+        out = remove_outside_background(path, threshold=args.threshold)
+        if args.output:
+            out.rename(args.output)
+            out = args.output
+        print(f"{path} -> {out}")
