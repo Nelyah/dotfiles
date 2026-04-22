@@ -1,89 +1,247 @@
 #! /usr/bin/env bash
 
-DARK_GRAY="$(tput setaf 0)"
-RED="$(tput setaf 1)"
-GREEN="$(tput setaf 2)"
-YELLOW="$(tput setaf 3)"
-BLUE="$(tput setaf 4)"
-MAGENTA="$(tput setaf 5)"
-CYAN="$(tput setaf 6)"
-WHITE="$(tput setaf 7)"
-GRAY="$(tput setaf 8)"
-BOLD="$(tput bold)"
-UNDERLINE="$(tput sgr 0 1)"
-INVERT="$(tput sgr 1 0)"
-NORMAL="$(tput sgr0)"
+# --- Status tree generator ---
+_gfl_status_tree() {
+    local green=$'\033[32m' red=$'\033[31m' gray=$'\033[90m'
+    local bold=$'\033[1m' reset=$'\033[0m'
+    local -a staged=() unstaged=() untracked=()
 
-export DARK_GRAY
-export RED
-export GREEN
-export YELLOW
-export BLUE
-export MAGENTA
-export CYAN
-export WHITE
-export GRAY
-export BOLD
-export UNDERLINE
-export INVERT
-export NORMAL
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        local x="${line:0:1}" y="${line:1:1}" path="${line:3}"
+        [[ "$path" == *" -> "* ]] && path="${path##* -> }"
+        path="${path#\"}" ; path="${path%\"}"
 
+        [[ "$x" != " " && "$x" != "?" ]] && staged+=("$x"$'\t'"$path")
+        if [[ "$y" != " " ]]; then
+            [[ "$x" == "?" ]] && untracked+=("?"$'\t'"$path") || unstaged+=("$y"$'\t'"$path")
+        fi
+    done < <(git status --porcelain 2>/dev/null)
+
+    if (( ${#staged[@]} + ${#unstaged[@]} + ${#untracked[@]} == 0 )); then
+        printf 'noop\t.\t%s── Working tree clean ──%s\n' "$gray" "$reset"
+        return
+    fi
+
+    _emit_group() {
+        local action="$1" label="$2" color="$3"
+        shift 3
+        (( $# == 0 )) && return
+
+        printf 'noop\t.\t%s── %s (%d) ──%s\n' "${bold}${color}" "$label" "$#" "$reset"
+
+        local prev_dir=""
+        while IFS=$'\t' read -r st fpath; do
+            local dir file
+            dir=$(dirname "$fpath")
+            file=$(basename "$fpath")
+
+            if [[ "$dir" != "." && "$dir" != "$prev_dir" ]]; then
+                printf '%s\t%s/\t  %s▸ %s/%s\n' "$action" "$dir" "$bold" "$dir" "$reset"
+                prev_dir="$dir"
+            fi
+
+            if [[ "$dir" == "." ]]; then
+                printf '%s\t%s\t  %s%s  %s%s\n' "$action" "$fpath" "$color" "$st" "$file" "$reset"
+            else
+                printf '%s\t%s\t      %s%s  %s%s\n' "$action" "$fpath" "$color" "$st" "$file" "$reset"
+            fi
+        done < <(printf '%s\n' "$@" | sort -t$'\t' -k2)
+    }
+
+    _emit_group "unstage" "Staged" "$green" "${staged[@]}"
+    _emit_group "stage" "Unstaged" "$red" "${unstaged[@]}"
+    _emit_group "stage" "Untracked" "$gray" "${untracked[@]}"
+}
+
+# --- Argument parsing ---
 args=()
 nb_lines=
+_fullscreen=false
+_fzf_query=
+_mode=log
 
 while (( $# > 0 )); do
-    if grep -E "^[0-9]+$" <<< "$1" &> /dev/null; then
-        nb_lines=$( tr -d '-' <<< "$1")
-    else
-        args+=( "$1" )
-    fi
-    shift
+    case "$1" in
+        --full)
+            _fullscreen=true
+            shift
+            ;;
+        --status)
+            _mode=status
+            shift
+            ;;
+        --emit-status)
+            _gfl_status_tree
+            exit 0
+            ;;
+        --query)
+            _fzf_query="$2"
+            shift 2
+            ;;
+        --query=*)
+            _fzf_query="${1#--query=}"
+            shift
+            ;;
+        *)
+            if grep -E "^[0-9]+$" <<< "$1" &> /dev/null; then
+                nb_lines=$(tr -d '-' <<< "$1")
+            else
+                args+=( "$1" )
+            fi
+            shift
+            ;;
+    esac
 done
 [ -n "$nb_lines" ] && nb_lines="-${nb_lines}"
 
-_gitLogLineToHash="echo {} | awk '{print \$1}' | head -1"
-
+# --- Tool detection ---
 _gitDiffTool=
-if hash diff-so-fancy &> /dev/null ; then
+if hash delta &>/dev/null; then
+    _gitDiffTool='| delta --paging=never'
+elif hash diff-so-fancy &>/dev/null; then
     _gitDiffTool='| diff-so-fancy'
 fi
-_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % $_gitDiffTool'"
+
+if [ "$(uname)" = Darwin ]; then
+    _clip="pbcopy"
+elif hash xclip &>/dev/null; then
+    _clip="xclip -selection clipboard"
+else
+    _clip="xsel --clipboard"
+fi
 
 _curEditor=${EDITOR:-nano}
+_repoRoot=$(git rev-parse --show-toplevel 2>/dev/null)
 
-_filesFromGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --pretty="" --name-only --relative %'  "
+# --- Git status header ---
+_branch=$(git branch --show-current 2>/dev/null || echo "detached")
+_dirty=$(git diff --quiet 2>/dev/null && git diff --cached --quiet 2>/dev/null || printf " *")
+_upstream=""
+if git rev-parse --abbrev-ref '@{upstream}' &>/dev/null; then
+    read -r _behind _ahead < <(git rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null)
+    (( _ahead > 0 )) && _upstream+=" +${_ahead}"
+    (( _behind > 0 )) && _upstream+=" -${_behind}"
+fi
+_status_line="${_branch}${_dirty}${_upstream}"
 
-[ "$(uname)" = Darwin ] && prefix_key=ctrl || prefix_key=alt
+# --- Mode-specific keys and header ---
+if [[ "$_mode" == "status" ]]; then
+    _normal_keys="j,k,u,o,q,g,G,i,/"
+    _keys="u:stage  o:edit  tab:log  /:search  q:quit"
+else
+    _normal_keys="j,k,y,o,p,f,r,b,s,q,g,G,i,/"
+    _keys="y:copy  o:edit  p:pick  f:fixup  r:rebase  b:branch  s:diff  tab:status  /:search  q:quit"
+fi
+_header=$(printf '%s\n%s' "$_status_line" "$_keys")
 
-_HEADER='Git fuzzy
-    '"${UNDERLINE}${YELLOW}"'Enter'"${NORMAL}"': Open Diff with the pager
-    '"${UNDERLINE}${YELLOW}${prefix_key}"'-y'"${NORMAL}"': Copy hash to clipboard (requires xclip)
-    '"${UNDERLINE}${YELLOW}${prefix_key}"'-o'"${NORMAL}"': Open files in commit using '"${_curEditor}"'
-    '"${UNDERLINE}${YELLOW}${prefix_key}"'-p'"${NORMAL}"': Cherry-pick commit
-    '"${UNDERLINE}${YELLOW}${prefix_key}"'-f'"${NORMAL}"': Fixup this commit
-    '"${UNDERLINE}${YELLOW}${prefix_key}"'-r'"${NORMAL}"': Interactive rebase from this commit
+# --- Vim-like modal keys ---
+_enter_normal="disable-search+hide-input+rebind($_normal_keys)"
+_enter_insert="enable-search+show-input+unbind($_normal_keys)+change-prompt(/ )"
 
+# --- Mode-specific options ---
+if [[ "$_mode" == "status" ]]; then
+    if "$_fullscreen"; then
+        _height_opts=()
+        _become='alt-enter:become(git-fl --status --query {q})'
+        _tab='tab:become(git-fl --full --query {q})'
+        _preview_window="right,60%,border-left"
+    else
+        _height_opts=(--height=30% --min-height=10)
+        _become='alt-enter:become(git-fl --status --full --query {q})'
+        _tab='tab:become(git-fl --query {q})'
+        _preview_window="right,50%,border-left"
+    fi
+else
+    # --- Log mode preview commands ---
+    _gitLogLineToHash="echo {} | awk '{print \$1}' | head -1"
+    _previewStat="$_gitLogLineToHash | xargs -I % sh -c 'git show --stat --color=always %'"
+    _previewStatDiff="$_gitLogLineToHash | xargs -I % sh -c 'git show --stat -p --color=always % $_gitDiffTool'"
+    _previewDiff="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % $_gitDiffTool'"
+    _filesFromGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --pretty=\"\" --name-only --relative %'"
 
-'
+    export GFL_PREVIEW_STAT="$_previewStat"
+    export GFL_PREVIEW_STAT_DIFF="$_previewStatDiff"
+    export GFL_PREVIEW_DIFF="$_previewDiff"
 
-_GitLogFormat="%C(212)%>|(5)%h%C(reset)  %C(04)%cd%C(reset)  %C(green)%<(20,trunc)%an%C(reset) %>|(1)%s%C(reset) %C(auto)%d%C(reset)"
-_GitDateFormat="%Y-%m-%d %H:%I:%S"
+    _GitLogFormat="%C(212)%>|(5)%h%C(reset)  %C(04)%cd%C(reset)  %C(green)%<(20,trunc)%an%C(reset) %>|(1)%s%C(reset) %C(auto)%d%C(reset)"
+    _GitDateFormat="%Y-%m-%d %H:%I:%S"
+    _GitCommand="git log $nb_lines --color=always --format=\"$_GitLogFormat\" --date=format:\"$_GitDateFormat\" ${args[*]}"
 
+    if "$_fullscreen"; then
+        _height_opts=()
+        _preview="$_previewStatDiff"
+        _preview_label="[ stat+diff ]"
+        _preview_window="right,60%,border-left"
+        _become='alt-enter:become(git-fl --query {q})'
+        _tab='tab:become(git-fl --status --full --query {q})'
+    else
+        _height_opts=(--height=30% --min-height=10)
+        _preview="$_previewStat"
+        _preview_label="[ stat ]"
+        _preview_window="right,50%,border-left"
+        _become='alt-enter:become(git-fl --full --query {q})'
+        _tab='tab:become(git-fl --status --query {q})'
+    fi
+fi
 
-_gitLog () {
-
-_GitCommand="git log  $nb_lines  --color=always  --format=\"$_GitLogFormat\"  --date=format:\"$_GitDateFormat\" ${args[@]}"
-eval "$_GitCommand" | \
-    fzf --no-sort --reverse --tiebreak=index --no-multi \
-        --ansi --preview="$_viewGitLogLine" \
-        --header "$_HEADER" \
-        --toggle-sort=\` \
-        --bind "enter:execute:$_viewGitLogLine   | less -R" \
-        --bind "alt-o:execute:$_filesFromGitLogLine | xargs --no-run-if-empty ${_curEditor} " \
-        --bind "alt-y:execute:$_gitLogLineToHash | xclip" \
-        --bind "alt-p:execute($_gitLogLineToHash | xargs  git cherry-pick)+reload:$_GitCommand" \
-        --bind "alt-f:execute($_gitLogLineToHash | xargs -I % git commit --fixup %)+reload:$_GitCommand"  \
-        --bind "alt-r:execute($_gitLogLineToHash | xargs -I % git rebase -i --autosquash %^ )+reload:$_GitCommand"
-}
-
-_gitLog
+# --- Run ---
+if [[ "$_mode" == "status" ]]; then
+    _gfl_status_tree |
+        fzf --no-sort --reverse --tiebreak=index --no-multi \
+            --ansi --track \
+            --delimiter $'\t' --with-nth 3.. \
+            "${_height_opts[@]}" \
+            --highlight-line \
+            --header "$_header" \
+            --query "$_fzf_query" \
+            --preview 'if [[ {1} == noop ]]; then git status --short; elif [[ {1} == unstage ]]; then git diff --cached --color=always -- {2} '"$_gitDiffTool"'; elif git ls-files --error-unmatch {2} &>/dev/null; then git diff --color=always -- {2} '"$_gitDiffTool"'; else cat '"$_repoRoot"'/{2}; fi' \
+            --preview-label "[ diff ]" \
+            --preview-window "$_preview_window" \
+            --bind "start:$_enter_normal" \
+            --bind "esc:$_enter_normal" \
+            --bind "i:$_enter_insert" \
+            --bind "/:$_enter_insert" \
+            --bind "j:down" \
+            --bind "k:up" \
+            --bind "g:first" \
+            --bind "G:last" \
+            --bind "q:abort" \
+            --bind 'u:transform:[[ {1} == noop ]] && exit 0; if [[ {1} == unstage ]]; then echo "execute-silent(git restore --staged -- {2})+reload(git-fl --emit-status)"; else echo "execute-silent(git add -- {2})+reload(git-fl --emit-status)"; fi' \
+            --bind 'enter:execute:if [[ {1} == noop ]]; then git status | less -R; elif [[ {1} == unstage ]]; then git diff --cached --color=always -- {2} '"$_gitDiffTool"' | less -R; elif git ls-files --error-unmatch {2} &>/dev/null; then git diff --color=always -- {2} '"$_gitDiffTool"' | less -R; else less '"$_repoRoot"'/{2}; fi' \
+            --bind 'o:execute:[[ {1} != noop ]] && '"$_curEditor"' {2}' \
+            --bind "$_become" \
+            --bind "$_tab" \
+            --bind 'ctrl-/:toggle-preview'
+else
+    eval "$_GitCommand" |
+        fzf --no-sort --reverse --tiebreak=index --no-multi \
+            --ansi \
+            "${_height_opts[@]}" \
+            --highlight-line \
+            --header "$_header" \
+            --query "$_fzf_query" \
+            --preview "$_preview" \
+            --preview-label "$_preview_label" \
+            --preview-window "$_preview_window" \
+            --bind "start:$_enter_normal" \
+            --bind "esc:$_enter_normal" \
+            --bind "i:$_enter_insert" \
+            --bind "/:$_enter_insert" \
+            --bind "j:down" \
+            --bind "k:up" \
+            --bind "g:first" \
+            --bind "G:last" \
+            --bind "q:abort" \
+            --bind "enter:execute:$_previewStatDiff | less -R" \
+            --bind "o:execute:$_filesFromGitLogLine | xargs --no-run-if-empty ${_curEditor}" \
+            --bind "y:execute-silent:$_gitLogLineToHash | $_clip" \
+            --bind "p:execute($_gitLogLineToHash | xargs git cherry-pick)+reload:$_GitCommand" \
+            --bind "f:execute($_gitLogLineToHash | xargs -I % git commit --fixup %)+reload:$_GitCommand" \
+            --bind "r:execute($_gitLogLineToHash | xargs -I % git rebase -i --autosquash %^)+reload:$_GitCommand" \
+            --bind "b:execute(git branch -a --format='%(refname:short)' --sort=-committerdate | fzf --height=40% --reverse --prompt='rebase onto> ' | xargs -I % sh -c 'git rebase -i --autosquash %')+reload:$_GitCommand" \
+            --bind "$_become" \
+            --bind "$_tab" \
+            --bind 'ctrl-/:toggle-preview' \
+            --bind 's:transform:case $FZF_PREVIEW_LABEL in *stat+diff*) echo "change-preview($GFL_PREVIEW_DIFF)+change-preview-label([ diff ])";; *diff*) echo "change-preview($GFL_PREVIEW_STAT)+change-preview-label([ stat ])";; *) echo "change-preview($GFL_PREVIEW_STAT_DIFF)+change-preview-label([ stat+diff ])";; esac'
+fi
