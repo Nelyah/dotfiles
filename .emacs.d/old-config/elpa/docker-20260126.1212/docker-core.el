@@ -1,0 +1,173 @@
+;;; docker-core.el --- Docker core  -*- lexical-binding: t -*-
+
+;; Author: Philippe Vaucher <philippe.vaucher@gmail.com>
+
+;; This file is NOT part of GNU Emacs.
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
+
+;;; Commentary:
+
+;;; Code:
+(eval-when-compile
+  (setq-local byte-compile-warnings '(not docstrings)))
+
+(require 'aio)
+(require 'transient)
+
+(require 'docker-group)
+(require 'docker-utils)
+(require 'docker-process)
+
+(defcustom docker-command "docker"
+  "The docker binary."
+  :group 'docker
+  :type 'string)
+
+(defvar docker-open-hook ()
+  "Called when `docker' transient is opened.")
+
+(defvar docker-status-strings '(:containers "" :images "" :networks "" :volumes "" :contexts "")
+  "Plist of statuses for `docker' transient.")
+
+(defcustom docker-show-status 'local-only
+  "Whether to display docker status in the main transient buffer."
+  :group 'docker
+  :type '(choice
+          (const :tag "Always" t)
+          (const :tag "Local Only" local-only)
+          (const :tag "Never" nil)))
+
+(defcustom docker-inspect-view-mode (if (fboundp 'json-mode) 'json-mode 'js-mode)
+  "Major mode used in `docker inspect' buffers."
+  :group 'docker
+  :type 'symbol)
+
+(defun docker-run-docker-async (&rest args)
+  "Execute \"`docker-command' ARGS\" and return a promise with the results."
+  (apply #'docker-run-async docker-command (docker-arguments) args))
+
+(defun docker-run-docker-async-with-buffer-interactive (&rest args)
+  "Execute \"`docker-command' ARGS\" and display output in an interactive buffer."
+  (apply #'docker-run-async-with-buffer-interactive docker-command (docker-arguments) args))
+
+(defun docker-run-docker-async-with-buffer-noninteractive (&rest args)
+  "Execute \"`docker-command' ARGS\" and display output in a non-interactive buffer."
+  (apply #'docker-run-async-with-buffer-noninteractive docker-command (docker-arguments) args))
+
+(defun docker-get-transient-action ()
+  "Extract the action out of `transient-current-command'."
+  (s-replace "-" " " (s-chop-prefix "docker-" (symbol-name transient-current-command))))
+
+(defun docker-generic-action-description ()
+  "Make the actions description for the selected items."
+  (let ((items (s-join ", " (docker-utils-get-marked-items-ids))))
+    (format "%s %s"
+            (propertize "Actions on" 'face 'transient-heading)
+            (propertize items        'face 'transient-value))))
+
+(aio-defun docker-generic-action (action args)
+  "Run \"`docker-command' ACTION ARGS\" on each of the selected items."
+  (interactive (list (docker-get-transient-action)
+                     (transient-args transient-current-command)))
+  (let* ((ids (docker-utils-get-marked-items-ids))
+         (promises (--map (docker-run-docker-async action args it) ids)))
+    (aio-await (aio-all promises))
+    (tablist-revert)))
+
+(aio-defun docker-generic-action-multiple-ids (action args)
+  "Same as `docker-generic-action', but group selection ids into a single command."
+  (interactive (list (docker-get-transient-action)
+                     (transient-args transient-current-command)))
+  (aio-await (docker-run-docker-async action args (docker-utils-get-marked-items-ids)))
+  (tablist-revert))
+
+(defun docker-generic-action-with-buffer-interactive (action args)
+  "Run \"`docker-command' ACTION ARGS\" and print output in an interactive buffer."
+  (interactive (list (docker-get-transient-action)
+                     (transient-args transient-current-command)))
+  (--each (docker-utils-get-marked-items-ids)
+    (docker-run-docker-async-with-buffer-interactive (s-split " " action) args it)))
+
+(defun docker-generic-action-with-buffer-noninteractive (action args)
+  "Run \"`docker-command' ACTION ARGS\" and print output in a non-interactive buffer."
+  (interactive (list (docker-get-transient-action)
+                     (transient-args transient-current-command)))
+  (--each (docker-utils-get-marked-items-ids)
+    (docker-run-docker-async-with-buffer-noninteractive (s-split " " action) args it)))
+
+(aio-defun docker-generic-action-with-buffer (action args)
+  "Run \"`docker-command' ACTION ARGS\", wait for completion, then display output.
+This collects all output before displaying, suitable for non-interactive commands."
+  (interactive (list (docker-get-transient-action)
+                     (transient-args transient-current-command)))
+  (--each (docker-utils-get-marked-items-ids)
+    (let* ((id it)
+           (output (aio-await (docker-run-docker-async (s-split " " action) args id))))
+      (docker-utils-with-buffer (format "%s %s" action id)
+        ;; Strip carriage returns (Docker outputs CRLF line endings)
+        (insert (ansi-color-apply (replace-regexp-in-string "\r" "" output)))
+        (special-mode)))))
+
+(aio-defun docker-inspect (&optional subcmd)
+  "Run \"`docker-command' inspect\" on the selected items."
+  (interactive)
+  (docker-utils-ensure-items)
+  (--each (docker-utils-get-marked-items-ids)
+    (let* ((id it)
+           (data (aio-await (docker-run-docker-async (concat (or subcmd "") " inspect") id))))
+      (docker-utils-with-buffer (format "inspect %s" id)
+        (insert data)
+        (funcall docker-inspect-view-mode)
+        (view-mode)))))
+
+(defun docker-read-log-level (prompt &rest _args)
+  "Read the docker log level using PROMPT."
+  (completing-read prompt '(debug info warn error fatal)))
+
+(defun docker-read-certificate (prompt &optional initial-input _history)
+  "Wrapper around `read-file-name' forwarding PROMPT and INITIAL-INPUT."
+  (read-file-name prompt nil nil t initial-input (apply-partially 'string-match ".*\\.pem")))
+
+(docker-utils-define-transient-arguments docker)
+
+;;;###autoload (autoload 'docker "docker" nil t)
+(transient-define-prefix docker ()
+  "Transient for docker."
+  :man-page "docker"
+  ["Arguments"
+   (5 "H" "Host" "--host " read-string)
+   (5 "Tt" "TLS" "--tls")
+   (5 "Tv" "TLS verify remote" "--tlsverify")
+   (5 "Ta" "TLS CA" "--tlscacert" docker-read-certificate)
+   (5 "Tc" "TLS certificate" "--tlscert" docker-read-certificate)
+   (5 "Tk" "TLS key" "--tlskey" docker-read-certificate)
+   (5 "l" "Log level" "--log-level " docker-read-log-level)]
+  ["Docker"
+   ("c" (lambda ()(plist-get docker-status-strings :containers)) docker-containers)
+   ("i" (lambda ()(plist-get docker-status-strings :images))     docker-images)
+   ("n" (lambda ()(plist-get docker-status-strings :networks))   docker-networks)
+   ("v" (lambda ()(plist-get docker-status-strings :volumes))    docker-volumes)
+   ("x" (lambda ()(plist-get docker-status-strings :contexts))   docker-contexts)]
+  ["Other"
+   ("C" "Compose" docker-compose)]
+  (interactive)
+  (run-hooks 'docker-open-hook)
+  (transient-setup 'docker))
+
+(provide 'docker-core)
+
+;;; docker-core.el ends here

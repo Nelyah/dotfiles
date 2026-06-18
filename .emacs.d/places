@@ -1,0 +1,9 @@
+;;; -*- coding: utf-8; mode: lisp-data -*-
+(("/Users/chloe/cloud/utils/org/inbox.org" . 232)
+ ("/Users/chloe/cloud/utils/org/someday.org" . 65)
+ ("/Users/chloe/cloud/utils/org/journal.org" . 51)
+ ("/Users/chloe/cloud/utils/org/cheatsheet.org" . 503)
+ ("/Users/chloe/.emacs.d/bookmarks" . 251)
+ ("/Users/chloe/.emacs.d/init.el" . 11099)
+ ("/Users/chloe/cloud/utils/org/"
+  (dired-filename . "/Users/chloe/cloud/utils/org/inbox.org")))

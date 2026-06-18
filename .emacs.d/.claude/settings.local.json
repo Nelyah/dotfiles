@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(emacs --version)",
+      "Bash(ls /Users/chloe/.emacs.d/*.el)",
+      "Bash(ls /Users/chloe/.emacs.d/lisp/*.el)",
+      "Bash(/usr/sbin/system_profiler SPFontsDataType)",
+      "Bash(brew list *)",
+      "Bash(fc-list : family)",
+      "Bash(system_profiler SPFontsDataType)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
+  }
+}
