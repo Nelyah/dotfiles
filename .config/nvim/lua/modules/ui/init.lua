@@ -1,5 +1,50 @@
 local plugin = require("core.packer").register_plugin
 
+-- {{{ Snacks
+plugin({
+	"folke/snacks.nvim",
+	priority = 1000,
+	lazy = false,
+	opts = {
+		input = { enabled = true },
+	},
+	keys = {
+		{
+			"<leader>r",
+			function()
+				Snacks.rename.rename_file()
+			end,
+			desc = "Rename File",
+		},
+	},
+	init = function()
+		vim.api.nvim_create_autocmd("User", {
+			pattern = "OilActionsPost",
+			callback = function(event)
+				for _, action in ipairs(event.data.actions or {}) do
+					if action.type == "move" then
+						Snacks.rename.on_rename_file(action.src_url, action.dest_url)
+					end
+				end
+			end,
+		})
+
+		local prev = { new_name = "", old_name = "" }
+		vim.api.nvim_create_autocmd("User", {
+			pattern = "NvimTreeSetup",
+			callback = function()
+				local events = require("nvim-tree.api").events
+				events.subscribe(events.Event.NodeRenamed, function(data)
+					if prev.new_name ~= data.new_name or prev.old_name ~= data.old_name then
+						prev = data
+						Snacks.rename.on_rename_file(data.old_name, data.new_name)
+					end
+				end)
+			end,
+		})
+	end,
+})
+-- }}}
 -- {{{ DiffView
 plugin({
 	cmd = {
@@ -105,7 +150,6 @@ plugin({
 plugin({
 	"navarasu/onedark.nvim",
 	config = function()
-		require("modules.treesitter") -- needed for this theme
 		require("onedark").setup({
 			style = "warmer",
 			colors = {
@@ -196,7 +240,7 @@ plugin({
 		end)
 		vim.keymap.set("n", "<leader>o", function()
 			fzf.files(vim.tbl_extend("force", fzf_opts, { ["header"] = false }))
-		end)
+		end, { nowait = true })
 		vim.keymap.set("n", ",", function()
 			fzf.buffers()
 		end)
@@ -233,7 +277,7 @@ plugin({
 plugin({
 	'MeanderingProgrammer/render-markdown.nvim',
 	ft = { "markdown" },
-	dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+	dependencies = { 'nvim-tree/nvim-web-devicons' },
 	opts = {},
 })
 -- }}}

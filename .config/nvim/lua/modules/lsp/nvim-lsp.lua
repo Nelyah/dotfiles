@@ -114,8 +114,15 @@ function M.setup()
 		{ "│", "FloatBorder" },
 	}
 
-	vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border })
-	vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border })
+	local function bordered(handler)
+		return function(err, result, ctx, config)
+			config = vim.tbl_deep_extend("force", config or {}, { border = border })
+			return handler(err, result, ctx, config)
+		end
+	end
+
+	vim.lsp.handlers["textDocument/hover"] = bordered(vim.lsp.handlers.hover)
+	vim.lsp.handlers["textDocument/signatureHelp"] = bordered(vim.lsp.handlers.signature_help)
 
 	-- Check for event after that many ms
 	vim.opt.updatetime = 700

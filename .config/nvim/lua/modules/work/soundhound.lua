@@ -1,5 +1,3 @@
-local plugin = require("core.packer").register_plugin
-
 local M = {}
 
 local insertHeader = function()
@@ -38,47 +36,7 @@ local insertHeader = function()
 	fn.append(fn.line("$"), end_lines)
 end
 
-local register_treesitter_parser = function()
-	local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-	parser_config.ter = {
-		install_info = {
-			-- url = "git@git.soundhound.com:cdequeker/tree-sitter-ter.git", -- local path or git repo
-			url = "/Users/cdequeker/dev/tree-sitter-ter", -- local path or git repo
-			files = { "src/parser.c", "src/scanner.cc" },
-			-- optional entries:
-			branch = "master", -- default branch in case of git repo if different from master
-			generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-			requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
-		},
-		filetype = "ter", -- if filetype does not match the parser name
-	}
-	vim.treesitter.language.register("ter", "ter")
-end
-
-M.treesitter_setup = function()
-	local has_treesitter, _ = pcall(require, "nvim-treesitter")
-	if not has_treesitter then
-		return
-	end
-	require("nvim-treesitter.parsers").ter = {
-		install_info = {
-			-- url = "git@git.soundhound.com:cdequeker/tree-sitter-ter.git", -- local path or git repo
-			url = "/Users/cdequeker/dev/tree-sitter-ter", -- local path or git repo
-			files = { "src/parser.c", "src/scanner.cc" },
-			-- optional entries:
-			branch = "master", -- default branch in case of git repo if different from master
-			generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-			requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
-		},
-		filetype = "ter", -- if filetype does not match the parser name
-	}
-	vim.treesitter.language.register("ter", "ter")
-end
-
 M.setup = function()
-	-- plugin({ "git@git.soundhound.com:cdequeker/tree-sitter-ter-queries.git", event = "VeryLazy" })
-	-- plugin({ "git@git.soundhound.com:terrier/salmon-vim", event = "VeryLazy" })
-
 	vim.filetype.add({
 		extension = { ter = "ter" },
 	})
