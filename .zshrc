@@ -31,7 +31,22 @@ bindkey "\e[3~" delete-char
 zmodload zsh/zle
 autoload -U add-zsh-hook
 
+#{{{ Cached init
+cached_init() {
+    local name=$1; shift
+    local bin=${commands[$name]}
+    [[ -n $bin ]] || return 0
 
+    local cache="${XDG_CACHE_HOME:-$HOME/.cache}/${name}-init.zsh"
+    if [[ ! -s $cache || $bin -nt $cache ]]; then
+        "$@" >| "$cache.tmp" && mv -f "$cache.tmp" "$cache" || {
+            rm -f "$cache.tmp"
+            return 1
+        }
+    fi
+    source "$cache"
+}
+#}}}
 
 #{{{ Bindings
 _git_tl () {
@@ -274,12 +289,7 @@ export RPROMPT="$RPROMPT $(_virtual_env_info)"
 #{{{ fzf
 
 if hash fzf &> /dev/null; then
-    _fzf_cache="${XDG_CACHE_HOME:-$HOME/.cache}/fzf-init.zsh"
-    if [[ ! -s $_fzf_cache || =fzf -nt $_fzf_cache ]]; then
-        fzf --zsh >| "$_fzf_cache"
-    fi
-    source "$_fzf_cache"
-    unset _fzf_cache
+    cached_init fzf fzf --zsh
 
     export FZF_DEFAULT_OPTS="--reverse"
     if hash rg &> /dev/null; then
@@ -458,11 +468,5 @@ export ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
 mkdir -p "$ZSH_CACHE_DIR"
 source "${ZSH_PLUGIN_HOME}/oh-my-zsh/completion.zsh"
 
-if hash atuin &> /dev/null; then
-    _atuin_cache="${XDG_CACHE_HOME:-$HOME/.cache}/atuin-init.zsh"
-    if [[ ! -s $_atuin_cache || =atuin -nt $_atuin_cache ]]; then
-        atuin init zsh  --disable-up-arrow >| "$_atuin_cache"
-    fi
-    source "$_atuin_cache"
-    unset _atuin_cache
-fi
+cached_init atuin atuin init zsh --disable-up-arrow
+cached_init meow meow init zsh
