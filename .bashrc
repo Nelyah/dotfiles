@@ -96,3 +96,4 @@ relPath () {
 # HINT: busybox's "readlink" does not support option '-m', only '-f'
 #       which requires that all but the last path component must exist)
 relpath () { relPath "$(readlink -m "$1")" "$(readlink -m "$2")"; }
+. "$HOME/.cargo/env"

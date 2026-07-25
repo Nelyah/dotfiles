@@ -32,9 +32,6 @@ zmodload zsh/zle
 autoload -U add-zsh-hook
 
 
-autoload -Uz compinit
-compinit
-
 
 #{{{ Bindings
 _git_tl () {
@@ -54,45 +51,18 @@ zle -N widget-git-status _git_status
 bindkey '\C-k' widget-git-status
 #}}}
 
-#{{{ Zplug
-export ZPLUG_HOME="${XDG_CONFIG_HOME}/zplug"
-
-[ -d "$ZPLUG_HOME" ] && REPLY=yes || read -q "REPLY?Clone Zplug to '$ZPLUG_HOME'? [yN] "
-
-if [[ $REPLY =~ ^([Yy]|yes)$ ]]; then
-
-    [ ! -d "$ZPLUG_HOME" ] && mkdir -p "$ZPLUG_HOME"
-    [ ! -f "$ZPLUG_HOME/init.zsh" ] && git clone https://github.com/zplug/zplug "$ZPLUG_HOME"
-
-    source "${ZPLUG_HOME}/init.zsh"
-
-    zplug 'zplug/zplug', hook-build:'zplug --self-manage'
-    zplug "mafredri/zsh-async", from:"github", use:"async.zsh"
-    zplug "lib/clipboard", from:"oh-my-zsh"
-    zplug "lib/compfix", from:"oh-my-zsh"
-    zplug "lib/completion", from:"oh-my-zsh"
-    zplug "lib/git", from:"oh-my-zsh"
-    zplug "Nelyah/bee", use:'completion'
-
-
-    # Install plugins if there are plugins that have not been installed
-    if ! zplug check --verbose; then
-        printf "Install? [y/N]: "
-        if read -q; then
-            echo; zplug install
-        fi
-    fi
-
-    zplug load
-    ZPLUG_LOADED=yes
-fi
+#{{{ Plugins (direct source — no zplug)
+ZSH_PLUGIN_HOME="${XDG_CONFIG_HOME}/zsh/plugins"
+source "${ZSH_PLUGIN_HOME}/zsh-async/async.zsh"
+source "${ZSH_PLUGIN_HOME}/oh-my-zsh/clipboard.zsh"
+fpath+=("${ZSH_PLUGIN_HOME}/bee")
 #}}}
 
 #{{{ LS_colors
-if [[ $(uname) == "Darwin" ]]; then
-    eval `gdircolors ~/.dircolors`
+if hash dircolors &>/dev/null; then
+    hash dircolors &>/dev/null && eval "$(dircolors ~/.dircolors)"
 else
-    eval `dircolors ~/.dircolors`
+    hash gdircolors &>/dev/null && eval "$(gdircolors ~/.dircolors)"
 fi
 #}}}
 
@@ -156,28 +126,26 @@ _vbe_vcs_info() {
     print ${vcs_info_msg_0_}
 }
 
-if [[ -n "$ZPLUG_LOADED" ]]; then
-    async_init
-    async_start_worker vcs_info
-    async_register_callback vcs_info _vbe_vcs_info_done
+async_init
+async_start_worker vcs_info
+async_register_callback vcs_info _vbe_vcs_info_done
 
-    _vbe_vcs_info_done() {
-        local stdout=$3
-        vcs_info_msg_0_=$stdout
-        zle reset-prompt
+_vbe_vcs_info_done() {
+    local stdout=$3
+    vcs_info_msg_0_=$stdout
+    zle reset-prompt
+}
+
+_vbe_async_worker () {
+    # Restart the worker if it died for some reason
+    async_job vcs_info _vbe_vcs_info $PWD || {
+        async_init
+        async_start_worker vcs_info
+        async_register_callback vcs_info _vbe_vcs_info_done
     }
+}
 
-    _vbe_async_worker () {
-        # Restart the worker if it died for some reason
-        async_job vcs_info _vbe_vcs_info $PWD || {
-            async_init
-            async_start_worker vcs_info
-            async_register_callback vcs_info _vbe_vcs_info_done
-        }
-    }
-
-    add-zsh-hook precmd _vbe_async_worker
-fi
+add-zsh-hook precmd _vbe_async_worker
 
 #}}}
 
@@ -306,7 +274,12 @@ export RPROMPT="$RPROMPT $(_virtual_env_info)"
 #{{{ fzf
 
 if hash fzf &> /dev/null; then
-    source <(fzf --zsh)
+    _fzf_cache="${XDG_CACHE_HOME:-$HOME/.cache}/fzf-init.zsh"
+    if [[ ! -s $_fzf_cache || =fzf -nt $_fzf_cache ]]; then
+        fzf --zsh >| "$_fzf_cache"
+    fi
+    source "$_fzf_cache"
+    unset _fzf_cache
 
     export FZF_DEFAULT_OPTS="--reverse"
     if hash rg &> /dev/null; then
@@ -462,6 +435,34 @@ function op() {
 }
 #}}}
 
+# Add custom completions and init the completion system once.
+# Always load the dump (-C). Rebuild in the background at most daily.
+fpath+=~/.zfunc
+autoload -Uz compinit
+compinit -C
+
+{
+  emulate -L zsh
+  setopt extendedglob
+  local dump="${ZDOTDIR:-$HOME}/.zcompdump"
+  local -a stale=( ${dump}(Nmh+24) )
+  if [[ ! -s $dump ]] || (( $#stale )); then
+    autoload -Uz compinit
+    compinit
+    [[ -s $dump && (! -s ${dump}.zwc || $dump -nt ${dump}.zwc) ]] && zcompile $dump
+  fi
+} &!
+
+# OMZ completion styles + bashcompinit (must run after compinit).
+export ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+mkdir -p "$ZSH_CACHE_DIR"
+source "${ZSH_PLUGIN_HOME}/oh-my-zsh/completion.zsh"
+
 if hash atuin &> /dev/null; then
-    eval "$(atuin init zsh)"
+    _atuin_cache="${XDG_CACHE_HOME:-$HOME/.cache}/atuin-init.zsh"
+    if [[ ! -s $_atuin_cache || =atuin -nt $_atuin_cache ]]; then
+        atuin init zsh >| "$_atuin_cache"
+    fi
+    source "$_atuin_cache"
+    unset _atuin_cache
 fi
