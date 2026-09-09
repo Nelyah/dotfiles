@@ -1,5 +1,48 @@
 #! /usr/bin/env bash
 
+# git-fl: a small fzf UI for git log/status.
+# Keep this file self-contained; helper subcommands below are called by fzf bindings.
+
+# --- Small shell helpers ---
+_gfl_shell_words() {
+    local sep="" arg quoted
+    for arg in "$@"; do
+        printf -v quoted '%q' "$arg"
+        printf '%s%s' "$sep" "$quoted"
+        sep=" "
+    done
+}
+
+_gfl_self_cmd() {
+    # Helper subcommands are launched through fzf; use the current script path
+    # by default and allow overriding while testing with GFL_SELF=/path/to/git-fl.
+    printf '%s' "${GFL_SELF:-${BASH_SOURCE[0]}}"
+}
+
+_gfl_repo_root() {
+    git rev-parse --show-toplevel 2>/dev/null
+}
+
+_gfl_diff_filter() {
+    if hash delta &>/dev/null; then
+        delta --paging=never
+    elif hash diff-so-fancy &>/dev/null; then
+        diff-so-fancy
+    else
+        cat
+    fi
+}
+
+_gfl_clip_cmd() {
+    if [ "$(uname)" = Darwin ]; then
+        printf '%s' "pbcopy"
+    elif hash xclip &>/dev/null; then
+        printf '%s' "xclip -selection clipboard"
+    else
+        printf '%s' "xsel --clipboard"
+    fi
+}
+
 # --- Status tree generator ---
 _gfl_status_tree() {
     local green=$'\033[32m' red=$'\033[31m' gray=$'\033[90m'
@@ -54,6 +97,567 @@ _gfl_status_tree() {
     _emit_group "stage" "Untracked" "$gray" "${untracked[@]}"
 }
 
+_gfl_status_line() {
+    local branch dirty upstream="" behind ahead
+    branch=$(git branch --show-current 2>/dev/null || echo "detached")
+    [[ -z "$branch" ]] && branch="detached"
+    dirty=$(git diff --quiet 2>/dev/null && git diff --cached --quiet 2>/dev/null || printf " *")
+    if git rev-parse --abbrev-ref '@{upstream}' &>/dev/null; then
+        read -r behind ahead < <(git rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null)
+        (( ahead > 0 )) && upstream+=" +${ahead}"
+        (( behind > 0 )) && upstream+=" -${behind}"
+    fi
+    printf '%s%s%s' "$branch" "$dirty" "$upstream"
+}
+
+_gfl_hash_from_log_line() {
+    printf '%s\n' "$1" |
+        sed -E $'s#\x1b\\[[0-9;?]*[ -/]*[@-~]##g' |
+        awk '{print $1; exit}'
+}
+
+# --- Status helpers used from fzf bindings ---
+_gfl_status_preview() {
+    local action="${1-}" path="${2-}" root
+    root=$(_gfl_repo_root)
+
+    if [[ -z "$path" || "$action" == "noop" ]]; then
+        git status --short
+        return
+    fi
+
+    local shown=false
+
+    if ! git diff --cached --quiet -- "$path" 2>/dev/null; then
+        printf '\033[1m── staged ──\033[0m\n'
+        git diff --cached --color=always -- "$path" | _gfl_diff_filter
+        shown=true
+    fi
+
+    if git ls-files --error-unmatch -- "$path" &>/dev/null; then
+        if ! git diff --quiet -- "$path" 2>/dev/null; then
+            $shown && printf '\n'
+            printf '\033[1m── unstaged ──\033[0m\n'
+            git diff --color=always -- "$path" | _gfl_diff_filter
+            shown=true
+        fi
+    elif [[ -n "$root" && -e "$root/$path" ]]; then
+        $shown && printf '\n'
+        printf '\033[1m── untracked file ──\033[0m\n'
+        if [[ -d "$root/$path" ]]; then
+            find "$root/$path" -maxdepth 2 -type f | sed "s#^$root/##" | head -200
+        else
+            cat "$root/$path"
+        fi
+        shown=true
+    fi
+
+    if ! $shown; then
+        printf 'No remaining diff for %s.\n' "$path"
+    fi
+}
+
+_gfl_status_open() {
+    local action="${1-}" path="${2-}" root
+    root=$(_gfl_repo_root)
+    if [[ -z "$path" || "$action" == "noop" ]]; then
+        git status | less -R
+    elif [[ -n "$root" && -e "$root/$path" ]] && ! git ls-files --error-unmatch -- "$path" &>/dev/null; then
+        if [[ -d "$root/$path" ]]; then
+            find "$root/$path" -maxdepth 2 -type f | sed "s#^$root/##" | less -R
+        else
+            less "$root/$path"
+        fi
+    else
+        _gfl_status_preview "$action" "$path" | less -R
+    fi
+}
+
+_gfl_status_edit() {
+    local path="${1-}" root editor
+    [[ -z "$path" || "$path" == "." ]] && return 0
+    root=$(_gfl_repo_root)
+    editor=${EDITOR:-nano}
+    if [[ -n "$root" ]]; then
+        "$editor" "$root/$path"
+    else
+        "$editor" "$path"
+    fi
+}
+
+_gfl_status_toggle_transform() {
+    local action="${1-}" path="${2-}" err rc verb
+    if [[ -z "$path" || "$action" == "noop" ]]; then
+        echo ignore
+        return 0
+    fi
+
+    err=$(mktemp -t git-fl-status.XXXXXX)
+    case "$action" in
+        unstage)
+            verb="unstaged"
+            git restore --staged -- "$path" 2>"$err"
+            rc=$?
+            ;;
+        stage)
+            verb="staged"
+            git add -- "$path" 2>"$err"
+            rc=$?
+            ;;
+        *)
+            rm -f "$err"
+            echo ignore
+            return 0
+            ;;
+    esac
+
+    if (( rc == 0 )); then
+        # Hybrid update: remove the selected stale row right away, then refresh
+        # the full status tree automatically. The reload reconciles moves between
+        # Unstaged/Staged and handles directory rows whose children all changed.
+        local self shell_self
+        self=$(_gfl_self_cmd)
+        shell_self=$(_gfl_shell_words "$self")
+        printf 'exclude+reload(%s --emit-status)+refresh-preview+change-preview-label([ %s ])\n' "$shell_self" "$verb"
+    else
+        printf 'change-preview-label([ %s failed; enter shows diff ])+refresh-preview\n' "$verb"
+    fi
+    rm -f "$err"
+}
+
+_gfl_status_patch() {
+    local action="${1-}" path="${2-}" root
+    [[ -z "$path" || "$action" == "noop" ]] && return 0
+    root=$(_gfl_repo_root)
+
+    case "$action" in
+        stage)
+            # Make untracked files visible to git add -p without staging them all.
+            if ! git ls-files --error-unmatch -- "$path" &>/dev/null && [[ -n "$root" && -f "$root/$path" ]]; then
+                git add -N -- "$path" 2>/dev/null || true
+            fi
+            git add -p -- "$path"
+            ;;
+        unstage)
+            git restore -p --staged -- "$path" 2>/dev/null || git reset -p -- "$path"
+            ;;
+    esac
+}
+
+_gfl_status_patch_env() {
+    _gfl_status_patch "${GFL_HUNK_ACTION-}" "${GFL_HUNK_PATH-}"
+}
+
+# --- Hunk mode ---
+_gfl_diff_for_hunks() {
+    local action="${1-}" path="${2-}"
+    case "$action" in
+        unstage) git diff --cached --no-color --no-ext-diff -- "$path" ;;
+        stage)   git diff --no-color --no-ext-diff -- "$path" ;;
+        *)       return 1 ;;
+    esac
+}
+
+_gfl_hunks_emit() {
+    local action="${1-}" path="${2-}" root
+    root=$(_gfl_repo_root)
+
+    # For a single untracked file, use intent-to-add so its content becomes a
+    # normal patch that can be partially staged.
+    if [[ "$action" == "stage" && -n "$root" && -f "$root/$path" ]] && \
+       ! git ls-files --error-unmatch -- "$path" &>/dev/null; then
+        git add -N -- "$path" 2>/dev/null || true
+    fi
+
+    _gfl_diff_for_hunks "$action" "$path" | awk -v action="$action" '
+        function clean(p) {
+            sub(/^a\//, "", p); sub(/^b\//, "", p); return p
+        }
+        function emit(    label) {
+            if (!in_hunk) return
+            label = (action == "unstage" ? "unstage" : "stage")
+            printf "%s\t%s\t%d\t%s\t%d\t%d\t  %s hunk %-3d  +%-2d -%-2d  %s  %s\n", \
+                action, file, hunk_no, hunk_header, add, del, label, hunk_no, add, del, file, hunk_header
+            in_hunk = 0
+        }
+        /^diff --git / {
+            emit()
+            header = $0 ORS
+            in_file = 1
+            before_first_hunk = 1
+            file = ""
+            next
+        }
+        /^\+\+\+ / && in_file {
+            line = $0
+            sub(/^\+\+\+ /, "", line)
+            sub(/	.*$/, "", line)
+            file = clean(line)
+            if (file == "/dev/null") file = old_file
+            if (before_first_hunk) header = header $0 ORS
+            next
+        }
+        /^--- / && in_file {
+            line = $0
+            sub(/^--- /, "", line)
+            sub(/	.*$/, "", line)
+            old_file = clean(line)
+            if (before_first_hunk) header = header $0 ORS
+            next
+        }
+        /^@@ / {
+            emit()
+            hunk_no++
+            hunk_header = $0
+            add = del = 0
+            in_hunk = 1
+            before_first_hunk = 0
+            next
+        }
+        {
+            if (in_hunk) {
+                if ($0 ~ /^\+/ && $0 !~ /^\+\+\+/) add++
+                else if ($0 ~ /^-/ && $0 !~ /^---/) del++
+            } else if (in_file && before_first_hunk) {
+                header = header $0 ORS
+            }
+        }
+        END { emit() }
+    '
+}
+
+_gfl_hunk_patch() {
+    local action="${1-}" path="${2-}" target="${3-}"
+    _gfl_diff_for_hunks "$action" "$path" | awk -v target="$target" '
+        /^diff --git / {
+            if (emit) exit
+            header = $0 ORS
+            in_file = 1
+            before_first_hunk = 1
+            next
+        }
+        /^@@ / {
+            hunk++
+            if (emit) exit
+            if (hunk == target) {
+                printf "%s", header
+                print
+                emit = 1
+            }
+            before_first_hunk = 0
+            next
+        }
+        {
+            if (emit) {
+                print
+            } else if (in_file && before_first_hunk) {
+                header = header $0 ORS
+            }
+        }
+    '
+}
+
+_gfl_hunk_preview_env() {
+    local idx="${1-}"
+    if [[ -z "$idx" || "$idx" == "0" || -z "${GFL_HUNK_ACTION-}" || -z "${GFL_HUNK_PATH-}" ]]; then
+        printf 'No hunk selected.\n'
+        return 0
+    fi
+    _gfl_hunk_patch "$GFL_HUNK_ACTION" "$GFL_HUNK_PATH" "$idx" | _gfl_diff_filter
+}
+
+_gfl_hunk_open_env() {
+    _gfl_hunk_preview_env "${1-}" | less -R
+}
+
+_gfl_emit_hunks_env() {
+    _gfl_hunks_emit "${GFL_HUNK_ACTION-}" "${GFL_HUNK_PATH-}"
+}
+
+_gfl_hunk_apply_env() {
+    local idx="${1-}" tmp rc
+    if [[ -z "$idx" || "$idx" == "0" || -z "${GFL_HUNK_ACTION-}" || -z "${GFL_HUNK_PATH-}" ]]; then
+        echo ignore
+        return 0
+    fi
+
+    tmp=$(mktemp -t git-fl-hunk.XXXXXX)
+    _gfl_hunk_patch "$GFL_HUNK_ACTION" "$GFL_HUNK_PATH" "$idx" >"$tmp"
+    if [[ ! -s "$tmp" ]]; then
+        rm -f "$tmp"
+        echo 'change-preview-label([ no patch for hunk ])+refresh-preview'
+        return 0
+    fi
+
+    if [[ "$GFL_HUNK_ACTION" == "unstage" ]]; then
+        git apply --cached --reverse "$tmp" >/dev/null 2>&1
+        rc=$?
+    else
+        git apply --cached "$tmp" >/dev/null 2>&1
+        rc=$?
+    fi
+    rm -f "$tmp"
+
+    if (( rc == 0 )); then
+        local self shell_self
+        self=$(_gfl_self_cmd)
+        shell_self=$(_gfl_shell_words "$self")
+        printf 'reload-sync(%s --emit-hunks-env)+refresh-preview+change-preview-label([ hunk applied ])\n' "$shell_self"
+    else
+        echo 'change-preview-label([ hunk failed; try p for git add -p ])+refresh-preview'
+    fi
+}
+
+_gfl_hunks_fzf() {
+    local action="${1-}" path="${2-}" status_query="" fullscreen=false
+    shift 2 2>/dev/null || true
+
+    while (( $# > 0 )); do
+        case "$1" in
+            --status-query)
+                status_query="${2-}"
+                shift 2
+                ;;
+            --full)
+                fullscreen=true
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    local -a return_args=()
+    return_args+=(--status)
+    "$fullscreen" && return_args+=(--full)
+    [[ -n "$status_query" ]] && return_args+=(--query "$status_query")
+
+    if [[ "$action" != "stage" && "$action" != "unstage" ]]; then
+        exec "$(_gfl_self_cmd)" "${return_args[@]}"
+    fi
+
+    export GFL_HUNK_ACTION="$action"
+    export GFL_HUNK_PATH="$path"
+
+    local self shell_self header preview_window
+    self=$(_gfl_self_cmd)
+    shell_self=$(_gfl_shell_words "$self")
+
+    local -a height_opts=()
+    if "$fullscreen"; then
+        height_opts=()
+        preview_window="right,60%,border-left"
+    else
+        height_opts=(--height=80% --min-height=20)
+        preview_window="right,60%,border-left"
+    fi
+
+    local normal_keys="j,k,@,q,g,G,i,/,space,-,ctrl-d,ctrl-u,ctrl-e,ctrl-y,enter,p"
+    local enter_normal="disable-search+hide-input+rebind($normal_keys)"
+    local enter_insert="enable-search+show-input+unbind($normal_keys)+change-prompt(/ )"
+    local verb="stage"
+    [[ "$action" == "unstage" ]] && verb="unstage"
+    header=$(printf '%s\n%s' \
+        "hunks: $verb $path" \
+        "u:apply hunk  p:git-patch  enter:pager  j/k:select  space/-:scroll diff  ctrl-d/u:half  ctrl-e/y:7 lines  ctrl-r:refresh  q:back")
+
+    _gfl_hunks_emit "$action" "$path" |
+        fzf --no-sort --reverse --tiebreak=index --no-multi \
+            --ansi --track --id-nth=2,4 \
+            --delimiter $'\t' --with-nth 7.. \
+            "${height_opts[@]}" \
+            --highlight-line \
+            --header "$header" \
+            --preview "$shell_self --hunk-preview-env {3}" \
+            --preview-label "[ hunk ]" \
+            --preview-window "$preview_window" \
+            --bind "start:$enter_normal" \
+            --bind "esc:$enter_normal" \
+            --bind "i:$enter_insert" \
+            --bind "/:$enter_insert" \
+            --bind "j:down" \
+            --bind "k:up" \
+            --bind "@:down" \
+            --bind "g:first" \
+            --bind "G:last" \
+            --bind "q:abort" \
+            --bind "u:transform:$shell_self --hunk-apply-env {3}" \
+            --bind "p:execute:$shell_self --status-patch-env+reload-sync($shell_self --emit-hunks-env)+refresh-preview" \
+            --bind "enter:execute:$shell_self --hunk-open-env {3}" \
+            --bind "ctrl-r:reload-sync($shell_self --emit-hunks-env)+refresh-preview" \
+            --bind "space:preview-page-down" \
+            --bind "-:preview-page-up" \
+            --bind "ctrl-d:preview-half-page-down" \
+            --bind "ctrl-u:preview-half-page-up" \
+            --bind "ctrl-e:preview-down+preview-down+preview-down+preview-down+preview-down+preview-down+preview-down" \
+            --bind "ctrl-y:preview-up+preview-up+preview-up+preview-up+preview-up+preview-up+preview-up" \
+            --bind 'ctrl-/:toggle-preview'
+
+    exec "$(_gfl_self_cmd)" "${return_args[@]}"
+}
+
+# --- Visible git actions used for fixup/rebase/pick ---
+_gfl_run_logged() {
+    local rc=0
+    printf '$ '
+    _gfl_shell_words "$@"
+    printf '\n'
+    "$@"
+    rc=$?
+    if (( rc != 0 )); then
+        printf '\n[git-fl] command exited with status %d\n' "$rc"
+    fi
+    return "$rc"
+}
+
+_gfl_run_and_restart() {
+    local mode="${1-}" action="${2-}"
+    shift 2 2>/dev/null || {
+        printf 'git-fl: missing internal action\n' >&2
+        exit 2
+    }
+
+    local query="" rc=0
+    local -a restart_extra=()
+
+    while (( $# > 0 )); do
+        case "$1" in
+            --query)
+                query="${2-}"
+                shift 2
+                ;;
+            --restart-arg)
+                restart_extra+=("${2-}")
+                shift 2
+                ;;
+            --)
+                shift
+                break
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    case "$mode:$action" in
+        log:pick|log:fixup|log:rebase)
+            local selected="${1-}" hash
+            hash=$(_gfl_hash_from_log_line "$selected")
+            if [[ -z "$hash" ]]; then
+                printf 'git-fl: could not find a commit hash in the selected line\n' >&2
+                rc=2
+            elif [[ "$action" == "pick" ]]; then
+                _gfl_run_logged git cherry-pick "$hash"
+                rc=$?
+            elif [[ "$action" == "fixup" ]]; then
+                _gfl_run_logged git commit --fixup "$hash"
+                rc=$?
+            else
+                _gfl_run_logged git rebase -i --autosquash "${hash}^"
+                rc=$?
+            fi
+            ;;
+        log:branch-rebase)
+            local branch
+            branch=$(git branch -a --format='%(refname:short)' --sort=-committerdate |
+                fzf --height=40% --reverse --prompt='rebase onto> ')
+            if [[ -n "$branch" ]]; then
+                _gfl_run_logged git rebase -i --autosquash "$branch"
+                rc=$?
+            fi
+            ;;
+        status:stage)
+            git add -- "${1-}"
+            rc=$?
+            ;;
+        status:unstage)
+            git restore --staged -- "${1-}"
+            rc=$?
+            ;;
+        *)
+            printf 'git-fl: unknown internal action %s:%s\n' "$mode" "$action" >&2
+            rc=2
+            ;;
+    esac
+
+    local -a restart_args=()
+    [[ "$mode" == "status" ]] && restart_args+=(--status)
+    [[ -n "$query" ]] && restart_args+=(--query "$query")
+    restart_args+=("${restart_extra[@]}")
+    exec "$(_gfl_self_cmd)" "${restart_args[@]}"
+}
+
+# --- Helper subcommands called from fzf ---
+case "${1-}" in
+    --run-and-restart)
+        shift
+        _gfl_run_and_restart "$@"
+        ;;
+    --emit-status)
+        _gfl_status_tree
+        exit 0
+        ;;
+    --status-preview)
+        shift
+        _gfl_status_preview "$@"
+        exit 0
+        ;;
+    --status-open)
+        shift
+        _gfl_status_open "$@"
+        exit 0
+        ;;
+    --status-edit)
+        shift
+        _gfl_status_edit "$@"
+        exit 0
+        ;;
+    --status-toggle)
+        shift
+        _gfl_status_toggle_transform "$@"
+        exit 0
+        ;;
+    --status-patch)
+        shift
+        _gfl_status_patch "$@"
+        exit 0
+        ;;
+    --status-patch-env)
+        _gfl_status_patch_env
+        exit 0
+        ;;
+    --hunks)
+        shift
+        _gfl_hunks_fzf "$@"
+        ;;
+    --emit-hunks)
+        shift
+        _gfl_hunks_emit "$@"
+        exit 0
+        ;;
+    --emit-hunks-env)
+        _gfl_emit_hunks_env
+        exit 0
+        ;;
+    --hunk-preview-env)
+        shift
+        _gfl_hunk_preview_env "$@"
+        exit 0
+        ;;
+    --hunk-open-env)
+        shift
+        _gfl_hunk_open_env "$@"
+        exit 0
+        ;;
+    --hunk-apply-env)
+        shift
+        _gfl_hunk_apply_env "$@"
+        exit 0
+        ;;
+esac
+
 # --- Argument parsing ---
 args=()
 nb_lines=
@@ -70,10 +674,6 @@ while (( $# > 0 )); do
         --status)
             _mode=status
             shift
-            ;;
-        --emit-status)
-            _gfl_status_tree
-            exit 0
             ;;
         --query)
             _fzf_query="$2"
@@ -95,7 +695,7 @@ while (( $# > 0 )); do
 done
 [ -n "$nb_lines" ] && nb_lines="-${nb_lines}"
 
-# --- Tool detection ---
+# --- Tool detection / common runtime state ---
 _gitDiffTool=
 if hash delta &>/dev/null; then
     _gitDiffTool='| delta --paging=never'
@@ -103,55 +703,74 @@ elif hash diff-so-fancy &>/dev/null; then
     _gitDiffTool='| diff-so-fancy'
 fi
 
-if [ "$(uname)" = Darwin ]; then
-    _clip="pbcopy"
-elif hash xclip &>/dev/null; then
-    _clip="xclip -selection clipboard"
-else
-    _clip="xsel --clipboard"
-fi
-
+_clip=$(_gfl_clip_cmd)
 _curEditor=${EDITOR:-nano}
-_repoRoot=$(git rev-parse --show-toplevel 2>/dev/null)
+_repoRoot=$(_gfl_repo_root)
+_self=$(_gfl_self_cmd)
+_shell_self=$(_gfl_shell_words "$_self")
+
+# --- Optional command output kept visible across restart ---
+_notice_header=""
+if [[ -n "${GFL_NOTICE_FILE-}" && -r "${GFL_NOTICE_FILE-}" ]]; then
+    if "$_fullscreen"; then
+        _notice_header=$(sed -n '1,40p' "$GFL_NOTICE_FILE")
+    else
+        cat "$GFL_NOTICE_FILE"
+        printf '\n'
+    fi
+    rm -f "$GFL_NOTICE_FILE"
+    unset GFL_NOTICE_FILE
+fi
 
 # --- Git status header ---
-_branch=$(git branch --show-current 2>/dev/null || echo "detached")
-_dirty=$(git diff --quiet 2>/dev/null && git diff --cached --quiet 2>/dev/null || printf " *")
-_upstream=""
-if git rev-parse --abbrev-ref '@{upstream}' &>/dev/null; then
-    read -r _behind _ahead < <(git rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null)
-    (( _ahead > 0 )) && _upstream+=" +${_ahead}"
-    (( _behind > 0 )) && _upstream+=" -${_behind}"
-fi
-_status_line="${_branch}${_dirty}${_upstream}"
+_status_line=$(_gfl_status_line)
 
 # --- Mode-specific keys and header ---
+_preview_nav_keys="space,-,ctrl-d,ctrl-u,ctrl-e,ctrl-y"
 if [[ "$_mode" == "status" ]]; then
-    _normal_keys="j,k,u,o,q,g,G,i,/"
-    _keys="u:stage  o:edit  tab:log  /:search  q:quit"
+    _normal_keys="j,k,u,h,p,o,q,g,G,i,/,$_preview_nav_keys"
+    _keys="u:toggle  h:hunks  p:git-patch  o:edit  enter:pager  ctrl-r:refresh  tab:log  /:search  q:quit"
 else
-    _normal_keys="j,k,y,o,p,f,r,b,s,q,g,G,i,/"
-    _keys="y:copy  o:edit  p:pick  f:fixup  r:rebase  b:branch  s:diff  tab:status  /:search  q:quit"
+    _normal_keys="j,k,y,o,p,f,r,b,s,q,g,G,i,/,$_preview_nav_keys"
+    _keys="y:copy  o:edit  p:pick  f:fixup  r:rebase  b:branch  s:diff  tab:status  space/-:scroll  /:search  q:quit"
 fi
 _header=$(printf '%s\n%s' "$_status_line" "$_keys")
+if [[ -n "$_notice_header" ]]; then
+    _header=$(printf '── last git output ──\n%s\n── git-fl ──\n%s' "$_notice_header" "$_header")
+fi
 
 # --- Vim-like modal keys ---
 _enter_normal="disable-search+hide-input+rebind($_normal_keys)"
 _enter_insert="enable-search+show-input+unbind($_normal_keys)+change-prompt(/ )"
 
+# --- Common preview navigation bindings ---
+_preview_scroll_binds=(
+    --bind 'space:preview-page-down'
+    --bind '-:preview-page-up'
+    --bind 'ctrl-d:preview-half-page-down'
+    --bind 'ctrl-u:preview-half-page-up'
+    --bind 'ctrl-e:preview-down+preview-down+preview-down+preview-down+preview-down+preview-down+preview-down'
+    --bind 'ctrl-y:preview-up+preview-up+preview-up+preview-up+preview-up+preview-up+preview-up'
+)
+
 # --- Mode-specific options ---
 if [[ "$_mode" == "status" ]]; then
     if "$_fullscreen"; then
         _height_opts=()
-        _become='alt-enter:become(git-fl --status --query {q})'
-        _tab='tab:become(git-fl --full --query {q})'
+        _become="alt-enter:become($_shell_self --status --query {q})"
+        _tab="tab:become($_shell_self --full --query {q})"
         _preview_window="right,60%,border-left"
+        _hunk_bind="h:become($_shell_self --hunks {1} {2} --full --status-query {q})"
     else
         _height_opts=(--height=30% --min-height=10)
-        _become='alt-enter:become(git-fl --status --full --query {q})'
-        _tab='tab:become(git-fl --query {q})'
+        _become="alt-enter:become($_shell_self --status --full --query {q})"
+        _tab="tab:become($_shell_self --query {q})"
         _preview_window="right,50%,border-left"
+        _hunk_bind="h:become($_shell_self --hunks {1} {2} --status-query {q})"
     fi
+    _stage_bind="u:transform:$_shell_self --status-toggle {1} {2}"
+    _patch_bind="p:execute:$_shell_self --status-patch {1} {2}+reload-sync($_shell_self --emit-status)+refresh-preview"
+    _reload_bind="ctrl-r:reload-sync($_shell_self --emit-status)+refresh-preview+change-preview-label([ diff ])"
 else
     # --- Log mode preview commands ---
     _gitLogLineToHash="echo {} | awk '{print \$1}' | head -1"
@@ -168,34 +787,58 @@ else
     _GitDateFormat="%Y-%m-%d %H:%I:%S"
     _GitCommand="git log $nb_lines --color=always --format=\"$_GitLogFormat\" --date=format:\"$_GitDateFormat\" ${args[*]}"
 
+    _restart_extra_flags=()
+    [[ -n "$nb_lines" ]] && _restart_extra_flags+=(--restart-arg "${nb_lines#-}")
+    # After commands that can produce hook/rebase output, restart in the
+    # low-profile layout so that terminal output remains visible above the UI.
+    for _arg in "${args[@]}"; do
+        _restart_extra_flags+=(--restart-arg "$_arg")
+    done
+    _restart_extra=$(_gfl_shell_words "${_restart_extra_flags[@]}")
+
     if "$_fullscreen"; then
         _height_opts=()
         _preview="$_previewStatDiff"
         _preview_label="[ stat+diff ]"
         _preview_window="right,60%,border-left"
-        _become='alt-enter:become(git-fl --query {q})'
-        _tab='tab:become(git-fl --status --full --query {q})'
+        _become="alt-enter:become($_shell_self --query {q})"
+        _tab="tab:become($_shell_self --status --full --query {q})"
     else
         _height_opts=(--height=30% --min-height=10)
         _preview="$_previewStat"
         _preview_label="[ stat ]"
         _preview_window="right,50%,border-left"
-        _become='alt-enter:become(git-fl --full --query {q})'
-        _tab='tab:become(git-fl --status --query {q})'
+        _become="alt-enter:become($_shell_self --full --query {q})"
+        _tab="tab:become($_shell_self --status --query {q})"
     fi
+
+    _run_pick="$_shell_self --run-and-restart log pick"
+    _run_fixup="$_shell_self --run-and-restart log fixup"
+    _run_rebase="$_shell_self --run-and-restart log rebase"
+    _run_branch_rebase="$_shell_self --run-and-restart log branch-rebase"
+    if [[ -n "$_restart_extra" ]]; then
+        _run_pick+=" $_restart_extra"
+        _run_fixup+=" $_restart_extra"
+        _run_rebase+=" $_restart_extra"
+        _run_branch_rebase+=" $_restart_extra"
+    fi
+    _pick_bind="p:become:$_run_pick --query {q} -- {}"
+    _fixup_bind="f:become:$_run_fixup --query {q} -- {}"
+    _rebase_bind="r:become:$_run_rebase --query {q} -- {}"
+    _branch_rebase_bind="b:become:$_run_branch_rebase --query {q}"
 fi
 
 # --- Run ---
 if [[ "$_mode" == "status" ]]; then
     _gfl_status_tree |
         fzf --no-sort --reverse --tiebreak=index --no-multi \
-            --ansi --track \
+            --ansi --track --id-nth=2 \
             --delimiter $'\t' --with-nth 3.. \
             "${_height_opts[@]}" \
             --highlight-line \
             --header "$_header" \
             --query "$_fzf_query" \
-            --preview 'if [[ {1} == noop ]]; then git status --short; elif [[ {1} == unstage ]]; then git diff --cached --color=always -- {2} '"$_gitDiffTool"'; elif git ls-files --error-unmatch {2} &>/dev/null; then git diff --color=always -- {2} '"$_gitDiffTool"'; else cat '"$_repoRoot"'/{2}; fi' \
+            --preview "$_shell_self --status-preview {1} {2}" \
             --preview-label "[ diff ]" \
             --preview-window "$_preview_window" \
             --bind "start:$_enter_normal" \
@@ -207,11 +850,15 @@ if [[ "$_mode" == "status" ]]; then
             --bind "g:first" \
             --bind "G:last" \
             --bind "q:abort" \
-            --bind 'u:transform:[[ {1} == noop ]] && exit 0; if [[ {1} == unstage ]]; then echo "execute-silent(git restore --staged -- {2})+reload(git-fl --emit-status)"; else echo "execute-silent(git add -- {2})+reload(git-fl --emit-status)"; fi' \
-            --bind 'enter:execute:if [[ {1} == noop ]]; then git status | less -R; elif [[ {1} == unstage ]]; then git diff --cached --color=always -- {2} '"$_gitDiffTool"' | less -R; elif git ls-files --error-unmatch {2} &>/dev/null; then git diff --color=always -- {2} '"$_gitDiffTool"' | less -R; else less '"$_repoRoot"'/{2}; fi' \
-            --bind 'o:execute:[[ {1} != noop ]] && '"$_curEditor"' {2}' \
+            --bind "$_stage_bind" \
+            --bind "$_patch_bind" \
+            --bind "$_hunk_bind" \
+            --bind "$_reload_bind" \
+            --bind "enter:execute:$_shell_self --status-open {1} {2}" \
+            --bind "o:execute:$_shell_self --status-edit {2}" \
             --bind "$_become" \
             --bind "$_tab" \
+            "${_preview_scroll_binds[@]}" \
             --bind 'ctrl-/:toggle-preview'
 else
     eval "$_GitCommand" |
@@ -236,12 +883,13 @@ else
             --bind "enter:execute:$_previewStatDiff | less -R" \
             --bind "o:execute:$_filesFromGitLogLine | xargs --no-run-if-empty ${_curEditor}" \
             --bind "y:execute-silent:$_gitLogLineToHash | $_clip" \
-            --bind "p:execute($_gitLogLineToHash | xargs git cherry-pick)+reload:$_GitCommand" \
-            --bind "f:execute($_gitLogLineToHash | xargs -I % git commit --fixup %)+reload:$_GitCommand" \
-            --bind "r:execute($_gitLogLineToHash | xargs -I % git rebase -i --autosquash %^)+reload:$_GitCommand" \
-            --bind "b:execute(git branch -a --format='%(refname:short)' --sort=-committerdate | fzf --height=40% --reverse --prompt='rebase onto> ' | xargs -I % sh -c 'git rebase -i --autosquash %')+reload:$_GitCommand" \
+            --bind "$_pick_bind" \
+            --bind "$_fixup_bind" \
+            --bind "$_rebase_bind" \
+            --bind "$_branch_rebase_bind" \
             --bind "$_become" \
             --bind "$_tab" \
+            "${_preview_scroll_binds[@]}" \
             --bind 'ctrl-/:toggle-preview' \
             --bind 's:transform:case $FZF_PREVIEW_LABEL in *stat+diff*) echo "change-preview($GFL_PREVIEW_DIFF)+change-preview-label([ diff ])";; *diff*) echo "change-preview($GFL_PREVIEW_STAT)+change-preview-label([ stat ])";; *) echo "change-preview($GFL_PREVIEW_STAT_DIFF)+change-preview-label([ stat+diff ])";; esac'
 fi

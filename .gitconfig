@@ -105,6 +105,7 @@
     cp              = cherry-pick
     st              = status
     ci              = commit
+    amend           = commit --amend
     co              = checkout
     br              = branch
     rbi             = rebase -i

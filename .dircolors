@@ -319,4 +319,5 @@ EXEC    38;5;70            # This is for files with execute permission:
 # description files
 .h 00;32
 .hpp 00;32
+.ti 00;32
 

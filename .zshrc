@@ -424,12 +424,12 @@ _relPath () {
 relpath () { _relPath "$(readlink -m "$1")" "$(readlink -m "$2")"; }
 
 # Taken from OMZ function library
-function op() {
+function open() {
   local open_cmd
 
   # define the open command
   case "$OSTYPE" in
-    darwin*)  open_cmd='open' ;;
+    darwin*)  open_cmd='command open' ;;
     cygwin*)  open_cmd='cygstart' ;;
     linux*)   [[ "$(uname -r)" != *icrosoft* ]] && open_cmd='nohup xdg-open' || {
                 open_cmd='cmd.exe /c start ""'
