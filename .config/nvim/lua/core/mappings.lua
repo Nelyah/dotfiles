@@ -76,12 +76,6 @@ vim.keymap.set("n", "<leader>d", "/\\v", { silent = false })
 vim.keymap.set("i", "kj", "<esc>")
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
 
--- Switching panes using the meta key
-vim.keymap.set("n", "<M-h>", "<C-w>h")
-vim.keymap.set("n", "<M-j>", "<C-w>j")
-vim.keymap.set("n", "<M-k>", "<C-w>k")
-vim.keymap.set("n", "<M-l>", "<C-w>l")
-
 -- Navigate display lines
 vim.keymap.set("n", "j", "gj")
 vim.keymap.set("n", "k", "gk")
@@ -156,9 +150,6 @@ vim.keymap.set("i", "<s-Tab>", function()
     return vim.fn.pumvisible() == 1 and "<C-p>" or "<S-Tab>"
 end, { expr = true })
 
-vim.keymap.set("i", "<Tab>", function()
-    return vim.fn.pumvisible() == 1 and "<C-n>" or "<Tab>"
-end, { expr = true })
 vim.keymap.set("i", "<Tab>", function()
     return vim.fn.pumvisible() == 1 and "<C-n>" or "<Tab>"
 end, { expr = true })

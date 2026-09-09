@@ -130,6 +130,10 @@ function M.setup()
 	local diagnositics_virtual_text_config = {
 		prefix = "●",
 	}
+	local diagnostics_virtual_lines_config = {
+		current_line = true,
+		overflow = "wrap",
+	}
 	vim.diagnostic.config({
 		severity_sort = true,
 		virtual_text = diagnositics_virtual_text_config,
@@ -162,7 +166,7 @@ function M.setup()
 		pattern = "*",
 		callback = function()
 			vim.diagnostic.config({
-				virtual_lines = has_diagnostic_on_current_line() and { current_line = true } or false,
+				virtual_lines = has_diagnostic_on_current_line() and diagnostics_virtual_lines_config or false,
 				virtual_text = not has_diagnostic_on_current_line() and diagnositics_virtual_text_config or false,
 			})
 		end,

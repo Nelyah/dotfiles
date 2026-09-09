@@ -1,50 +1,5 @@
 local plugin = require("core.packer").register_plugin
 
--- {{{ Snacks
-plugin({
-	"folke/snacks.nvim",
-	priority = 1000,
-	lazy = false,
-	opts = {
-		input = { enabled = true },
-	},
-	keys = {
-		{
-			"<leader>r",
-			function()
-				Snacks.rename.rename_file()
-			end,
-			desc = "Rename File",
-		},
-	},
-	init = function()
-		vim.api.nvim_create_autocmd("User", {
-			pattern = "OilActionsPost",
-			callback = function(event)
-				for _, action in ipairs(event.data.actions or {}) do
-					if action.type == "move" then
-						Snacks.rename.on_rename_file(action.src_url, action.dest_url)
-					end
-				end
-			end,
-		})
-
-		local prev = { new_name = "", old_name = "" }
-		vim.api.nvim_create_autocmd("User", {
-			pattern = "NvimTreeSetup",
-			callback = function()
-				local events = require("nvim-tree.api").events
-				events.subscribe(events.Event.NodeRenamed, function(data)
-					if prev.new_name ~= data.new_name or prev.old_name ~= data.old_name then
-						prev = data
-						Snacks.rename.on_rename_file(data.old_name, data.new_name)
-					end
-				end)
-			end,
-		})
-	end,
-})
--- }}}
 -- {{{ DiffView
 plugin({
 	cmd = {
@@ -58,17 +13,61 @@ plugin({
 	},
 	"sindrets/diffview.nvim",
 	init = function()
-		vim.keymap.set('n', '<leader>gt', function()
-			if next(require('diffview.lib').views) == nil then
+		vim.keymap.set("n", "<leader>gt", function()
+			if next(require("diffview.lib").views) == nil then
 				print("open")
-				vim.cmd('DiffviewOpen')
+				vim.cmd("DiffviewOpen")
 			else
 				print("close")
-				vim.cmd('DiffviewClose')
+				vim.cmd("DiffviewClose")
 			end
 		end)
 	end,
-
+	config = function()
+		require("diffview").setup({
+			enhanced_diff_hl = true,
+			file_panel = {
+				win_config = {
+					width = 50,
+				},
+			},
+			file_history_panel = {
+				win_config = {
+					height = 16,
+				},
+			},
+			keymaps = {
+				file_panel = {
+					{ "n", "<leader>w", "<Cmd>vertical resize 80<CR>", { desc = "Widen the file panel" } },
+					{ "n", "<leader>W", "<Cmd>vertical resize 50<CR>", { desc = "Reset the file panel width" } },
+				},
+			},
+			hooks = {
+				diff_buf_win_enter = function(_, winid, ctx)
+					if not ctx or not tostring(ctx.layout_name or ""):find("^diff2") then
+						return
+					end
+					local winhl
+					if ctx.symbol == "a" then
+						winhl = table.concat({
+							"DiffAdd:DiffviewDiffAddAsDelete",
+							"DiffDelete:DiffviewDiffDeleteDim",
+							"DiffChange:DiffviewDiffAddAsDelete",
+							"DiffText:DiffviewDiffDeleteWord",
+						}, ",")
+					else
+						winhl = table.concat({
+							"DiffDelete:DiffviewDiffDeleteDim",
+							"DiffAdd:DiffviewDiffAdd",
+							"DiffChange:DiffviewDiffAdd",
+							"DiffText:DiffviewDiffAddWord",
+						}, ",")
+					end
+					vim.api.nvim_set_option_value("winhl", winhl, { win = winid })
+				end,
+			},
+		})
+	end,
 })
 -- }}}
 -- {{{ Gitsigns - Git information on the sign column
@@ -140,7 +139,7 @@ plugin({
 -- }}}
 -- {{{ Nvim colorizer - Colour highlighter
 plugin({
-	"NvChad/nvim-colorizer.lua",
+	"norcalli/nvim-colorizer.lua",
 	config = function()
 		require("colorizer").setup()
 	end,
@@ -150,6 +149,7 @@ plugin({
 plugin({
 	"navarasu/onedark.nvim",
 	config = function()
+		require("modules.treesitter") -- needed for this theme
 		require("onedark").setup({
 			style = "warmer",
 			colors = {
@@ -162,6 +162,19 @@ plugin({
 				darker = true, -- darker colors for diagnostic
 				undercurl = false, -- use undercurl instead of underline for diagnostics
 				background = true, -- use background color for virtual text
+			},
+			highlights = {
+				["@nospell"] = { fg = "none" },
+				["@spell"] = { fg = "none" },
+				DiffAdd = { bg = "#1e2820" },
+				DiffDelete = { bg = "#422928" },
+				DiffChange = { bg = "#1e2820" },
+				DiffText = { bg = "#2a3e30" },
+				DiffviewDiffAdd = { bg = "#1e2820" },
+				DiffviewDiffAddAsDelete = { bg = "#422928" },
+				DiffviewDiffDelete = { bg = "#422928" },
+				DiffviewDiffAddWord = { bg = "#2a3e30" },
+				DiffviewDiffDeleteWord = { bg = "#783532" },
 			},
 		})
 		vim.cmd([[colorscheme onedark]])
@@ -180,6 +193,31 @@ plugin({
 	config = function()
 		require("modules.ui.lualine").setup()
 	end,
+	dependencies = {
+		"kdheepak/tabline.nvim",
+	},
+})
+plugin({
+	"kdheepak/tabline.nvim",
+	lazy = true,
+})
+-- }}}
+-- {{{ Tabline - Better buffers and tabs. Only used for tabs in lualine
+plugin({
+	"kdheepak/tabline.nvim",
+	config = function()
+		require("tabline").setup({
+			enable = false, -- Set up by lualine
+			options = {
+				component_separators = { "", "" },
+				section_separators = { "", "" },
+			},
+		})
+	end,
+	dependencies = {
+		"nvim-lualine/lualine.nvim",
+		"kyazdani42/nvim-web-devicons",
+	},
 })
 -- }}}
 -- {{{ Todo Comments -- Highlight them and make them searchable
@@ -194,7 +232,7 @@ plugin({
 -- }}}
 -- {{{ NvimTree -- Show files on side window
 plugin({
-	"nvim-tree/nvim-tree.lua",
+	"kyazdani42/nvim-tree.lua",
 	cmd = "NvimTreeToggle",
 	config = function()
 		require("nvim-tree").setup({
@@ -206,56 +244,26 @@ plugin({
 	init = function()
 		vim.keymap.set("n", "<leader>n", "<cmd>NvimTreeToggle<CR>")
 	end,
-	dependencies = { "nvim-tree/nvim-web-devicons" },
+	dependencies = { "kyazdani42/nvim-web-devicons" },
 })
 -- }}}
--- {{{ Dependencies
 plugin({
-	"nvim-lua/plenary.nvim",
+	"kyazdani42/nvim-web-devicons",
 	lazy = true,
 })
+
+-- Plugin to provide a nicer interface to some things (like some code-action)
 plugin({
-	"nvim-tree/nvim-web-devicons",
-	lazy = true,
+	"stevearc/dressing.nvim",
+	event = "VeryLazy",
+	opts = {},
 })
--- }}}
 -- {{{ Fzf-Lua
 plugin({
 	"ibhagwan/fzf-lua",
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()
-		local fzf = require("fzf-lua")
-		fzf.setup({})
-		fzf.register_ui_select()
-
-		local fzf_opts = {
-			["cwd_prompt"] = false,
-			fzf_opts = {
-				["--layout"] = "default",
-			},
-		}
-
-		vim.keymap.set("n", "<leader>i", function()
-			fzf.live_grep_native(fzf_opts)
-		end)
-		vim.keymap.set("n", "<leader>o", function()
-			fzf.files(vim.tbl_extend("force", fzf_opts, { ["header"] = false }))
-		end, { nowait = true })
-		vim.keymap.set("n", ",", function()
-			fzf.buffers()
-		end)
-		vim.keymap.set("n", "<leader>x", function()
-			fzf.commands()
-		end)
-		vim.keymap.set("n", "<leader>s", function()
-			fzf.lgrep_curbuf()
-		end)
-		vim.keymap.set("n", "<c-x>h", function()
-			fzf.help_tags()
-		end)
-		vim.api.nvim_create_user_command("FT", function()
-			fzf.filetypes()
-		end, {})
+		require("modules.ui.fzf-lua").setup()
 	end,
 })
 -- }}}
@@ -275,9 +283,11 @@ plugin({
 -- }}}
 -- {{{ Markdown
 plugin({
-	'MeanderingProgrammer/render-markdown.nvim',
+	"MeanderingProgrammer/render-markdown.nvim",
 	ft = { "markdown" },
-	dependencies = { 'nvim-tree/nvim-web-devicons' },
+	dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use the mini.nvim suite
+	-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+	-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
 	opts = {},
 })
 -- }}}

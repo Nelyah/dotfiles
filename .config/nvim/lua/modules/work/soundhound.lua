@@ -36,11 +36,34 @@ local insertHeader = function()
 	fn.append(fn.line("$"), end_lines)
 end
 
+local ter_parser_path = vim.fn.expand("~/dev/tree-sitter-ter")
+
+local register_treesitter_parser = function()
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "TSUpdate",
+		group = vim.api.nvim_create_augroup("soundhound-ts-parsers", { clear = true }),
+		callback = function()
+			require("nvim-treesitter.parsers").ter = {
+				install_info = {
+					path = ter_parser_path,
+					queries = "queries",
+				},
+			}
+		end,
+	})
+
+	vim.treesitter.language.register("ter", "ter")
+end
+
 M.setup = function()
 	vim.filetype.add({
 		extension = { ter = "ter" },
 	})
 	vim.api.nvim_create_user_command("InsertHeader", insertHeader, {})
+
+	if vim.fn.isdirectory(ter_parser_path) == 1 then
+		register_treesitter_parser()
+	end
 end
 
 return M

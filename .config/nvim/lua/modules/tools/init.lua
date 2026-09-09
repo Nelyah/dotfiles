@@ -2,7 +2,13 @@ local plugin = require("core.packer").register_plugin
 
 plugin({ -- Sane binding to navigate between vim and tmux
 	"christoomey/vim-tmux-navigator",
-	event = "VeryLazy",
+	keys = {
+		{ "<m-h>", mode = { "n", "t" } },
+		{ "<m-j>", mode = { "n", "t" } },
+		{ "<m-k>", mode = { "n", "t" } },
+		{ "<m-l>", mode = { "n", "t" } },
+		{ "<m-\\>", mode = { "n", "t" } },
+	},
 	init = function()
 		vim.g.tmux_navigator_no_mappings = 1
 	end,
@@ -11,14 +17,34 @@ plugin({ -- Sane binding to navigate between vim and tmux
 	end,
 })
 
-plugin({ "mg979/vim-visual-multi", event = "VeryLazy" })
+plugin({ "terryma/vim-multiple-cursors", event = "VeryLazy" })
 
+plugin({ -- Align text based on pattern
+	"godlygeek/tabular",
+	event = "VeryLazy",
+	config = function()
+		vim.keymap.set({ "n", "v" }, "<Leader>T=", "<cmd>Tabularize /=<CR>")
+	end,
+})
+--
+-- comments based on the file type
+plugin({ "tpope/vim-commentary", event = "VeryLazy" })
 plugin({ "tpope/vim-surround", event = "VeryLazy" })
 plugin({ "tpope/vim-repeat", event = "VeryLazy" }) -- Allow repeating plugin actions and more
+plugin("tpope/vim-eunuch") -- Provide basic commands (chmod, mkdir, rename, etc.)
+plugin({ "ryvnf/readline.vim", branch = "main", event = { "InsertEnter", "CmdlineEnter" } })
 
 plugin({ -- Add Table mode for writing them in Markdown
 	"dhruvasagar/vim-table-mode",
 	ft = { "markdown", "pandoc", "vimwiki.markdown" },
+})
+
+plugin({ -- Many conceal and folding features
+	"plasticboy/vim-markdown",
+	ft = { "markdown", "pandoc", "vimwiki.markdown" },
+	config = function()
+		vim.g.vim_markdown_folding_disabled = 1
+	end,
 })
 
 plugin({ -- Autoformat
@@ -133,6 +159,7 @@ plugin({
 	dependencies = {
 		"nvim-lua/plenary.nvim", -- required
 		"sindrets/diffview.nvim", -- optional - Diff integration
+		"ibhagwan/fzf-lua",
 	},
 	config = function()
 		require("neogit").setup({
