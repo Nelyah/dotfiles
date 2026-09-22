@@ -1,0 +1,7 @@
+# Track only portable Pi configuration and customisations.
+/*
+!/.gitignore
+!/settings.json
+!/keybindings.json
+!/extensions/
+!/tests/
