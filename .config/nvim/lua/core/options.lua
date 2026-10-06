@@ -24,7 +24,7 @@ vim.opt.cmdheight = 2 -- Better display for messages
 vim.opt.synmaxcol = 1000 -- Only highlight first 1000 chars for better performance
 vim.opt.complete = vim.opt.complete + "kspell"
 
-if vim.fn.has("termguicolors") then
+if vim.fn.has("termguicolors") == 1 then
 	vim.opt.termguicolors = true
 end
 
@@ -48,8 +48,8 @@ vim.g.tex_flavor = "latex"
 -- Enables using the lua way of defining filetypes
 vim.g.do_filetype_lua = 1
 
-if vim.fn.executable("rg") then
-	vim.g.grepprg = "rg --vimgrep --no-heading --smart-case"
+if vim.fn.executable("rg") == 1 then
+	vim.opt.grepprg = "rg --vimgrep --no-heading --smart-case"
 end
 
 vim.opt.pumheight = 20 -- Maximum number of items to show in the popup menu
@@ -91,11 +91,11 @@ vim.o.shiftwidth = 0 -- follow tabstop
 vim.keymap.set("n", "<leader>e2", function()
 	vim.o.shiftwidth = 2
 	vim.o.tabstop = 2
-end, { noremap = true, silent = true })
+end, { noremap = true, silent = true, desc = "Use two-space indentation" })
 vim.keymap.set("n", "<leader>e4", function()
 	vim.o.shiftwidth = 4
 	vim.o.tabstop = 4
-end, { noremap = true, silent = true })
+end, { noremap = true, silent = true, desc = "Use four-space indentation" })
 vim.opt.expandtab = true
 vim.opt.backspace = { "indent", "eol", "start" }
 --

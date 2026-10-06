@@ -1,11 +1,10 @@
 require("core.options")
 require("core.mappings")
 require("core.autocmd")
+require("core.large_file").setup()
 require('core.conflict_markers_highlight')
 
 local pack = require("core.packer")
 
 -- Adding this as core since it's useful for many use cases
-pack.register_plugin("nvim-lua/plenary.nvim")
-
-pack:bootstrap()
+pack.register_plugin({ "nvim-lua/plenary.nvim", lazy = true })

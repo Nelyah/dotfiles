@@ -29,18 +29,18 @@ vim.cmd([[ command! -nargs=1 Ssh :r scp://<args>/ ]])
 vim.api.nvim_create_autocmd("Filetype", {
     group = vim.api.nvim_create_augroup("git_rebase_mappings", { clear = true }),
     pattern = { "gitrebase" },
-    callback = function()
-        vim.keymap.set("n", "<Leader>p", "ciwpick<esc>0")
-        vim.keymap.set("n", "<Leader>r", "ciwreword<esc>0")
-        vim.keymap.set("n", "<Leader>e", "ciwedit<esc>0")
-        vim.keymap.set("n", "<Leader>s", "ciwsquash<esc>0")
-        vim.keymap.set("n", "<Leader>f", "ciwfixup<esc>0")
-        vim.keymap.set("n", "<Leader>x", "ciwexec<esc>0")
-        vim.keymap.set("n", "<Leader>b", "ciwbreak<esc>0")
-        vim.keymap.set("n", "<Leader>d", "ciwdrop<esc>0")
-        vim.keymap.set("n", "<Leader>l", "ciwlabel<esc>0")
-        vim.keymap.set("n", "<Leader>t", "ciwreset<esc>0")
-        vim.keymap.set("n", "<Leader>m", "ciwmerge<esc>0")
+    callback = function(args)
+        vim.keymap.set("n", "<Leader>p", "ciwpick<esc>0", { buffer = args.buf, desc = "Set rebase action to pick" })
+        vim.keymap.set("n", "<Leader>r", "ciwreword<esc>0", { buffer = args.buf, desc = "Set rebase action to reword" })
+        vim.keymap.set("n", "<Leader>e", "ciwedit<esc>0", { buffer = args.buf, desc = "Set rebase action to edit" })
+        vim.keymap.set("n", "<Leader>s", "ciwsquash<esc>0", { buffer = args.buf, desc = "Set rebase action to squash" })
+        vim.keymap.set("n", "<Leader>f", "ciwfixup<esc>0", { buffer = args.buf, desc = "Set rebase action to fixup" })
+        vim.keymap.set("n", "<Leader>x", "ciwexec<esc>0", { buffer = args.buf, desc = "Set rebase action to exec" })
+        vim.keymap.set("n", "<Leader>b", "ciwbreak<esc>0", { buffer = args.buf, desc = "Set rebase action to break" })
+        vim.keymap.set("n", "<Leader>d", "ciwdrop<esc>0", { buffer = args.buf, desc = "Set rebase action to drop" })
+        vim.keymap.set("n", "<Leader>l", "ciwlabel<esc>0", { buffer = args.buf, desc = "Set rebase action to label" })
+        vim.keymap.set("n", "<Leader>t", "ciwreset<esc>0", { buffer = args.buf, desc = "Set rebase action to reset" })
+        vim.keymap.set("n", "<Leader>m", "ciwmerge<esc>0", { buffer = args.buf, desc = "Set rebase action to merge" })
         vim.cmd([[%s/^pick \\([a-z0-9]\\+\\) drop! /drop \1 /e]])
     end,
 })
@@ -48,13 +48,11 @@ vim.api.nvim_create_autocmd("Filetype", {
 -- {{{ Mail
 -- Go to the pattern if exists, else adds it on the first line
 local mailJumpToField = function(field)
-    local line_pattern = fn.search("^" .. field .. ":")
-
-    vim.api.nvim_win_set_cursor(0, { 0, 1 })
+    local line_pattern = fn.search("^" .. field .. ":", "cnw")
 
     if line_pattern == 0 then
         fn.append(0, field .. ":")
-        vim.api.nvim_win_set_cursor(0, { 0, string.len(vim.api.nvim_get_current_line()) - 1 })
+        vim.api.nvim_win_set_cursor(0, { 1, #field })
     else
         vim.api.nvim_win_set_cursor(0, { line_pattern, 0 })
     end
@@ -63,22 +61,21 @@ end
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("mail_autocmd", { clear = true }),
     pattern = "mail",
-    callback = function()
-        vim.bo.textwidth = 0
+    callback = function(args)
+        vim.bo[args.buf].textwidth = 0
         vim.keymap.set("n", "<Leader>gt", function()
             mailJumpToField("To")
-        end)
+        end, { buffer = args.buf, desc = "Jump to or add To header" })
         vim.keymap.set("n", "<Leader>gb", function()
-            mailJumpToField("Bcc:")
-        end)
+            mailJumpToField("Bcc")
+        end, { buffer = args.buf, desc = "Jump to or add Bcc header" })
         vim.keymap.set("n", "<Leader>gc", function()
-            mailJumpToField("Cc:")
-        end)
+            mailJumpToField("Cc")
+        end, { buffer = args.buf, desc = "Jump to or add Cc header" })
         vim.keymap.set("n", "<Leader>gs", function()
-            mailJumpToField("Subject:")
-        end)
+            mailJumpToField("Subject")
+        end, { buffer = args.buf, desc = "Jump to or add Subject header" })
     end,
 })
 
 -- }}}
-

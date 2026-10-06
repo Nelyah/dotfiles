@@ -12,6 +12,7 @@ plugin({
 -- {{{ Blink.cmp - Provide autocompletion
 plugin({
 	"saghen/blink.cmp",
+	event = { "InsertEnter", "CmdlineEnter" },
 	dependencies = { "rafamadriz/friendly-snippets" },
 
 	-- use a release tag to download pre-built binaries

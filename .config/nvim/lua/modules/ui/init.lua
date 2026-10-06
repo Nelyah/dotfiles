@@ -21,7 +21,7 @@ plugin({
 				print("close")
 				vim.cmd("DiffviewClose")
 			end
-		end)
+		end, { desc = "Toggle Git diff view" })
 	end,
 	config = function()
 		require("diffview").setup({
@@ -74,6 +74,11 @@ plugin({
 plugin({
 	"lewis6991/gitsigns.nvim",
 	event = "VeryLazy",
+	init = function()
+		vim.api.nvim_create_user_command("Blame", function()
+			require("gitsigns").blame()
+		end, { desc = "Show Git blame" })
+	end,
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 	},
@@ -95,7 +100,7 @@ plugin({
 					else
 						gitsigns.nav_hunk("next")
 					end
-				end)
+				end, { desc = "Go to next Git hunk or diff change" })
 
 				map("n", "[c", function()
 					if vim.wo.diff then
@@ -103,35 +108,31 @@ plugin({
 					else
 						gitsigns.nav_hunk("prev")
 					end
-				end)
+				end, { desc = "Go to previous Git hunk or diff change" })
 
 				local gitsign_key_prefix = "<leader>g"
 
 				-- Actions
-				map("n", gitsign_key_prefix .. "s", gitsigns.stage_hunk)
-				map("n", gitsign_key_prefix .. "r", gitsigns.reset_hunk)
+				map("n", gitsign_key_prefix .. "s", gitsigns.stage_hunk, { desc = "Stage Git hunk" })
+				map("n", gitsign_key_prefix .. "r", gitsigns.reset_hunk, { desc = "Reset Git hunk" })
 				map("v", gitsign_key_prefix .. "s", function()
 					gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
-				end)
+				end, { desc = "Stage selected Git lines" })
 				map("v", gitsign_key_prefix .. "r", function()
 					gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
-				end)
-				map("n", gitsign_key_prefix .. "S", gitsigns.stage_buffer)
-				map("n", gitsign_key_prefix .. "u", gitsigns.undo_stage_hunk)
-				map("n", gitsign_key_prefix .. "R", gitsigns.reset_buffer)
-				map("n", gitsign_key_prefix .. "p", gitsigns.preview_hunk)
-				map("n", gitsign_key_prefix .. "b", function()
-					gitsigns.blame_line({ full = true })
-				end)
-				map("n", gitsign_key_prefix .. "b", gitsigns.toggle_current_line_blame)
-				map("n", gitsign_key_prefix .. "d", gitsigns.diffthis)
+				end, { desc = "Reset selected Git lines" })
+				map("n", gitsign_key_prefix .. "S", gitsigns.stage_buffer, { desc = "Stage entire buffer" })
+				map("n", gitsign_key_prefix .. "u", gitsigns.undo_stage_hunk, { desc = "Undo staging Git hunk" })
+				map("n", gitsign_key_prefix .. "R", gitsigns.reset_buffer, { desc = "Reset entire buffer" })
+				map("n", gitsign_key_prefix .. "p", gitsigns.preview_hunk, { desc = "Preview Git hunk" })
+				map("n", gitsign_key_prefix .. "b", gitsigns.toggle_current_line_blame, { desc = "Toggle current line Git blame" })
+				map("n", gitsign_key_prefix .. "d", gitsigns.preview_hunk_inline, { desc = "Preview Git hunk inline" })
 				map("n", gitsign_key_prefix .. "D", function()
 					gitsigns.diffthis("~")
-				end)
-				map("n", gitsign_key_prefix .. "d", gitsigns.toggle_deleted)
+				end, { desc = "Diff buffer against previous commit" })
 
 				-- Text object
-				map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
+				map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select Git hunk" })
 			end,
 		})
 	end,
@@ -139,17 +140,18 @@ plugin({
 -- }}}
 -- {{{ Nvim colorizer - Colour highlighter
 plugin({
-	"norcalli/nvim-colorizer.lua",
+	"catgoose/nvim-colorizer.lua",
+	ft = require("modules.ui.colorizer").filetypes,
 	config = function()
-		require("colorizer").setup()
+		require("modules.ui.colorizer").setup()
 	end,
 })
 -- }}}
 -- {{{ Onedark - Colour scheme with support for treesitter syntax
 plugin({
 	"navarasu/onedark.nvim",
+	priority = 1000,
 	config = function()
-		require("modules.treesitter") -- needed for this theme
 		require("onedark").setup({
 			style = "warmer",
 			colors = {
@@ -178,6 +180,9 @@ plugin({
 			},
 		})
 		vim.cmd([[colorscheme onedark]])
+		vim.api.nvim_set_hl(0, "GitSignsDeleteVirtLn", { link = "DiffviewDiffDelete" })
+		vim.api.nvim_set_hl(0, "GitSignsDeleteVirtLnInLine", { link = "DiffviewDiffDeleteWord" })
+		vim.api.nvim_set_hl(0, "GitSignsDeleteInline", { link = "DiffviewDiffDeleteWord" })
 		vim.cmd([[highlight IncSearch guibg=#135564 guifg=white]])
 		vim.cmd([[highlight Search guibg=#135564 guifg=white]])
 		vim.cmd([[highlight Folded guibg=default guifg=grey]])
@@ -193,31 +198,7 @@ plugin({
 	config = function()
 		require("modules.ui.lualine").setup()
 	end,
-	dependencies = {
-		"kdheepak/tabline.nvim",
-	},
-})
-plugin({
-	"kdheepak/tabline.nvim",
-	lazy = true,
-})
--- }}}
--- {{{ Tabline - Better buffers and tabs. Only used for tabs in lualine
-plugin({
-	"kdheepak/tabline.nvim",
-	config = function()
-		require("tabline").setup({
-			enable = false, -- Set up by lualine
-			options = {
-				component_separators = { "", "" },
-				section_separators = { "", "" },
-			},
-		})
-	end,
-	dependencies = {
-		"nvim-lualine/lualine.nvim",
-		"kyazdani42/nvim-web-devicons",
-	},
+	dependencies = { "nvim-tree/nvim-web-devicons" },
 })
 -- }}}
 -- {{{ Todo Comments -- Highlight them and make them searchable
@@ -236,13 +217,18 @@ plugin({
 	cmd = "NvimTreeToggle",
 	config = function()
 		require("nvim-tree").setup({
+			on_attach = function(bufnr)
+				require("nvim-tree.api").map.on_attach.default(bufnr)
+				vim.keymap.del("n", "J", { buffer = bufnr })
+				vim.keymap.del("n", "K", { buffer = bufnr })
+			end,
 			view = {
 				width = 40,
 			},
 		})
 	end,
 	init = function()
-		vim.keymap.set("n", "<leader>n", "<cmd>NvimTreeToggle<CR>")
+		vim.keymap.set("n", "<leader>n", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
 	end,
 	dependencies = { "kyazdani42/nvim-web-devicons" },
 })
@@ -261,6 +247,15 @@ plugin({
 -- {{{ Fzf-Lua
 plugin({
 	"ibhagwan/fzf-lua",
+	cmd = { "FzfLua", "FT" },
+	keys = {
+		{ "<leader>i", desc = "Search project text" },
+		{ "<leader>o", desc = "Find files" },
+		{ "<leader>x", desc = "Find commands" },
+		{ "<leader>s", desc = "Search current buffer lines" },
+		{ "<c-x>h", desc = "Search help tags" },
+		{ ",", desc = "Find buffers" },
+	},
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()
 		require("modules.ui.fzf-lua").setup()
@@ -270,13 +265,29 @@ plugin({
 -- {{{ Scrollview (scrollbar with diagnostic icons)
 plugin({
 	"dstein64/nvim-scrollview",
+	event = "VeryLazy",
+	dependencies = { "lewis6991/gitsigns.nvim" },
 	config = function()
 		require("scrollview").setup({
-			excluded_filetypes = { "nerdtree" },
+			excluded_filetypes = { "NvimTree" },
+			byte_limit = require("core.large_file").max_bytes,
+			line_limit = require("core.large_file").max_lines,
 			current_only = true,
 			base = "right",
+			signs_scrollbar_overlap = "over",
 			signs_on_startup = { "conflicts", "diagnostics", "search" },
 			diagnostics_severities = { vim.diagnostic.severity.ERROR, vim.diagnostic.severity.WARN },
+		})
+		require("scrollview.contrib.gitsigns").setup({
+			add_symbol = "▏",
+			change_symbol = "▏",
+			delete_symbol = "▁",
+			add_highlight = "GitSignsAdd",
+			change_highlight = "GitSignsChange",
+			delete_highlight = "GitSignsDelete",
+			add_priority = 35,
+			change_priority = 35,
+			delete_priority = 35,
 		})
 	end,
 })

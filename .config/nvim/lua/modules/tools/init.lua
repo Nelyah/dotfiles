@@ -3,11 +3,11 @@ local plugin = require("core.packer").register_plugin
 plugin({ -- Sane binding to navigate between vim and tmux
 	"christoomey/vim-tmux-navigator",
 	keys = {
-		{ "<m-h>", mode = { "n", "t" } },
-		{ "<m-j>", mode = { "n", "t" } },
-		{ "<m-k>", mode = { "n", "t" } },
-		{ "<m-l>", mode = { "n", "t" } },
-		{ "<m-\\>", mode = { "n", "t" } },
+		{ "<m-h>", mode = { "n", "t" }, desc = "Focus left Vim or tmux pane" },
+		{ "<m-j>", mode = { "n", "t" }, desc = "Focus lower Vim or tmux pane" },
+		{ "<m-k>", mode = { "n", "t" }, desc = "Focus upper Vim or tmux pane" },
+		{ "<m-l>", mode = { "n", "t" }, desc = "Focus right Vim or tmux pane" },
+		{ "<m-\\>", mode = { "n", "t" }, desc = "Focus previous Vim or tmux pane" },
 	},
 	init = function()
 		vim.g.tmux_navigator_no_mappings = 1
@@ -23,7 +23,7 @@ plugin({ -- Align text based on pattern
 	"godlygeek/tabular",
 	event = "VeryLazy",
 	config = function()
-		vim.keymap.set({ "n", "v" }, "<Leader>T=", "<cmd>Tabularize /=<CR>")
+		vim.keymap.set({ "n", "v" }, "<Leader>T=", "<cmd>Tabularize /=<CR>", { desc = "Align text on equals signs" })
 	end,
 })
 --
@@ -54,7 +54,7 @@ plugin({ -- Autoformat
 		{
 			"gF",
 			function()
-				require("conform").format({ async = true, lsp_fallback = true })
+				require("conform").format({ async = true, lsp_format = "fallback" })
 			end,
 			mode = "",
 			desc = "[F]ormat buffer",
@@ -73,11 +73,9 @@ plugin({ -- Autoformat
 				end
 			end,
 
-			shell = { "shfmt" },
+			sh = { "shfmt" },
 
-			-- You can use a sub-list to tell conform to run *until* a formatter
-			-- is found.
-			javascript = { { "prettierd", "prettier" } },
+			javascript = { "prettierd", "prettier", stop_after_first = true },
 			cpp = { "clang-format" },
 			go = { "golines" },
 			json = { "jq" },

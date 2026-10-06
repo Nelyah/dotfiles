@@ -17,6 +17,7 @@ plugin({
 
 plugin({
 	"williamboman/mason.nvim",
+	cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonUninstallAll", "MasonUpdate", "MasonLog" },
 	config = function()
 		require("mason").setup({
 			-- Add installed binaries at the end of the PATH
@@ -55,12 +56,11 @@ plugin({
 	dependencies = {
 		"rmagatti/logger.nvim" ,
 	},
-	event = "BufEnter",
-	init = function()
-		vim.keymap.set("n", "gs", require("goto-preview").goto_preview_declaration)
-		vim.keymap.set("n", "gS", require("goto-preview").goto_preview_definition)
-		vim.keymap.set("n", "gx", require("goto-preview").close_all_win)
-	end,
+	keys = {
+		{ "gs", function() require("goto-preview").goto_preview_declaration() end, desc = "Preview declaration" },
+		{ "gS", function() require("goto-preview").goto_preview_definition() end, desc = "Preview definition" },
+		{ "gx", function() require("goto-preview").close_all_win() end, desc = "Close all preview windows" },
+	},
 	opts = {
 		height = 30,
 	},

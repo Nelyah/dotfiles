@@ -87,16 +87,16 @@ function M.lspconfig()
 		group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
 		callback = function(args)
 			local bufnr = args.buf
-			vim.keymap.set("n", "gD", vim.lsp.buf.definition, { buffer = bufnr })
-			vim.keymap.set("n", "gh", vim.lsp.buf.hover, { buffer = bufnr })
-			vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { buffer = bufnr })
-			vim.keymap.set("n", "1gD", vim.lsp.buf.type_definition, { buffer = bufnr })
-			vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr })
-			vim.keymap.set("n", "gR", vim.lsp.buf.rename, { buffer = bufnr })
-			vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action, { buffer = bufnr })
-			vim.keymap.set("n", "g0", vim.lsp.buf.document_symbol, { buffer = bufnr })
-			vim.keymap.set("n", "gW", vim.lsp.buf.workspace_symbol, { buffer = bufnr })
-			vim.keymap.set("n", "gd", vim.lsp.buf.declaration, { buffer = bufnr })
+			vim.keymap.set("n", "gD", vim.lsp.buf.definition, { buffer = bufnr, desc = "Go to definition" })
+			vim.keymap.set("n", "gh", vim.lsp.buf.hover, { buffer = bufnr, desc = "Show hover documentation" })
+			vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { buffer = bufnr, desc = "Go to implementation" })
+			vim.keymap.set("n", "1gD", vim.lsp.buf.type_definition, { buffer = bufnr, desc = "Go to type definition" })
+			vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, desc = "List references" })
+			vim.keymap.set("n", "gR", vim.lsp.buf.rename, { buffer = bufnr, desc = "Rename symbol" })
+			vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action, { buffer = bufnr, desc = "Show code actions" })
+			vim.keymap.set("n", "g0", vim.lsp.buf.document_symbol, { buffer = bufnr, desc = "List document symbols" })
+			vim.keymap.set("n", "gW", vim.lsp.buf.workspace_symbol, { buffer = bufnr, desc = "Search workspace symbols" })
+			vim.keymap.set("n", "gd", vim.lsp.buf.declaration, { buffer = bufnr, desc = "Go to declaration" })
 		end,
 	})
 end
@@ -137,6 +137,7 @@ function M.setup()
 	vim.diagnostic.config({
 		severity_sort = true,
 		virtual_text = diagnositics_virtual_text_config,
+		virtual_lines = false,
 		underline = false,
 		update_in_insert = false,
 		float = { border = border },
@@ -154,34 +155,36 @@ function M.setup()
 	--		Activates after a timeout (700ms)
 	--			Disables virtual text
 	--			Enables virtual_lines
-	local function has_diagnostic_on_current_line()
-		local current_line = vim.api.nvim_win_get_cursor(0)[1] - 1 -- Get current line (0-based index)
-		local diagnostics = vim.diagnostic.get(0, { lnum = current_line })
-		return #diagnostics > 0
+	local expanded_buf
+	local function restore_diagnostics()
+		local bufnr = expanded_buf
+		expanded_buf = nil
+		if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
+			vim.diagnostic.show(nil, bufnr)
+		end
 	end
 	local diagnostic_hover_group = vim.api.nvim_create_augroup("diagnostic-hover", { clear = true })
 
 	vim.api.nvim_create_autocmd("CursorHold", {
 		group = diagnostic_hover_group,
 		pattern = "*",
-		callback = function()
-			vim.diagnostic.config({
-				virtual_lines = has_diagnostic_on_current_line() and diagnostics_virtual_lines_config or false,
-				virtual_text = not has_diagnostic_on_current_line() and diagnositics_virtual_text_config or false,
+		callback = function(args)
+			local current_line = vim.api.nvim_win_get_cursor(0)[1] - 1
+			if #vim.diagnostic.get(args.buf, { lnum = current_line }) == 0 then
+				restore_diagnostics()
+				return
+			end
+			vim.diagnostic.show(nil, args.buf, nil, {
+				virtual_lines = diagnostics_virtual_lines_config,
+				virtual_text = false,
 			})
+			expanded_buf = args.buf
 		end,
 	})
-	vim.api.nvim_create_autocmd("CursorMoved", {
+	vim.api.nvim_create_autocmd({ "CursorMoved", "InsertEnter", "BufLeave", "WinLeave" }, {
 		group = diagnostic_hover_group,
 		pattern = "*",
-		callback = function()
-			if not has_diagnostic_on_current_line() then
-				vim.diagnostic.config({
-					virtual_text = diagnositics_virtual_text_config,
-					virtual_lines = false,
-				})
-			end
-		end,
+		callback = restore_diagnostics,
 	})
 end
 
