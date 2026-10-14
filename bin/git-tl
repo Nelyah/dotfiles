@@ -1,46 +1,964 @@
-#! /usr/bin/env bash
+#!/usr/bin/env python3
+from __future__ import annotations
 
-nb_lines=10
-files=()
-args=()
+import os
+import re
+import shutil
+import signal
+import subprocess
+import sys
+import unicodedata
+from dataclasses import dataclass, field
+from datetime import date, datetime, timedelta
+from enum import Enum, IntFlag
 
-while (( $# > 0 )); do
-    case "$1" in
-        -a) args+=( --author=".*$2.*" )
-            shift 2
-        ;;
-        *)
-            if grep -E "^-?[0-9]+$" <<< "$1" &> /dev/null; then
-                nb_lines="$( tr -d '-' <<< "$1")"
-            elif [ -e "$1" ]; then
-                [[ "${#files}" == 0 ]] && files+=( '--' )
-                files+=( "$1" )
-            else
-                args+=( "$1" )
-            fi
-            shift
-        ;;
-    esac
-done
+DEFAULT_COUNT = 10
+WEEKDAY_SPAN_DAYS = 6
+WEEKDAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+NODE_GLYPH = "•"
+HEAD_GLYPH = "@"
+BOX_GLYPHS = " │││─╯╮┤─╰╭├─┴┬┼"
+FIELD_SEPARATOR = "\x1f"
+LOG_FORMAT = "%H%x1f%h%x1f%P%x1f%ct%x1f%aN%x1f%D%x1f%s"
+REF_FORMAT = "%(refname)%1f%(upstream)%1f%(upstream:track,nobracket)%1f%(symref)%1f%(HEAD)"
+COUNT_PATTERN = re.compile(r"-?[0-9]+")
+TRACK_PATTERN = re.compile(r"(ahead|behind) ([0-9]+)")
+FIXUP_PATTERN = re.compile(r"(fixup|squash|amend)! (.*)")
+HEX_COLOR_PATTERN = re.compile(r"#[0-9a-f]{3}(?:[0-9a-f]{3})?")
+NUMBER_PATTERN = re.compile(r"-?[0-9]+")
+COMMIT_FILTERS = (
+    "--author",
+    "--committer",
+    "--grep",
+    "--invert-grep",
+    "--all-match",
+    "-S",
+    "-G",
+    "--merges",
+    "--no-merges",
+    "--min-parents",
+    "--max-parents",
+    "--since-as-filter",
+)
+REVISION_OPTIONS = ("--branches", "--tags", "--remotes", "--glob=")
+DEFAULT_BRANCH_CANDIDATES = ("main", "master")
+DEFAULT_GRAPH_COLORS = (
+    "red",
+    "green",
+    "yellow",
+    "blue",
+    "magenta",
+    "cyan",
+    "bold red",
+    "bold green",
+    "bold yellow",
+    "bold blue",
+    "bold magenta",
+    "bold cyan",
+)
 
-_date_format='%Y-%m-%d %H:%I:%S'
-pretty_format="$(git config --get format.pretty)"
-if [ -z "$pretty_format" ]; then
-    pretty_format="%C(212)%>|(5)%h%C(reset)  %C(04)%cd%C(reset)  %C(green)%<(20,trunc)%an%C(reset) %>|(1)%s%C(reset) %C(auto)%d%C(reset)"
-fi
 
-graph_config="$(git config --get --bool tl.graph)" || graph_config=true
-"$graph_config" && graph_arg="--graph" || graph_arg=""
+class ColorMode(Enum):
+    AUTO = "auto"
+    ALWAYS = "always"
+    NEVER = "never"
 
-[[ "${#args[@]}" == 0 ]] && args+=( HEAD )
+    @classmethod
+    def from_argument(cls, argument: str) -> ColorMode | None:
+        if argument in ("--color", "--color=always"):
+            return cls.ALWAYS
+        if argument in ("--color=never", "--no-color"):
+            return cls.NEVER
+        if argument == "--color=auto":
+            return cls.AUTO
+        return None
 
-git log -"${nb_lines}" \
-    --date=format:"$_date_format" \
-    --format=format:"$pretty_format" \
-    --abbrev-commit \
-    --decorate \
-    $graph_arg \
-    --regexp-ignore-case \
-    --extended-regexp \
-    "${args[@]}" \
-    "${files[@]}"
+    @classmethod
+    def from_config(cls, value: str | None) -> ColorMode:
+        if value is None:
+            return cls.AUTO
+        lowered = value.lower()
+        if lowered == "always":
+            return cls.ALWAYS
+        if lowered in ("never", "false", "no", "off", "0"):
+            return cls.NEVER
+        return cls.AUTO
+
+    def enabled(self, is_tty: bool) -> bool:
+        return self is ColorMode.ALWAYS or (self is ColorMode.AUTO and is_tty)
+
+
+class AnsiColor(Enum):
+    BLACK = 0
+    RED = 1
+    GREEN = 2
+    YELLOW = 3
+    BLUE = 4
+    MAGENTA = 5
+    CYAN = 6
+    WHITE = 7
+
+
+class Attribute(Enum):
+    BOLD = (1, 22)
+    DIM = (2, 22)
+    ITALIC = (3, 23)
+    UL = (4, 24)
+    BLINK = (5, 25)
+    REVERSE = (7, 27)
+    STRIKE = (9, 29)
+
+
+class RefKind(Enum):
+    HEAD = "head"
+    BRANCH = "branch"
+    REMOTE = "remote"
+    TAG = "tag"
+    STASH = "stash"
+    OTHER = "other"
+
+
+class Listing(Enum):
+    BRIGHT = "bright"
+    DIMMED = "dimmed"
+
+
+class Direction(IntFlag):
+    NONE = 0
+    UP = 1
+    DOWN = 2
+    LEFT = 4
+    RIGHT = 8
+
+
+def strip_prefix(text: str, prefix: str) -> str:
+    return text[len(prefix) :] if text.startswith(prefix) else text
+
+
+def unique(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    kept = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            kept.append(item)
+    return kept
+
+
+def char_width(char: str) -> int:
+    if unicodedata.combining(char):
+        return 0
+    return 2 if unicodedata.east_asian_width(char) in ("W", "F") else 1
+
+
+def display_width(text: str) -> int:
+    return sum(char_width(char) for char in text)
+
+
+def truncate(text: str, width: int) -> str:
+    if display_width(text) <= width:
+        return text
+    kept = []
+    used = 0
+    for char in text:
+        used += char_width(char)
+        if used > width - 1:
+            break
+        kept.append(char)
+    return "".join(kept) + "…"
+
+
+def color_code(word: str, background: bool) -> str | None:
+    base = 40 if background else 30
+    if word == "normal":
+        return ""
+    if word == "default":
+        return str(base + 9)
+    bright = word.startswith("bright")
+    name = strip_prefix(word, "bright").upper()
+    if name in AnsiColor.__members__:
+        return str(base + (60 if bright else 0) + AnsiColor[name].value)
+    if HEX_COLOR_PATTERN.fullmatch(word):
+        digits = word[1:]
+        if len(digits) == 3:
+            digits = "".join(digit * 2 for digit in digits)
+        red, green, blue = (int(digits[index : index + 2], 16) for index in (0, 2, 4))
+        return f"{base + 8};2;{red};{green};{blue}"
+    if NUMBER_PATTERN.fullmatch(word):
+        value = int(word)
+        if value == -1:
+            return ""
+        if 0 <= value < 8:
+            return str(base + value)
+        if 8 <= value < 16:
+            return str(base + 60 + value - 8)
+        if 16 <= value < 256:
+            return f"{base + 8};5;{value}"
+    return None
+
+
+def attribute_code(word: str) -> int | None:
+    if word == "reset":
+        return 0
+    negated = word.startswith("no")
+    name = strip_prefix(strip_prefix(word, "no"), "-") if negated else word
+    if name.upper() not in Attribute.__members__:
+        return None
+    on, off = Attribute[name.upper()].value
+    return off if negated else on
+
+
+def parse_color(spec: str) -> str | None:
+    attributes = []
+    colors = []
+    for word in spec.lower().split():
+        attribute = attribute_code(word)
+        if attribute is not None:
+            attributes.append(str(attribute))
+            continue
+        if len(colors) == 2:
+            return None
+        code = color_code(word, background=len(colors) == 1)
+        if code is None:
+            return None
+        colors.append(code)
+    codes = attributes + [code for code in colors if code]
+    return f"\x1b[{';'.join(codes)}m" if codes else ""
+
+
+class GitConfig:
+    def __init__(self, entries: dict[str, str]) -> None:
+        self.entries = entries
+
+    @classmethod
+    def parse(cls, raw: str) -> GitConfig:
+        entries = {}
+        for entry in raw.split("\0"):
+            if not entry:
+                continue
+            key, separator, value = entry.partition("\n")
+            entries[key] = value if separator else "true"
+        return cls(entries)
+
+    def get(self, key: str) -> str | None:
+        return self.entries.get(key)
+
+    def get_bool(self, key: str, default: bool) -> bool:
+        value = self.get(key)
+        if value is None:
+            return default
+        lowered = value.lower()
+        if lowered in ("true", "yes", "on", "1"):
+            return True
+        if lowered in ("false", "no", "off", "0", ""):
+            return False
+        return default
+
+    def color(self, key: str, default: str) -> str:
+        value = self.get(key)
+        parsed = parse_color(value) if value is not None else None
+        return parsed if parsed is not None else parse_color(default) or ""
+
+    def graph_colors(self) -> tuple[str, ...]:
+        value = self.get("log.graphcolors")
+        specs = value.split(",") if value else []
+        parsed = [parse_color(spec.strip()) for spec in specs]
+        colors = tuple(color for color in parsed if color)
+        return colors or tuple(parse_color(spec) or "" for spec in DEFAULT_GRAPH_COLORS)
+
+
+@dataclass
+class Palette:
+    reset: str = ""
+    dim: str = ""
+    hash: str = ""
+    hash_dimmed: str = ""
+    checkout: str = ""
+    date: str = ""
+    author: str = ""
+    fixup: str = ""
+    head: str = ""
+    branch: str = ""
+    remote: str = ""
+    tag: str = ""
+    stash: str = ""
+    graph: tuple[str, ...] = ("",)
+
+    @classmethod
+    def from_config(cls, config: GitConfig) -> Palette:
+        return cls(
+            reset="\x1b[m",
+            dim="\x1b[2m",
+            hash="\x1b[38;5;212m",
+            hash_dimmed="\x1b[2;38;5;212m",
+            checkout="\x1b[38;2;255;200;110m",
+            date="\x1b[34m",
+            author="\x1b[38;2;127;150;115m",
+            fixup="\x1b[1;35m",
+            head=config.color("color.decorate.head", "bold cyan"),
+            branch=config.color("color.decorate.branch", "bold green"),
+            remote=config.color("color.decorate.remotebranch", "bold red"),
+            tag=config.color("color.decorate.tag", "bold yellow"),
+            stash=config.color("color.decorate.stash", "bold magenta"),
+            graph=config.graph_colors(),
+        )
+
+    def ref_color(self, kind: RefKind) -> str:
+        if kind is RefKind.HEAD:
+            return self.head
+        if kind is RefKind.BRANCH:
+            return self.branch
+        if kind is RefKind.REMOTE:
+            return self.remote
+        if kind is RefKind.TAG:
+            return self.tag
+        if kind is RefKind.STASH:
+            return self.stash
+        return ""
+
+
+@dataclass
+class Span:
+    text: str
+    color: str
+
+
+class Text:
+    def __init__(self) -> None:
+        self.spans: list[Span] = []
+
+    def add(self, text: str, color: str = "") -> Text:
+        if text:
+            self.spans.append(Span(text, color))
+        return self
+
+    def extend(self, other: Text) -> Text:
+        self.spans.extend(other.spans)
+        return self
+
+    @property
+    def plain(self) -> str:
+        return "".join(span.text for span in self.spans)
+
+    def render(self, reset: str) -> str:
+        return "".join(f"{span.color}{span.text}{reset}" if span.color else span.text for span in self.spans)
+
+
+@dataclass
+class Options:
+    count: int = DEFAULT_COUNT
+    git_args: list[str] = field(default_factory=list)
+    paths: list[str] = field(default_factory=list)
+    color_mode: ColorMode | None = None
+
+    @property
+    def filters_commits(self) -> bool:
+        return any(argument.startswith(COMMIT_FILTERS) for argument in self.git_args)
+
+    @property
+    def has_revision(self) -> bool:
+        return any(names_revision(argument) for argument in self.git_args)
+
+
+def names_revision(argument: str) -> bool:
+    if argument == "HEAD":
+        return False
+    if argument == "--all" or argument.startswith(REVISION_OPTIONS):
+        return True
+    return not argument.startswith(("-", "^"))
+
+
+def parse_args(arguments: list[str]) -> Options:
+    options = Options()
+    remaining = iter(arguments)
+    for argument in remaining:
+        color_mode = ColorMode.from_argument(argument)
+        if argument == "-a":
+            author = next(remaining, None)
+            if author is None:
+                sys.exit("git tl: -a needs an author")
+            options.git_args.append(f"--author=.*{author}.*")
+        elif argument == "--":
+            options.paths.extend(remaining)
+        elif color_mode is not None:
+            options.color_mode = color_mode
+        elif COUNT_PATTERN.fullmatch(argument):
+            options.count = abs(int(argument))
+        elif os.path.exists(argument):
+            options.paths.append(argument)
+        else:
+            options.git_args.append(argument)
+    return options
+
+
+@dataclass
+class Ref:
+    kind: RefKind
+    name: str
+    is_head: bool = False
+
+    @classmethod
+    def parse(cls, item: str) -> Ref:
+        if item.startswith("HEAD -> "):
+            return cls(RefKind.BRANCH, strip_prefix(item, "HEAD -> "), is_head=True)
+        if item == "HEAD":
+            return cls(RefKind.HEAD, item)
+        if item.startswith("tag: "):
+            return cls(RefKind.TAG, strip_prefix(item, "tag: "))
+        if item.startswith("refs/heads/"):
+            return cls(RefKind.BRANCH, item)
+        if item.startswith("refs/remotes/"):
+            return cls(RefKind.REMOTE, item)
+        if item.startswith("refs/tags/"):
+            return cls(RefKind.TAG, item)
+        if item == "refs/stash":
+            return cls(RefKind.STASH, item)
+        return cls(RefKind.OTHER, item)
+
+    @property
+    def short_name(self) -> str:
+        if self.kind is RefKind.BRANCH:
+            return strip_prefix(self.name, "refs/heads/")
+        if self.kind is RefKind.REMOTE:
+            return strip_prefix(self.name, "refs/remotes/")
+        if self.kind is RefKind.TAG:
+            return strip_prefix(self.name, "refs/tags/")
+        if self.kind is RefKind.OTHER:
+            return strip_prefix(self.name, "refs/")
+        return self.name
+
+    @property
+    def parts(self) -> tuple[str, str]:
+        name = self.short_name
+        cut = name.rfind("/") + 1
+        namespace = name[:cut]
+        if self.kind is RefKind.TAG:
+            namespace = "tag: " + namespace
+        return namespace, name[cut:]
+
+
+@dataclass
+class Commit:
+    hash: str
+    short_hash: str
+    parents: list[str]
+    time: datetime
+    author: str
+    refs: list[Ref]
+    subject: str
+
+    @property
+    def is_head(self) -> bool:
+        return any(ref.is_head or ref.kind is RefKind.HEAD for ref in self.refs)
+
+
+def parse_commits(raw: str) -> list[Commit]:
+    commits = []
+    for record in raw.split("\0"):
+        fields = record.split(FIELD_SEPARATOR, 6)
+        if len(fields) != 7:
+            continue
+        full, short, parents, timestamp, author, decoration, subject = fields
+        commits.append(
+            Commit(
+                hash=full,
+                short_hash=short,
+                parents=parents.split(),
+                time=datetime.fromtimestamp(int(timestamp)),
+                author=author,
+                refs=[Ref.parse(item) for item in decoration.split(", ")] if decoration else [],
+                subject=subject,
+            )
+        )
+    return commits
+
+
+@dataclass
+class Branch:
+    name: str
+    upstream: str
+    ahead: int
+    behind: int
+
+    def mark(self, decorated: set[str]) -> str:
+        if self.upstream and self.upstream in decorated:
+            return " ✓"
+        arrows = (f"↑{self.ahead}" if self.ahead else "") + (f"↓{self.behind}" if self.behind else "")
+        return f" {arrows}" if arrows else ""
+
+
+class RefTable:
+    def __init__(self, branches: list[Branch], names: set[str], current: str | None, remote_default: str | None) -> None:
+        self.branches = {branch.name: branch for branch in branches}
+        self.names = names
+        self.current = current
+        self.remote_default = remote_default
+
+    @classmethod
+    def parse(cls, raw: str) -> RefTable:
+        branches = []
+        names = set()
+        current = None
+        remote_defaults = []
+        for line in raw.splitlines():
+            fields = line.split(FIELD_SEPARATOR)
+            if len(fields) != 5:
+                continue
+            name, upstream, track, symref, head = fields
+            names.add(name)
+            if name.startswith("refs/heads/"):
+                ahead = behind = 0
+                for direction, number in TRACK_PATTERN.findall(track):
+                    if direction == "ahead":
+                        ahead = int(number)
+                    else:
+                        behind = int(number)
+                branches.append(Branch(name, upstream, ahead, behind))
+                if head == "*":
+                    current = name
+            elif symref and name.endswith("/HEAD"):
+                if name == "refs/remotes/origin/HEAD":
+                    remote_defaults.insert(0, symref)
+                else:
+                    remote_defaults.append(symref)
+        return cls(branches, names, current, remote_defaults[0] if remote_defaults else None)
+
+    def branch(self, name: str) -> Branch | None:
+        return self.branches.get(name)
+
+
+@dataclass
+class DefaultBranch:
+    name: str | None
+    refs: list[str]
+
+    @classmethod
+    def find(cls, table: RefTable, config: GitConfig) -> DefaultBranch:
+        name = None
+        if table.remote_default:
+            parts = table.remote_default.split("/", 3)
+            name = parts[3] if len(parts) == 4 else None
+        else:
+            for candidate in (config.get("init.defaultbranch"), *DEFAULT_BRANCH_CANDIDATES):
+                if candidate and table.branch(f"refs/heads/{candidate}"):
+                    name = candidate
+                    break
+        refs = []
+        if name:
+            branch = table.branch(f"refs/heads/{name}")
+            if branch:
+                refs.append(branch.name)
+                if branch.upstream in table.names:
+                    refs.append(branch.upstream)
+            if table.remote_default:
+                refs.append(table.remote_default)
+        return cls(name, unique(refs))
+
+
+@dataclass
+class Membership:
+    listing: Listing
+    arguments: list[str]
+
+    @classmethod
+    def plan(cls, options: Options, table: RefTable, default: DefaultBranch) -> Membership | None:
+        if default.refs and table.current != f"refs/heads/{default.name}":
+            return cls(Listing.BRIGHT, ["rev-list", "HEAD", *(f"^{ref}" for ref in default.refs)])
+        if options.has_revision:
+            return cls(
+                Listing.DIMMED,
+                ["rev-list", "--regexp-ignore-case", "--extended-regexp", *options.git_args, "^HEAD"],
+            )
+        return None
+
+
+@dataclass
+class Dimming:
+    bright: set[str] | None = None
+    dimmed: set[str] = field(default_factory=set)
+
+    @classmethod
+    def from_listing(cls, membership: Membership | None, output: str | None) -> Dimming:
+        if membership is None or output is None:
+            return cls()
+        hashes = set(output.split())
+        if membership.listing is Listing.BRIGHT:
+            return cls(bright=hashes)
+        return cls(dimmed=hashes)
+
+    def applies_to(self, commit_hash: str) -> bool:
+        return (self.bright is not None and commit_hash not in self.bright) or commit_hash in self.dimmed
+
+
+@dataclass
+class DateColumn:
+    cutoff: date
+    show_year: bool
+    width: int
+
+    @classmethod
+    def for_commits(cls, commits: list[Commit], today: date) -> DateColumn:
+        cutoff = today - timedelta(days=WEEKDAY_SPAN_DAYS)
+        days = [commit.time.date() for commit in commits]
+        older = [day for day in days if day < cutoff]
+        show_year = any(day.year != today.year for day in older)
+        if older:
+            width = 10 if show_year else 5
+        else:
+            width = 3 if days else 0
+        return cls(cutoff, show_year, width)
+
+    def label(self, day: date) -> str:
+        if day >= self.cutoff:
+            return WEEKDAYS[day.weekday()]
+        if self.show_year:
+            return day.isoformat()
+        return f"{day.month:02}-{day.day:02}"
+
+
+@dataclass
+class Lane:
+    target: str
+    color: str
+
+
+@dataclass
+class Cell:
+    directions: Direction = Direction.NONE
+    color: str = ""
+    is_node: bool = False
+
+
+def toward(index: int, node: int) -> Direction:
+    return Direction.LEFT if index > node else Direction.RIGHT
+
+
+@dataclass
+class GraphRow:
+    cells: list[Cell]
+    gaps: list[str | None]
+
+    def connect(self, node: int, index: int, color: str) -> None:
+        low, high = min(node, index), max(node, index)
+        for gap in range(low, high):
+            if self.gaps[gap] is None:
+                self.gaps[gap] = color
+        for between in range(low + 1, high):
+            cell = self.cells[between]
+            if not cell.directions:
+                cell.color = color
+            cell.directions |= Direction.LEFT | Direction.RIGHT
+
+    def text(self, node_glyph: str, node_color: str | None = None) -> Text:
+        text = Text()
+        for cell, gap in zip(self.cells, self.gaps):
+            if cell.is_node:
+                text.add(node_glyph, node_color or cell.color)
+            else:
+                text.add(BOX_GLYPHS[cell.directions], cell.color if cell.directions else "")
+            text.add(" " if gap is None else "─", gap or "")
+        return text
+
+
+def first_free(occupied: set[int], start: int) -> int:
+    index = start
+    while index in occupied:
+        index += 1
+    return index
+
+
+def set_lane(lanes: list[Lane | None], index: int, lane: Lane | None) -> None:
+    while len(lanes) <= index:
+        lanes.append(None)
+    lanes[index] = lane
+
+
+class GraphLayout:
+    def __init__(self, colors: tuple[str, ...]) -> None:
+        self.lanes: list[Lane | None] = []
+        self.colors = colors
+        self.color_index = 0
+
+    def next_color(self) -> str:
+        color = self.colors[self.color_index % len(self.colors)]
+        self.color_index += 1
+        return color
+
+    def place(self, commit_hash: str, parents: list[str]) -> GraphRow:
+        before = self.lanes
+        occupied = {index for index, lane in enumerate(before) if lane is not None}
+        waiting = [index for index, lane in enumerate(before) if lane is not None and lane.target == commit_hash]
+        if waiting:
+            node = waiting[0]
+            color = before[node].color
+        else:
+            node = first_free(occupied, 0)
+            occupied.add(node)
+            color = self.next_color()
+
+        after = list(before)
+        for index in waiting:
+            after[index] = None
+        set_lane(after, node, Lane(parents[0], color) if parents else None)
+        joins = []
+        branches = []
+        for parent in parents[1:]:
+            existing = next(
+                (index for index, lane in enumerate(after) if lane is not None and lane.target == parent and index != node),
+                None,
+            )
+            if existing is not None:
+                joins.append(existing)
+            else:
+                slot = first_free(occupied, node + 1)
+                occupied.add(slot)
+                set_lane(after, slot, Lane(parent, self.next_color()))
+                branches.append(slot)
+        while after and after[-1] is None:
+            after.pop()
+        self.lanes = after
+
+        width = max(len(before), len(after), node + 1)
+        row = GraphRow([Cell() for _ in range(width)], [None] * width)
+        for index, lane in enumerate(before):
+            if lane is not None and index not in waiting:
+                row.cells[index] = Cell(Direction.UP | Direction.DOWN, lane.color)
+        row.cells[node] = Cell(color=color, is_node=True)
+        for index in waiting[1:]:
+            row.cells[index] = Cell(Direction.UP | toward(index, node), before[index].color)
+        for index in branches:
+            row.cells[index] = Cell(Direction.DOWN | toward(index, node), after[index].color)
+        for index in joins:
+            row.cells[index].directions |= toward(index, node)
+        for index in waiting[1:] + branches + joins:
+            row.connect(node, index, row.cells[index].color)
+        return row
+
+    def collapse(self, upcoming: str | None) -> GraphRow | None:
+        merges = []
+        for index, lane in enumerate(self.lanes):
+            if lane is None or lane.target == upcoming:
+                continue
+            into = next(
+                (
+                    earlier
+                    for earlier in range(index)
+                    if self.lanes[earlier] is not None and self.lanes[earlier].target == lane.target
+                ),
+                None,
+            )
+            if into is not None:
+                merges.append((index, into))
+        if not merges:
+            return None
+
+        width = len(self.lanes)
+        row = GraphRow([Cell() for _ in range(width)], [None] * width)
+        for index, lane in enumerate(self.lanes):
+            if lane is not None:
+                row.cells[index] = Cell(Direction.UP | Direction.DOWN, lane.color)
+        for index, into in merges:
+            row.cells[index] = Cell(Direction.UP | Direction.LEFT, row.cells[index].color)
+            row.cells[into].directions |= Direction.RIGHT
+        for index, into in merges:
+            row.connect(into, index, row.cells[index].color)
+            self.lanes[index] = None
+        while self.lanes and self.lanes[-1] is None:
+            self.lanes.pop()
+        return row
+
+
+@dataclass
+class GraphStep:
+    row: GraphRow
+    connector: GraphRow | None
+
+
+def layout_graph(commits: list[Commit], colors: tuple[str, ...], drop_missing_parents: bool) -> list[GraphStep]:
+    shown = {commit.hash for commit in commits}
+    upcoming = [commit.hash for commit in commits[1:]] + [None]
+    layout = GraphLayout(colors)
+    steps = []
+    for commit, next_hash in zip(commits, upcoming):
+        parents = [parent for parent in commit.parents if parent in shown or not drop_missing_parents]
+        row = layout.place(commit.hash, unique(parents))
+        steps.append(GraphStep(row, layout.collapse(next_hash)))
+    return steps
+
+
+@dataclass
+class Renderer:
+    palette: Palette
+    table: RefTable
+    dimming: Dimming
+    dates: DateColumn
+    author_width: int
+    columns: int
+
+    def decorations(self, commit: Commit) -> Text:
+        decorated = {ref.name for ref in commit.refs}
+        absorbed = set()
+        for ref in commit.refs:
+            branch = self.table.branch(ref.name) if ref.kind is RefKind.BRANCH else None
+            if branch and branch.upstream:
+                absorbed.add(branch.upstream)
+
+        text = Text()
+        for ref in commit.refs:
+            if ref.kind is RefKind.REMOTE and (ref.name.endswith("/HEAD") or ref.name in absorbed):
+                continue
+            color = self.palette.ref_color(ref.kind)
+            namespace, leaf = ref.parts
+            branch = self.table.branch(ref.name) if ref.kind is RefKind.BRANCH else None
+            mark = branch.mark(decorated) if branch else ""
+            text.add("  ").add(namespace, color + self.palette.dim).add(leaf, color).add(mark, color)
+        return text
+
+    def subject(self, subject: str) -> Text:
+        match = FIXUP_PATTERN.fullmatch(subject)
+        if match:
+            return Text().add(f"{match.group(1)}!", self.palette.fixup).add(f" {match.group(2)}", self.palette.dim)
+        return Text().add(subject)
+
+    def line(self, commit: Commit, row: GraphRow | None, show_day: bool) -> str:
+        if commit.is_head:
+            text = row.text(HEAD_GLYPH, self.palette.checkout) if row else Text()
+            hash_color = self.palette.checkout
+        else:
+            text = row.text(NODE_GLYPH) if row else Text()
+            hash_color = self.palette.hash_dimmed if self.dimming.applies_to(commit.hash) else self.palette.hash
+        text.add(commit.short_hash, hash_color).add("  ")
+        label = self.dates.label(commit.time.date()) if show_day else ""
+        text.add(f"{label:<{self.dates.width}} {commit.time:%H:%M}", self.palette.date).add("  ")
+        text.add(commit.author, self.palette.author)
+        text.add(" " * (self.author_width - display_width(commit.author)) + "  ")
+        suffix = self.decorations(commit)
+        subject = commit.subject
+        if self.columns > 0:
+            available = max(self.columns - display_width(text.plain) - display_width(suffix.plain), 1)
+            subject = truncate(subject, available)
+        return text.extend(self.subject(subject)).extend(suffix).render(self.palette.reset)
+
+
+def start_git(arguments: list[str], stderr: int | None = subprocess.DEVNULL) -> subprocess.Popen[bytes]:
+    try:
+        return subprocess.Popen(["git", *arguments], stdout=subprocess.PIPE, stderr=stderr)
+    except FileNotFoundError:
+        sys.exit("git tl: git is not installed")
+
+
+def finish(process: subprocess.Popen[bytes]) -> str | None:
+    output, _ = process.communicate()
+    return output.decode("utf-8", errors="replace") if process.returncode == 0 else None
+
+
+def log_arguments(options: Options) -> list[str]:
+    return [
+        "log",
+        "-n",
+        str(options.count),
+        "-z",
+        "--parents",
+        "--topo-order",
+        "--no-color",
+        "--no-show-signature",
+        "--decorate=full",
+        f"--format={LOG_FORMAT}",
+        "--regexp-ignore-case",
+        "--extended-regexp",
+        *options.git_args,
+        "--",
+        *options.paths,
+    ]
+
+
+def resolve_pager(config: GitConfig) -> str | None:
+    pager = os.environ.get("GIT_PAGER")
+    if pager is None:
+        pager = config.get("core.pager")
+    if pager is None:
+        pager = os.environ.get("PAGER")
+    if pager is None:
+        pager = "less"
+    return None if pager in ("", "cat") else pager
+
+
+def write_stdout(data: bytes) -> None:
+    try:
+        sys.stdout.buffer.write(data)
+        sys.stdout.flush()
+    except BrokenPipeError:
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+
+
+def emit(lines: list[str], pager: str | None) -> None:
+    data = "".join(f"{line}\n" for line in lines).encode("utf-8")
+    if pager is None:
+        write_stdout(data)
+        return
+    environment = os.environ.copy()
+    environment.setdefault("LESS", "FRX")
+    environment.setdefault("LV", "-c")
+    try:
+        process = subprocess.Popen(pager, shell=True, stdin=subprocess.PIPE, env=environment)
+    except OSError:
+        write_stdout(data)
+        return
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    process.communicate(data)
+
+
+def main(arguments: list[str]) -> int:
+    options = parse_args(arguments)
+    is_tty = sys.stdout.isatty()
+
+    log = start_git(log_arguments(options), stderr=None)
+    config_process = start_git(["config", "-z", "--list"])
+    refs_process = start_git(["for-each-ref", f"--format={REF_FORMAT}", "refs/heads", "refs/remotes"])
+
+    config = GitConfig.parse(finish(config_process) or "")
+    table = RefTable.parse(finish(refs_process) or "")
+    default = DefaultBranch.find(table, config)
+    membership = Membership.plan(options, table, default)
+    membership_process = start_git(membership.arguments) if membership else None
+
+    raw_log, _ = log.communicate()
+    if log.returncode != 0:
+        return log.returncode
+    commits = parse_commits(raw_log.decode("utf-8", errors="replace"))
+    if not commits:
+        return 0
+
+    color_mode = options.color_mode or ColorMode.from_config(config.get("color.diff") or config.get("color.ui"))
+    palette = Palette.from_config(config) if color_mode.enabled(is_tty) else Palette()
+    if config.get_bool("tl.graph", True):
+        steps: list[GraphStep | None] = list(layout_graph(commits, palette.graph, options.filters_commits))
+    else:
+        steps = [None] * len(commits)
+
+    renderer = Renderer(
+        palette=palette,
+        table=table,
+        dimming=Dimming.from_listing(membership, finish(membership_process) if membership_process else None),
+        dates=DateColumn.for_commits(commits, date.today()),
+        author_width=max(display_width(commit.author) for commit in commits),
+        columns=shutil.get_terminal_size((0, 0)).columns if is_tty else 0,
+    )
+    lines = []
+    previous_day = None
+    for commit, step in zip(commits, steps):
+        day = commit.time.date()
+        lines.append(renderer.line(commit, step.row if step else None, day != previous_day))
+        if step and step.connector:
+            lines.append(step.connector.text(NODE_GLYPH).render(palette.reset).rstrip())
+        previous_day = day
+
+    emit(lines, resolve_pager(config) if is_tty else None)
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main(sys.argv[1:]))
+    except KeyboardInterrupt:
+        sys.exit(130)
