@@ -56,4 +56,8 @@ if hash pyenv &>/dev/null; then
     eval "$(pyenv init --path)"
     eval "$(pyenv init -)"
 fi
-. "$HOME/.cargo/env"
+
+local _cargo="$HOME/.cargo/env"
+if [ -f "$_cargo" ]; then
+    . "$_cargo"
+fi
