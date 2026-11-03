@@ -31,7 +31,7 @@ plugin({
 			ensure_installed = {
 				"clangd",
 				"lua_ls",
-				"pyright",
+				"ty",
 				"rust_analyzer",
 			},
 			-- We enable LSP after our `vim.lsp.config(...)` overrides are applied.

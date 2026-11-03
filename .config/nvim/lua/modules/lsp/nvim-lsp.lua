@@ -201,7 +201,7 @@ function M.enable()
 	end
 
 	-- Always try these, even if they're not installed via Mason.
-	vim.list_extend(to_enable, { "lua_ls", "pyright", "nixd" })
+	vim.list_extend(to_enable, { "lua_ls", "ty", "nixd" })
 
 	local seen = {}
 	local unique = {}
