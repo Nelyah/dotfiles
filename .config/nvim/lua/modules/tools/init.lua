@@ -174,6 +174,9 @@ plugin({
 plugin({
 	"stevearc/oil.nvim",
 	event = { "Syntax" },
+	keys = {
+		{ "-", "<cmd>Oil<cr>", desc = "Open parent directory in Oil" },
+	},
 	opts = {},
 	-- Optional dependencies
 	dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
