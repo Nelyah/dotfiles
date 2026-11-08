@@ -6,3 +6,5 @@
 .cache
 compile_commands.json
 __pycache__
+
+**/.claude/.cc-writes/
