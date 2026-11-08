@@ -16,8 +16,14 @@
 #     stash or HEAD for local branches, remote-tracking branches, tags, stash and HEAD, respectively.
 [color "decorate"]
     HEAD = "44 bold"
+    branch = "#b8a4ef"
     remoteBranch = 98
     tag = "203 bold"
+    stash = "bold magenta"
+
+[color "tl"]
+    date = blue
+    author = "#7f9673"
 
 # color.branch
 #     A boolean to enable/disable color in the output of git-branch(1). May be set to always, false (or
@@ -81,7 +87,7 @@
 [color "diff"]
     meta = yellow
     frag = magenta bold
-    commit = yellow bold
+    commit = 212
     old = red bold
     new = green bold
     whitespace = red reverse
@@ -228,11 +234,12 @@
 [difftool]
     prompt = false
 [tig "color"]
-    id = color212 default
     cursor	= white color8 bold underline
 [log]
-    decorate = full
-    date = format:"%Y-%m-%d %H:%M"
+    decorate = short
+    excludeDecoration = refs/remotes/*/HEAD
+    date = format-local:"%Y-%m-%d %H:%M"
+    graphColors = blue,green,magenta,cyan,yellow,brightblue,brightgreen,brightmagenta,brightcyan,brightyellow
 [push]
     autoSetupRemote = true
     # Makes sure that the tags I made locally are pushed to the server when I push
@@ -255,6 +262,8 @@
     line-graphics         = auto
     main-view             = line-number:no,interval=5 id:yes date:default author:full commit-title:yes,graph,refs,overflow=no
     main-view-date        = custom
+    main-view-date-local  = yes
+    reference-format      = branch tag remote
     ignore-case           = smart-case
     main-view-date-format = "\"%Y-%m-%d %H:%M\""
     mouse                 = yes
@@ -267,8 +276,22 @@
 [tig "color"]
     title-focus = cyan default
     title-blur = cyan default
-    palette-0 = color24 default ; This is the main graph lines
-    palette-1 = color24 default ; this is the merge graph lines
+    main-ref = 147 default
+    author = 244 default
+    palette-0 = blue default
+    palette-1 = green default
+    palette-2 = magenta default
+    palette-3 = cyan default
+    palette-4 = yellow default
+    palette-5 = 12 default
+    palette-6 = 10 default
+    palette-7 = 13 default
+    palette-8 = 14 default
+    palette-9 = 11 default
+    palette-10 = blue default
+    palette-11 = green default
+    palette-12 = magenta default
+    palette-13 = cyan default
 
 
 ;   !	Run the command in the foreground with output shown.
