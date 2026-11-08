@@ -255,6 +255,7 @@ plugin({
 		{ "<leader>s", desc = "Search current buffer lines" },
 		{ "<c-x>h", desc = "Search help tags" },
 		{ ",", desc = "Find buffers" },
+		{ "<leader>r", desc = "Resume last picker" },
 	},
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()

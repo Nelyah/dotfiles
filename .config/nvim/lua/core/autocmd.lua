@@ -24,6 +24,19 @@ vim.cmd([[ autocmd! FileType help wincmd L ]])
 
 vim.cmd([[ command! -nargs=1 Ssh :r scp://<args>/ ]])
 
+vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("quickfix_mappings", { clear = true }),
+    pattern = "qf",
+    callback = function(args)
+        vim.keymap.set("n", "<CR>", "<CR>", { buffer = args.buf, desc = "Open the entry under the cursor" })
+        vim.keymap.set("n", "f", function()
+            local loclist = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].loclist == 1
+            vim.cmd.wincmd("p")
+            require("modules.ui.fzf-lua").quickfix(loclist)
+        end, { buffer = args.buf, desc = "Search this list in fzf-lua" })
+    end,
+})
+
 -- {{{ Git
 -- Git rebase bindings
 vim.api.nvim_create_autocmd("Filetype", {

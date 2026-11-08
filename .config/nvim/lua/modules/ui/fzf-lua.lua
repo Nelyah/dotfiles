@@ -4,6 +4,12 @@ local default_fzf_opts = {
 	["--layout"] = "default",
 }
 
+function M.quickfix(loclist)
+	local fzf = require("fzf-lua")
+	local picker = loclist and fzf.loclist or fzf.quickfix
+	picker({ fzf_opts = default_fzf_opts })
+end
+
 function M.setup()
 	local fzf = require("fzf-lua")
 	fzf.setup({})
@@ -33,6 +39,7 @@ function M.setup()
 	vim.keymap.set("n", ",", function()
 		fzf.buffers({ fzf_opts = default_fzf_opts })
 	end, { desc = "Find buffers" })
+	vim.keymap.set("n", "<leader>r", fzf.resume, { desc = "Resume last picker" })
 
 	vim.api.nvim_create_user_command("FT", function()
 		fzf.filetypes({ fzf_opts = default_fzf_opts })

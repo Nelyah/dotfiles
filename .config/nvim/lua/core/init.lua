@@ -2,6 +2,7 @@ require("core.options")
 require("core.mappings")
 require("core.autocmd")
 require("core.large_file").setup()
+require("core.quickfix_preview").setup()
 require('core.conflict_markers_highlight')
 
 local pack = require("core.packer")
