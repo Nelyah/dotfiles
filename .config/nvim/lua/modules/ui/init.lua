@@ -221,6 +221,7 @@ plugin({
 				require("nvim-tree.api").map.on_attach.default(bufnr)
 				vim.keymap.del("n", "J", { buffer = bufnr })
 				vim.keymap.del("n", "K", { buffer = bufnr })
+				vim.keymap.del("n", "<C-e>", { buffer = bufnr })
 			end,
 			view = {
 				width = 40,
