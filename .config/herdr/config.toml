@@ -1,0 +1,104 @@
+onboarding = false
+
+# Keybindings mirroring ~/.config/tmux/tmux.conf (plus tmux defaults).
+[keys]
+prefix = "alt+a"                        # tmux: prefix M-a (M-a M-a sends literal M-a, built in)
+
+# Panes
+split_vertical = "prefix+h"             # tmux: h split-window -h (side by side)
+split_horizontal = "prefix+v"           # tmux: v split-window -v (stacked)
+close_pane = "prefix+x"                 # tmux: x kill-pane
+zoom = "prefix+z"
+cycle_pane_next = "prefix+o"            # tmux default: o
+last_pane = "prefix+semicolon"          # tmux default: ;
+focus_pane_left = ""                    # M-h/j/k/l handled by nav.sh (vim-aware), see [[keys.command]] below
+focus_pane_down = ""
+focus_pane_up = ""
+focus_pane_right = ""
+swap_pane_left = "prefix+["             # tmux: [ swap with left-of
+swap_pane_right = "prefix+]"            # tmux: ] swap with right-of
+swap_pane_up = "prefix+{"               # tmux: { swap-pane -U
+swap_pane_down = "prefix+}"             # tmux: } swap-pane -D
+resize_pane_left = "alt+left"           # tmux: -n M-arrows resize
+resize_pane_right = "alt+right"
+resize_pane_up = "alt+up"
+resize_pane_down = "alt+down"
+resize_mode = "prefix+shift+r"          # herdr-only; moved off prefix+r
+rename_pane = "prefix+shift+p"
+
+# Copy mode
+copy_mode = "prefix+a"                  # tmux: a copy-mode
+
+# Tabs (= tmux windows)
+new_tab = "prefix+c"
+next_tab = "prefix+n"
+previous_tab = "prefix+p"
+switch_tab = "prefix+1..9"
+rename_tab = "prefix+comma"             # tmux default: ,
+close_tab = "prefix+ampersand"          # tmux default: &
+move_tab_previous = "prefix+<"          # tmux: < swap-window previous
+move_tab_next = "prefix+>"              # tmux: > swap-window next
+
+# Workspaces (= tmux sessions)
+workspace_picker = "prefix+s"           # tmux default: s choose-session
+goto = "prefix+w"                       # tmux default: w choose-tree
+rename_workspace = "prefix+$"           # tmux default: $
+previous_workspace = "prefix+("         # tmux default: (
+next_workspace = "prefix+)"             # tmux default: )
+new_workspace = "prefix+shift+n"
+close_workspace = "prefix+shift+d"
+
+# Misc
+detach = "prefix+d"                     # tmux default: d
+reload_config = "prefix+r"              # tmux: r source-file
+settings = "prefix+shift+s"             # moved off prefix+s
+open_notification_target = "prefix+shift+o"  # moved off prefix+o
+help = "prefix+?"
+toggle_sidebar = "prefix+b"
+
+# Vim-aware M-h/j/k/l (like vim-tmux-navigator's is_vim check).
+[[keys.command]]
+key = "alt+h"
+type = "shell"
+command = "~/.config/herdr/plugins/nav.sh left"
+description = "pane left (vim-aware)"
+
+[[keys.command]]
+key = "alt+j"
+type = "shell"
+command = "~/.config/herdr/plugins/nav.sh down"
+description = "pane down (vim-aware)"
+
+[[keys.command]]
+key = "alt+k"
+type = "shell"
+command = "~/.config/herdr/plugins/nav.sh up"
+description = "pane up (vim-aware)"
+
+[[keys.command]]
+key = "alt+l"
+type = "shell"
+command = "~/.config/herdr/plugins/nav.sh right"
+description = "pane right (vim-aware)"
+
+# Status bar mirroring the tmux theme (Nelyah/tmux-theme + tmux-cpu + spend).
+[ui]
+tab_bar_position = "bottom"             # tmux: status-position bottom
+tab_bar_right_separator = "  "
+tab_bar_right = [
+  { type = "zoom" },
+  { type = "command", command = "~/.config/herdr/plugins/status.sh ram", interval_seconds = 2, timeout_seconds = 2 },
+  { type = "command", command = "~/.config/herdr/plugins/status.sh cpu", interval_seconds = 2, timeout_seconds = 3 },
+  { type = "command", command = "printf 'Spend %s' \"$(~/.config/tmux/spend)\"", interval_seconds = 60, timeout_seconds = 10 },
+  { type = "command", command = "printf '󰛵 %s' \"$(hostname -s)\"", interval_seconds = 3600 },
+  { type = "datetime", format = "󰃰 %d/%m" },
+  { type = "datetime", format = "%H:%M:%S" },
+]
+
+# tmux-theme palette: bg #222222, tab pill #4d4d4d, active #80aaff, text #c5cad3.
+[theme.custom]
+panel_bg = "#222222"
+surface0 = "#4d4d4d"
+accent = "#80aaff"
+overlay1 = "#c5cad3"
+overlay0 = "#888c94"
