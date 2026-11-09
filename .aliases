@@ -1,9 +1,11 @@
 # vim: set ft=sh:
 
-alias grep="grep --color=always"
-alias egrep="egrep --color=always"
+if [ -z "$CLAUDECODE" ]; then
+  alias grep="grep --color=always"
+  alias egrep="egrep --color=always"
+  alias rm="rm -i"
+fi
 
-alias rm="rm -i"
 alias rebash="source ~/.bashrc"
 alias irssi@freenode="irssi -c chat.freenode.net -p 6667 -n Nelyah"
 alias irc="weechat-curses"
