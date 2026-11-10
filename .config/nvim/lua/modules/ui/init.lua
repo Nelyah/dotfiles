@@ -24,6 +24,8 @@ plugin({
 		end, { desc = "Toggle Git diff view" })
 	end,
 	config = function()
+		local commit_files = require("modules.ui.diffview_commit_files")
+
 		require("diffview").setup({
 			enhanced_diff_hl = true,
 			file_panel = {
@@ -41,8 +43,16 @@ plugin({
 					{ "n", "<leader>w", "<Cmd>vertical resize 80<CR>", { desc = "Widen the file panel" } },
 					{ "n", "<leader>W", "<Cmd>vertical resize 50<CR>", { desc = "Reset the file panel width" } },
 				},
+				file_history_panel = {
+					{ "n", "<cr>", commit_files.select_commit, { desc = "Show the commit's files in the sidebar" } },
+					{ "n", "o", commit_files.select_commit, { desc = "Show the commit's files in the sidebar" } },
+					{ "n", "l", commit_files.select_commit, { desc = "Show the commit's files in the sidebar" } },
+					{ "n", "<2-LeftMouse>", commit_files.select_commit, { desc = "Show the commit's files in the sidebar" } },
+				},
 			},
 			hooks = {
+				view_opened = commit_files.attach,
+				view_closed = commit_files.detach,
 				diff_buf_win_enter = function(_, winid, ctx)
 					if not ctx or not tostring(ctx.layout_name or ""):find("^diff2") then
 						return
