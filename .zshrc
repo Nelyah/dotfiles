@@ -467,5 +467,8 @@ export ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
 mkdir -p "$ZSH_CACHE_DIR"
 source "${ZSH_PLUGIN_HOME}/oh-my-zsh/completion.zsh"
 
+if hash nelyah &> /dev/null; then
+    cached_init nelyah nelyah shell-init zsh
+fi
 cached_init atuin atuin init zsh --disable-up-arrow
 cached_init meow meow init zsh
