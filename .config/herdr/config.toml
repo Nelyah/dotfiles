@@ -41,12 +41,18 @@ move_tab_next = "prefix+>"              # tmux: > swap-window next
 
 # Workspaces (= tmux sessions)
 workspace_picker = "prefix+s"           # tmux default: s choose-session
-goto = "prefix+w"                       # tmux default: w choose-tree
+goto = "alt+w"                          # tmux: -n M-w choose-tree (direct, no prefix)
 rename_workspace = "prefix+$"           # tmux default: $
 previous_workspace = "prefix+("         # tmux default: (
 next_workspace = "prefix+)"             # tmux default: )
 new_workspace = "prefix+shift+n"
 close_workspace = "prefix+shift+d"
+
+# Navigate mode (workspace_picker): j/k move the workspace selection, J/K move pane focus.
+navigate_workspace_up = ["k", "up"]
+navigate_workspace_down = ["j", "down"]
+navigate_pane_up = "K"
+navigate_pane_down = "J"
 
 # Misc
 detach = "prefix+d"                     # tmux default: d
@@ -81,19 +87,84 @@ type = "shell"
 command = "~/.config/herdr/plugins/nav.sh right"
 description = "pane right (vim-aware)"
 
-# Status bar mirroring the tmux theme (Nelyah/tmux-theme + tmux-cpu + spend).
+# Status bar mirroring the tmux theme (Nelyah/tmux-theme + tmux-cpu).
 [ui]
 tab_bar_position = "bottom"             # tmux: status-position bottom
-tab_bar_right_separator = "  "
-tab_bar_right = [
-  { type = "zoom" },
-  { type = "command", command = "~/.config/herdr/plugins/status.sh ram", interval_seconds = 2, timeout_seconds = 2 },
-  { type = "command", command = "~/.config/herdr/plugins/status.sh cpu", interval_seconds = 2, timeout_seconds = 3 },
-  { type = "command", command = "printf 'Spend %s' \"$(~/.config/tmux/spend)\"", interval_seconds = 60, timeout_seconds = 10 },
-  { type = "command", command = "printf '󰛵 %s' \"$(hostname -s)\"", interval_seconds = 3600 },
-  { type = "datetime", format = "󰃰 %d/%m" },
-  { type = "datetime", format = "%H:%M:%S" },
+
+status_indicators = "dots"
+[ui.colors]
+bar = "theme.panel_bg"
+ink = "theme.surface_dim"
+pill = "theme.surface0"
+pill_text = "theme.text"
+ram = "theme.yellow"
+cpu = "theme.peach"
+host = "theme.blue"
+time = "theme.mauve"
+
+[ui.tab_bar]
+tab_style = "rounded"
+right_separator = " "
+
+[[ui.tab_bar.right]]
+source = "zoom"
+parts = [{ text = " ZOOM ", fg = "ink", bg = "theme.accent", bold = true }]
+
+[[ui.tab_bar.right]]
+source = "ram"
+parts = [
+  { text = "\ue0b6", fg = "ram", bg = "bar" },
+  { text = "RAM ", fg = "ink", bg = "ram", bold = true },
+  { text = " ", bg = "pill" },
+  { value = true, bg = "pill", bold = true },
+  { text = " ", bg = "pill" },
+  { text = "\ue0b4", fg = "pill", bg = "bar" },
 ]
+
+[[ui.tab_bar.right]]
+source = "cpu"
+parts = [
+  { text = "\ue0b6", fg = "cpu", bg = "bar" },
+  { text = "CPU ", fg = "ink", bg = "cpu", bold = true },
+  { text = " ", bg = "pill" },
+  { value = true, bg = "pill", bold = true },
+  { text = " ", bg = "pill" },
+  { text = "\ue0b4", fg = "pill", bg = "bar" },
+]
+
+[[ui.tab_bar.right]]
+source = "hostname"
+parts = [
+  { text = "\ue0b6", fg = "host", bg = "bar" },
+  { text = "\U000f06f5 ", fg = "ink", bg = "host" },
+  { text = " ", bg = "pill" },
+  { value = true, fg = "pill_text", bg = "pill" },
+  { text = " ", bg = "pill" },
+  { text = "\ue0b4", fg = "pill", bg = "bar" },
+]
+
+[[ui.tab_bar.right]]
+source = "clock"
+format = "%d/%m %H:%M"
+parts = [
+  { text = "\ue0b6", fg = "time", bg = "bar" },
+  { text = "\U000f00f0 ", fg = "ink", bg = "time" },
+  { text = " ", bg = "pill" },
+  { value = true, fg = "pill_text", bg = "pill" },
+  { text = " ", bg = "pill" },
+  { text = "\ue0b4", fg = "pill", bg = "bar" },
+]
+
+[status_sources.ram]
+command = "~/.config/herdr/plugins/ram.sh"
+format = "json"
+interval_seconds = 2
+
+[status_sources.cpu]
+command = "~/.config/herdr/plugins/cpu.sh"
+format = "json"
+interval_seconds = 2
+timeout_seconds = 3
 
 # tmux-theme palette: bg #222222, tab pill #4d4d4d, active #80aaff, text #c5cad3.
 [theme.custom]

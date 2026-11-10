@@ -194,11 +194,10 @@ function custom_path ()
 
 # Anonymous function to avoid leaking NBSP variable.
 function () {
-  if [[ -n "$TMUX" ]]; then
-    local LVL=$(($SHLVL - 1))
-  else
-    local LVL=$SHLVL
-  fi
+  local LVL=$SHLVL
+  [[ -n "$TMUX" ]] && (( LVL-- ))
+  [[ "$HERDR_ENV" == 1 ]] && (( LVL-- ))
+  (( LVL < 1 )) && LVL=1
   if [[ $EUID -eq 0 ]]; then
     local SUFFIX=$(printf '#%.0s' {1..$LVL})
   else
