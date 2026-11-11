@@ -1,0 +1,28 @@
+# Vim-aware M-h/j/k/l. Wired as plugin actions (not `type = "shell"`) because
+# herdr runs shell keybinds via `/bin/sh -lc`, sourcing /etc/profile and
+# ~/.profile on every keypress. Plugin actions exec argv directly.
+id = "local.nav"
+name = "Vim-aware nav"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+platforms = ["macos", "linux"]
+
+[[actions]]
+id = "left"
+title = "Pane left (vim-aware)"
+command = ["./nav.sh", "left"]
+
+[[actions]]
+id = "down"
+title = "Pane down (vim-aware)"
+command = ["./nav.sh", "down"]
+
+[[actions]]
+id = "up"
+title = "Pane up (vim-aware)"
+command = ["./nav.sh", "up"]
+
+[[actions]]
+id = "right"
+title = "Pane right (vim-aware)"
+command = ["./nav.sh", "right"]

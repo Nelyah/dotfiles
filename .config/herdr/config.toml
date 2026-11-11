@@ -11,7 +11,7 @@ close_pane = "prefix+x"                 # tmux: x kill-pane
 zoom = "prefix+z"
 cycle_pane_next = "prefix+o"            # tmux default: o
 last_pane = "prefix+semicolon"          # tmux default: ;
-focus_pane_left = ""                    # M-h/j/k/l handled by nav.sh (vim-aware), see [[keys.command]] below
+focus_pane_left = ""                    # M-h/j/k/l handled by scripts/nav (vim-aware), see [[keys.command]] below
 focus_pane_down = ""
 focus_pane_up = ""
 focus_pane_right = ""
@@ -65,26 +65,26 @@ toggle_sidebar = "prefix+b"
 # Vim-aware M-h/j/k/l (like vim-tmux-navigator's is_vim check).
 [[keys.command]]
 key = "alt+h"
-type = "shell"
-command = "~/.config/herdr/plugins/nav.sh left"
+type = "plugin_action"
+command = "local.nav.left"
 description = "pane left (vim-aware)"
 
 [[keys.command]]
 key = "alt+j"
-type = "shell"
-command = "~/.config/herdr/plugins/nav.sh down"
+type = "plugin_action"
+command = "local.nav.down"
 description = "pane down (vim-aware)"
 
 [[keys.command]]
 key = "alt+k"
-type = "shell"
-command = "~/.config/herdr/plugins/nav.sh up"
+type = "plugin_action"
+command = "local.nav.up"
 description = "pane up (vim-aware)"
 
 [[keys.command]]
 key = "alt+l"
-type = "shell"
-command = "~/.config/herdr/plugins/nav.sh right"
+type = "plugin_action"
+command = "local.nav.right"
 description = "pane right (vim-aware)"
 
 # Status bar mirroring the tmux theme (Nelyah/tmux-theme + tmux-cpu).
@@ -99,6 +99,7 @@ pill = "theme.surface0"
 pill_text = "theme.text"
 ram = "theme.yellow"
 cpu = "theme.peach"
+spend = "theme.green"
 host = "theme.blue"
 time = "theme.mauve"
 
@@ -133,6 +134,17 @@ parts = [
 ]
 
 [[ui.tab_bar.right]]
+source = "spend"
+parts = [
+  { text = "\ue0b6", fg = "spend", bg = "bar" },
+  { text = "Spend ", fg = "ink", bg = "spend", bold = true },
+  { text = " ", bg = "pill" },
+  { value = true, fg = "pill_text", bg = "pill", bold = true },
+  { text = " ", bg = "pill" },
+  { text = "\ue0b4", fg = "pill", bg = "bar" },
+]
+
+[[ui.tab_bar.right]]
 source = "hostname"
 parts = [
   { text = "\ue0b6", fg = "host", bg = "bar" },
@@ -156,15 +168,21 @@ parts = [
 ]
 
 [status_sources.ram]
-command = "~/.config/herdr/plugins/ram.sh"
+command = "~/.config/herdr/scripts/ram.sh"
 format = "json"
 interval_seconds = 2
 
 [status_sources.cpu]
-command = "~/.config/herdr/plugins/cpu.sh"
+command = "~/.config/herdr/scripts/cpu.sh"
 format = "json"
 interval_seconds = 2
 timeout_seconds = 3
+
+[status_sources.spend]
+command = "~/.config/herdr/scripts/spend.sh"
+format = "json"
+interval_seconds = 60
+timeout_seconds = 30
 
 # tmux-theme palette: bg #222222, tab pill #4d4d4d, active #80aaff, text #c5cad3.
 [theme.custom]
