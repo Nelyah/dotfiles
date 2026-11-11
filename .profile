@@ -34,7 +34,7 @@ function __macos_profile() {
     # This makes sure that this session has the right path for the SDK
     # This makes sure it finds the libraries required etc.
     local _sdk_cache="$_cache_dir/macos-sdkroot"
-    if [ ! -s "$_sdk_cache" ]; then
+    if [ ! -s "$_sdk_cache" ] || [ ! -d "$(cat "$_sdk_cache")" ]; then
         xcrun --sdk macosx --show-sdk-path >| "$_sdk_cache"
     fi
     export SDKROOT="$(cat "$_sdk_cache")"
